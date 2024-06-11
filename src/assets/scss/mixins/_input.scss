@@ -23,4 +23,8 @@
     border-color: darken($border-color, 10%);
     outline: $outline-color solid 3px;
   }
+
+  &:disabled {
+    background-color: #E4E7EC;
+  }
 }
