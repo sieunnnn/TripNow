@@ -1,6 +1,6 @@
 <template>
   <router-view/>
-  <ToastManager/>
+  <Toast />
 </template>
 
 <script setup lang="ts">
