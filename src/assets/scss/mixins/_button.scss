@@ -1,0 +1,23 @@
+
+@mixin custom-button(
+  $bg-color: #175CD3,
+  $text-color: #FFF,
+  $hover-darken: 10%,
+  $focus-darken: 15%,
+  $border-radius: 4px
+) {
+  border: none;
+  border-radius: $border-radius;
+  background-color: $bg-color;
+  color: $text-color;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darken($bg-color, $hover-darken);
+  }
+
+  &:focus {
+    outline: none;
+    background-color: darken($bg-color, $focus-darken);
+  }
+}

@@ -1,0 +1,6 @@
+
+@mixin background($color) {
+  background-color: $color;
+  margin: 0;
+  padding: 0;
+}

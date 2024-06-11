@@ -1,0 +1,17 @@
+.flatpickr-months.flatpickr-months {
+    font-size: 12px;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background-color: #1570EF !important;
+    border: none !important;
+    color: #FCFCFD !important;
+    font-weight: normal !important;
+}
+
+.flatpickr-day.today {
+    background-color: #D0D5DD !important;
+    border: none !important;
+}

@@ -1,0 +1,19 @@
+
+@mixin flex-row($justify-content: flex-start, $align-items: stretch) {
+  display: flex;
+  flex-direction: row;
+  justify-content: $justify-content;
+  align-items: $align-items;
+}
+
+@mixin flex-column($justify-content: flex-start, $align-items: stretch) {
+  display: flex;
+  flex-direction: column;
+  justify-content: $justify-content;
+  align-items: $align-items;
+}
+
+@mixin size($width: 100%, $height: 100%) {
+  width: $width;
+  height: $height;
+}

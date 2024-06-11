@@ -1,0 +1,26 @@
+
+@mixin custom-input(
+  $border-color: #98A2B3,
+  $text-color: #1E1E1C,
+  $placeholder-color: #98A2B3,
+  $background-color: #FFF,
+  $outline-color: #D1E9FF
+) {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid $border-color;
+  border-radius: 5px;
+  color: $text-color;
+  background-color: $background-color;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: $placeholder-color;
+    outline: none;
+  }
+
+  &:focus {
+    border-color: darken($border-color, 10%);
+    outline: $outline-color solid 3px;
+  }
+}
