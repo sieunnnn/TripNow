@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import SignupPage from '../pages/authentication/SignupPage.vue';
+import LoginPage from "../pages/authentication/LoginPage.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -7,10 +8,15 @@ const routes: Array<RouteRecordRaw> = [
         name: 'Signup',
         component: SignupPage
     },
+    {
+        path: '/login',
+        name: 'Login',
+        component: LoginPage
+    },
 ];
 
 const router = createRouter({
-    history: createWebHistory(import.meta.env.VITE_APP_BASE_URL),
+    history: createWebHistory(),
     routes
 });
 
