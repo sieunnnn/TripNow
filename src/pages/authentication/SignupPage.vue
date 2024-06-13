@@ -25,12 +25,12 @@
           </div>
           <div class="form-item">
             <label for="password">비밀번호</label>
-            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." class="custom-input" />
+            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." :class="{'custom-input': true, 'error-input': passwordError}"/>
             <div v-if="passwordError" class="error">{{ passwordError }}</div>
           </div>
           <div class="form-item">
             <label for="nickname">닉네임</label>
-            <input id="nickname" type="text" v-model="formValue.nickname" placeholder="닉네임을 적어주세요." class="custom-input" />
+            <input id="nickname" type="text" v-model="formValue.nickname" placeholder="닉네임을 적어주세요." :class="{'custom-input': true, 'error-input': nicknameError}" />
             <div v-if="nicknameError" class="error">{{ nicknameError }}</div>
           </div>
           <div class="form-item">
@@ -54,7 +54,6 @@ import { useToast, ToastType } from "../../components/toast/Toast.ts";
 
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/themes/light.css';
-import '../../assets/scss/mixins/_typo.scss'
 
 const formValue = ref({
   email: '',
@@ -209,7 +208,7 @@ form {
 
   .error {
     @include noto-sans-kr(400, 14px, $red500);
-    margin: 2px 0 0 2px;
+    margin: 4px 0 0 2px;
   }
 }
 
@@ -229,6 +228,10 @@ form {
   @include custom-input();
   @include size(100%, 30px);
   @include noto-sans-kr(400, 16x, $black);
+}
+
+.error-input {
+  @include custom-input-error();
 }
 
 .authentication-button {
