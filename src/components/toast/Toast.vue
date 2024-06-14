@@ -41,7 +41,7 @@ const { toasts } = useToast();
   min-height: 60px;
   box-sizing: border-box;
   white-space: nowrap;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(12px);
   background-color: rgba(0, 0, 0, 0.3);
 }
 
