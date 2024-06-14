@@ -62,10 +62,12 @@ const formValue = ref({
   birthday: ''
 });
 
+const { addToast } = useToast();
+
 const code = ref('');
 const birthdatePicker = ref<HTMLInputElement | null>(null);
 const isCodeInputDisabled = ref(true);
-const { addToast } = useToast();
+
 const passwordPattern = /^[A-Za-z\d~!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>?/]{8,20}$/;
 const nicknamePattern = /^[a-zA-Z가-힣\d]+$/;
 
