@@ -17,8 +17,10 @@
     "@vitejs/plugin-vue": "^5.0.5",
     "axios": "^1.7.2",
     "flatpickr": "^4.6.13",
+    "pinia": "^2.1.7",
     "sass": "^1.77.4",
     "sass-loader": "^10.5.2",
+    "vue": "^3.4.29",
     "vue-router": "^4.0.13"
   }
 }

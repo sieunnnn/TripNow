@@ -17,7 +17,7 @@
           </div>
           <div class="form-item">
             <label for="password">비밀번호</label>
-            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." :class="{'custom-input': true, 'error-input': passwordError}"/>
+            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." class="custom-input"/>
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">로그인</button>
@@ -30,11 +30,11 @@
         <div class="form-item sns-label">
           소셜 계정으로 30 초 만에 로그인하기
           <button type="button" class="submit-button sns-button">
-            <img src="../../../public/google.png" width="22" height="22" class="image"/>
-            구글 계정 으로 로그인
+            <img src="/google.png" width="22" height="22" class="image"/>
+            <a href="http://localhost:8080/api/v1/oauth/authorize/google" class="link" style="text-decoration: none">구글 계정 으로 로그인</a>
           </button>
           <button type="button" class="kakao" style="margin-bottom: 30px">
-            <img src="../../../public/kakao.png" width="22" height="22" class="image"/>
+            <img src="/kakao.png" width="22" height="22" class="image"/>
             카카오 계정 으로 로그인
           </button>
         </div>
@@ -51,6 +51,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useToast, ToastType } from "../../components/toast/Toast.ts";
+import { loginRequest } from "../../api/authentication/AuthenticationDto.ts";
+import { login } from "../../api/authentication/AuthenticationApi.ts";
 import '../../assets/scss/mixins/_typo.scss'
 
 const formValue = ref({
@@ -58,9 +60,28 @@ const formValue = ref({
   password: '',
 });
 
-const code = ref('');
 const { addToast } = useToast();
 
+const handleLogin = async () => {
+  const data: loginRequest = {
+    email: formValue.value.email,
+    password: formValue.value.password
+  };
+
+  const status = await login(data);
+
+  let message = '';
+  let type: ToastType = 'success';
+
+  if (status === 200) {
+    message = '✅ 로그인에 성공했어요.';
+
+  } else {
+    message = '❎ 이메일과 비밀번호를 다시한번 확인해주세요.';
+  }
+
+  addToast(message, type, 2000)
+}
 </script>
 
 <style scoped lang="scss">

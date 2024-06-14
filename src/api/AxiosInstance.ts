@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://api.example.com';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
@@ -35,16 +35,17 @@ axiosInstance.interceptors.response.use(
                     throw new Error('No refresh token available');
                 }
 
-                const response = await axios.post(`${API_BASE_URL}/api/v1/auth/token/refresh`, {
+                const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`, {
                     token: refreshToken,
                 });
 
                 const { accessToken } = response.data;
                 localStorage.setItem('Authorization', accessToken);
-                axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
-                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+                axiosInstance.defaults.headers.common['Authorization'] = `${accessToken}`;
+                originalRequest.headers['Authorization'] = `${accessToken}`;
 
                 return axiosInstance(originalRequest);
+
             } catch (e) {
                 console.error('Token refresh failed', e);
             }
