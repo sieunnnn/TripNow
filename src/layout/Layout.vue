@@ -1,7 +1,7 @@
 <template>
   <div class="flex-row">
     <Navigator class="navigator"/>
-    <div class="content">안녕</div>
+    <RouterView class="content" />
   </div>
 </template>
 
@@ -24,7 +24,7 @@ import Navigator from "../layout/Navigator.vue";
 }
 
 .navigator {
-  flex: 0 0 1.5%;
+  flex: 0 0 100px;
   background-color: $gray25;
   transition: all 0.5s ease;
 
@@ -36,6 +36,7 @@ import Navigator from "../layout/Navigator.vue";
 .content {
   flex: 1;
   background-color: transparent;
+  overflow: hidden;
 }
 
 </style>

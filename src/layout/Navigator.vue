@@ -70,10 +70,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
       margin-top: 40px;
     }
 
-    .icon {
-      margin-left: 20px;
-    }
-
     .text {
       margin-left: 20px;
       transition: width 0.5s ease;
@@ -89,6 +85,10 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   .text {
     display: none;
   }
+}
+
+.icon {
+  margin-left: 15px;
 }
 
 .logo-container, .user-container, .menu-container {

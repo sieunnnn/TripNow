@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-// @ts-ignore
+
 import SignupPage from '../pages/authentication/SignupPage.vue';
-// @ts-ignore
 import LoginPage from "../pages/authentication/LoginPage.vue";
-// @ts-ignore
 import SocialCallback from "../pages/authentication/SocialCallback.vue";
 import Layout from '../layout/Layout.vue';
+import PlannerList from "../pages/planner/PlannerList.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -26,13 +25,13 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'Layout',
-        component: Layout
-        // children: [
-        //     {
-        //         path: '',
-        //         component: MultipleComponents
-        //     }
-        // ]
+        component: Layout,
+        children: [
+            {
+                path: '/planners',
+                component: PlannerList
+            }
+        ]
     }
 ];
 
