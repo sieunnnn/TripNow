@@ -5,6 +5,7 @@ import SignupPage from '../pages/authentication/SignupPage.vue';
 import LoginPage from "../pages/authentication/LoginPage.vue";
 // @ts-ignore
 import SocialCallback from "../pages/authentication/SocialCallback.vue";
+import Layout from '../layout/Layout.vue';
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -21,6 +22,17 @@ const routes: Array<RouteRecordRaw> = [
         path: '/oauth/callback',
         name: 'SocialLogin',
         component: SocialCallback
+    },
+    {
+        path: '/',
+        name: 'Layout',
+        component: Layout
+        // children: [
+        //     {
+        //         path: '',
+        //         component: MultipleComponents
+        //     }
+        // ]
     }
 ];
 
