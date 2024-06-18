@@ -25,17 +25,17 @@
           </div>
           <div class="form-item">
             <label for="password">비밀번호</label>
-            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." :class="{'custom-input': true, 'error-input': passwordError}"/>
+            <input id="password" type="password" v-model="formValue.password" placeholder="비밀번호를 적어주세요." :class="{'custom-input': true, 'error-input': passwordError}" :disabled="isInputDisabled"/>
             <div v-if="passwordError" class="error">{{ passwordError }}</div>
           </div>
           <div class="form-item">
             <label for="nickname">닉네임</label>
-            <input id="nickname" type="text" v-model="formValue.nickname" placeholder="닉네임을 적어주세요." :class="{'custom-input': true, 'error-input': nicknameError}" />
+            <input id="nickname" type="text" v-model="formValue.nickname" placeholder="닉네임을 적어주세요." :class="{'custom-input': true, 'error-input': nicknameError}" :disabled="isInputDisabled"/>
             <div v-if="nicknameError" class="error">{{ nicknameError }}</div>
           </div>
           <div class="form-item">
             <label for="birthday">생년월일</label>
-            <input id="birthday" type="text" ref="birthdatePicker" v-model="formValue.birthday" placeholder="생일을 적어주세요." class="custom-input" />
+            <input id="birthday" type="text" ref="birthdatePicker" v-model="formValue.birthday" placeholder="생일을 적어주세요." class="custom-input" :disabled="isInputDisabled"/>
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">가입 하기</button>
@@ -66,7 +66,8 @@ const { addToast } = useToast();
 
 const code = ref('');
 const birthdatePicker = ref<HTMLInputElement | null>(null);
-const isCodeInputDisabled = ref(true);
+let isCodeInputDisabled = true;
+let isInputDisabled = true;
 
 const passwordPattern = /^[A-Za-z\d~!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>?/]{8,20}$/;
 const nicknamePattern = /^[a-zA-Z가-힣\d]+$/;
@@ -102,6 +103,7 @@ const handleEmailSend = async () => {
   if (status === 200) {
     message = '✉️ 인증번호가 담긴 메일을 발송했어요.';
     type = 'success';
+    isCodeInputDisabled = false;
 
   } else if (status === 400) {
     message = '⚠️ 이미 존재하는 이메일이에요.';
@@ -125,6 +127,7 @@ const handleAuthValidate = async () => {
   if (status === 200) {
     message = '☑️ 이메일 인증이 완료되었어요.';
     type = 'success';
+    isInputDisabled = true;
 
   } else {
     message = '❎ 인증번호를 다시 입력해주세요.';
