@@ -35,7 +35,7 @@
           </div>
           <div class="form-item">
             <label for="birthday">생년월일</label>
-            <input id="birthday" type="text" ref="birthdatePicker" v-model="formValue.birthday" placeholder="생일을 적어주세요." class="custom-input" :disabled="isInputDisabled"/>
+            <DatePicker v-model="formValue.birthday" placeholder="생일을 적어주세요." style="width: 100%"/>
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">가입 하기</button>
@@ -49,23 +49,24 @@
 <script setup lang="ts">
 import { authenticationMailSend, authenticationValidate, signup } from '../../api/authentication/AuthenticationApi';
 import { authenticationRequest, authenticationValidateRequest, signupRequest } from '../../api/authentication/AuthenticationDto.ts';
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useToast, ToastType } from "../../components/toast/Toast.ts";
 
-import flatpickr from 'flatpickr';
-import 'flatpickr/dist/themes/light.css';
+// import flatpickr from 'flatpickr';
+// import 'flatpickr/dist/themes/light.css';
+import DatePicker from "../../components/DatePicker.vue";
 
 const formValue = ref({
   email: '',
   password: '',
   nickname: '',
-  birthday: ''
+  birthday: new Date()
 });
 
 const { addToast } = useToast();
 
 const code = ref('');
-const birthdatePicker = ref<HTMLInputElement | null>(null);
+// const birthdatePicker = ref<HTMLInputElement | null>(null);
 let isCodeInputDisabled = true;
 let isInputDisabled = true;
 
@@ -82,13 +83,13 @@ const nicknameError = computed(() => {
       : '한글, 영문, 숫자 를 조합하여 2-12 자로 만들어주세요.';
 });
 
-onMounted(() => {
-  if (birthdatePicker.value) {
-    flatpickr(birthdatePicker.value, {
-      dateFormat: 'Y-m-d',
-    });
-  }
-});
+// onMounted(() => {
+//   if (birthdatePicker.value) {
+//     flatpickr(birthdatePicker.value, {
+//       dateFormat: 'Y-m-d',
+//     });
+//   }
+// });
 
 const handleEmailSend = async () => {
   const data: authenticationRequest = {
