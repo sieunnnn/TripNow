@@ -66,7 +66,6 @@ const formValue = ref({
 const { addToast } = useToast();
 
 const code = ref('');
-// const birthdatePicker = ref<HTMLInputElement | null>(null);
 let isCodeInputDisabled = true;
 let isInputDisabled = true;
 
@@ -82,14 +81,6 @@ const nicknameError = computed(() => {
       ? ''
       : '한글, 영문, 숫자 를 조합하여 2-12 자로 만들어주세요.';
 });
-
-// onMounted(() => {
-//   if (birthdatePicker.value) {
-//     flatpickr(birthdatePicker.value, {
-//       dateFormat: 'Y-m-d',
-//     });
-//   }
-// });
 
 const handleEmailSend = async () => {
   const data: authenticationRequest = {
@@ -233,7 +224,7 @@ form {
 .custom-input {
   @include custom-input();
   @include size(100%, 30px);
-  @include noto-sans-kr(400, 16x, $black);
+  @include noto-sans-kr(400, 14x, $black);
 }
 
 .error-input {
@@ -242,9 +233,9 @@ form {
 
 .authentication-button {
   @include custom-button($gray400, #FCFCFD, 5%, 5%, 6px);
-  @include size(130px, 31px);
+  @include size(130px, 32px);
   margin-left: 10px;
-  @include noto-sans-kr(400, 16x, $gray25);
+  @include noto-sans-kr(400, 14px, $gray25);
 }
 
 .submit-button {
