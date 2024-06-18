@@ -11,7 +11,7 @@ export interface signupRequest {
     email: string,
     password: string,
     nickname: string,
-    birthday: string
+    birthday: Date
 }
 
 export interface loginRequest {
@@ -23,7 +23,7 @@ export interface userInfoResponse {
     userId: number,
     nickname: string,
     userTag: number,
-    birthday: string,
+    birthday: Date,
     email: string,
     profileUrl: string,
     isBirthday: boolean,
