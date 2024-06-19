@@ -1,45 +1,9 @@
 
-@mixin noto-sans-kr($weight, $font-size: 16px, $color: #1E1E1C) {
-    font-family: "Noto Sans KR", sans-serif;
+@mixin pretendard($weight, $font-size: 16px, $color: #1E1E1C) {
+    font-family: "Pretendard-Regular", sans-serif;
     font-optical-sizing: auto;
     font-weight: $weight;
     font-style: normal;
     font-size: $font-size;
     color: $color;
-}
-
-.noto-sans-kr-100 {
-    @include noto-sans-kr(100);
-}
-
-.noto-sans-kr-200 {
-    @include noto-sans-kr(200);
-}
-
-.noto-sans-kr-300 {
-    @include noto-sans-kr(300);
-}
-
-.noto-sans-kr-400 {
-    @include noto-sans-kr(400);
-}
-
-.noto-sans-kr-500 {
-    @include noto-sans-kr(500);
-}
-
-.noto-sans-kr-600 {
-    @include noto-sans-kr(600);
-}
-
-.noto-sans-kr-700 {
-    @include noto-sans-kr(700);
-}
-
-.noto-sans-kr-800 {
-    @include noto-sans-kr(800);
-}
-
-.noto-sans-kr-900 {
-    @include noto-sans-kr(900);
 }

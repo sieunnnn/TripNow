@@ -30,13 +30,14 @@ import Navigator from "../layout/Navigator.vue";
 
   &:hover {
     flex: 0 0 14%;
+    min-width: 250px;
   }
 }
 
 .content {
   flex: 1;
   background-color: transparent;
-  overflow: hidden;
+  flex-wrap: nowrap;
 }
 
 </style>

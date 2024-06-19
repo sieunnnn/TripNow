@@ -3,7 +3,7 @@
     <n-carousel
         direction="vertical"
         dot-placement="right"
-        style="width: 87%; height: 300px; border-radius: 10px;  margin: 1.5% 0 1.5% 5%;"
+        style="width: 87%; height: 300px; border-radius: 10px;  margin: 1.5% 0 25px 5%;"
     >
       <img
           class="carousel-img"
@@ -22,46 +22,63 @@
           src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg"
       >
     </n-carousel>
-    <form @submit.prevent="">
-      <div class="form-item">
-        <label for="travel" style="margin-bottom:8px;">⚡ 이전 여행 계획을 빠르게 찾아 보세요.</label>
-        <div class="align-contents">
-          <input id="title" type="text" v-model="formValue.title" placeholder="찾고 싶은 여행 계획을 적어 주세요." class="custom-input" />
-          <button type="button" class="search-button" @click="">
-            <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="margin-right: 8px"/>
-            <span class="label">검색</span>
-          </button>
+    <div class="flex-row" style="justify-content: center">
+      <div class="flex-row" style="align-items: flex-end; justify-content: space-between; width: 90%;">
+        <button class="blue-button" type="button" @click="handleCreatePlannerModal" style="width: 130px; margin: 0 0 16px 0; min-width: 120px">
+          <font-awesome-icon icon="fa-regular fa-calendar-plus" style="margin: 0 8px 2px 0" />
+          여행 추가 하기
+        </button>
+        <div class="flex-row" style="width: 550px">
+          <div class="form-item">
+            <div class="align-contents">
+              <input id="title" type="text" v-model="formValue.title" placeholder="찾고 싶은 여행 계획을 적어 주세요." class="custom-input" />
+              <button type="submit" class="blue-button" @click="handleSearch">
+                <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="margin-right: 8px"/>
+                <span class="label">검색</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </form>
+    </div>
     <div class="planner-list-container">
       <div class="planner-list-box">
         <div class="planner">
           <div class="flex-row" style="justify-content: space-between;">
             <div class="flex-row">
-              <n-tag round :bordered="false" class="tag">
-                <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 5px 0 2px"/>
+              <n-tag round :bordered="false" class="tag" :color="{ color: '#98A2B3', textColor: '#FCFCFD' }" >
+                <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
                 1인 여행
               </n-tag>
-              <n-tag round :bordered="false" type="error" class="tag" >
-                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 5px 0 2px"/>
+              <n-tag round :bordered="false" type="warning" class="tag" :color="{ color: '#32D583', textColor: '#FCFCFD' }">
+                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
                 공개중
               </n-tag>
             </div>
-            <font-awesome-icon icon="fa-regular fa-pen-to-square" style="margin-right: 12px" class="icon"/>
+            <font-awesome-icon icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
             <font-awesome-icon icon="fa-solid fa-trash-can" class="icon"/>
           </div>
           <div class="title">제주도 가고 싶어요 우히히힣</div>
           <div class="flex-row" style="align-items: center">
-            <font-awesome-icon icon="fa-regular fa-calendar-check" class="icon" style="margin: 0 8px 0 2px; color: #E31B54"/>
+            <font-awesome-icon icon="fa-regular fa-calendar-check" class="icon" style="margin: 0 8px 0 2px; color: #FB6514"/>
             <div class="calendar">2024. 09. 23</div>
             <div class="calendar" style="margin: 0 5px">~</div>
             <div class="calendar">2024. 12. 17</div>
           </div>
-          <div class="flex-row" style="justify-content: flex-end; margin-top: 20px">
-            <div class="image">사람</div>
-            <div class="image">사람</div>
-            <div class="image">사람</div>
+          <div class="flex-row" style="justify-content: flex-end; margin-top: 19px">
+            <n-avatar-group :options="options" :size="48" :max="4">
+              <template #avatar="{ option: { name, src } }">
+                <n-tooltip>
+                  <template #trigger>
+                    <n-avatar :src="src"/>
+                  </template>
+                  {{ name }}
+                </n-tooltip>
+              </template>
+              <template #rest="{ options: restOptions, rest }">
+                  <n-avatar :options="createDropdownOptions(restOptions)">+{{ rest }}</n-avatar>
+              </template>
+            </n-avatar-group>
           </div>
         </div>
       </div>
@@ -76,6 +93,49 @@ const formValue = ref({
   title: ''
 })
 
+let createModalOpen = ref(false);
+
+const handleCreatePlannerModal = async () => {
+  createModalOpen.value = true;
+}
+
+const handleSearch = async () => {
+}
+
+const options = ref([
+  {
+    name: 'Leonardo DiCaprio',
+    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
+  },
+  {
+    name: 'Jennifer Lawrence',
+    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
+  },
+  {
+    name: 'Audrey Hepburn',
+    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
+  },
+  {
+    name: 'Anne Hathaway',
+    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
+  },
+  {
+    name: 'Taylor Swift',
+    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
+  }
+]);
+
+type Option = {
+  name: string;
+  src: string;
+};
+
+const createDropdownOptions = (options: Option[]) => {
+  return options.map((option: Option) => ({
+    key: option.name,
+    label: option.name
+  }));
+};
 </script>
 
 <style scoped lang="scss">
@@ -99,18 +159,20 @@ const formValue = ref({
 }
 
 .title {
-  @include noto-sans-kr(700, 28px, $black);
+  @include pretendard(900, 28px, $black);
   @include size(90%, auto);
-  margin: 20px 0 12px 0;
+  margin: 25px 0 12px 0;
 }
 
 .tag {
-  @include noto-sans-kr(400, 12px, $gray700);
+  font-family: "Pretendard-Regular", sans-serif;
+  font-size:12px;
+  font-weight: 300;
   margin-right: 10px;
 }
 
 .icon {
-  @include noto-sans-kr(400, 18px, $gray500);
+  @include pretendard(400, 18px, $gray500);
   margin-top: 5px;
 
   &:hover {
@@ -120,7 +182,7 @@ const formValue = ref({
 }
 
 .calendar {
-  @include noto-sans-kr(400, 14px, $black);
+  @include pretendard(400, 14px, $gray600);
 }
 
 .image {
@@ -139,22 +201,21 @@ const formValue = ref({
 
 form {
   @include flex-column(flex-start, flex-start);
-  @include size(90%, auto);
-  padding-left: 5%;
+  @include size(550px, auto);
 }
 
 .form-item {
-  @include size(33%, auto);
+  @include size(495px, auto);
   @include flex-column(flex-start, flex-start);
-  margin-bottom: 22px;
+  margin-bottom: 16px;
 
   label {
-    @include noto-sans-kr(500, 15px, #1E1E1C);
+    @include pretendard(500, 15px, #1E1E1C);
     margin-bottom: 5px;
   }
 
   .error {
-    @include noto-sans-kr(400, 14px, $red500);
+    @include pretendard(400, 14px, $red500);
     margin: 4px 0 0 2px;
   }
 }
@@ -168,20 +229,21 @@ form {
 .custom-input {
   @include custom-input($gray400, $black, $gray400, white, transparent);
   @include size(100%, 30px);
-  @include noto-sans-kr(400, 16x, $black);
+  @include pretendard(400, 16x, $black);
 }
 
-.search-button {
+.blue-button {
   @include flex-row(center, center);
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include noto-sans-kr(500, 13px, $gray25);
-  @include size(110px, 32px);
+  @include pretendard(500, 13px, $gray25);
+  @include size(80px, 32px);
+  min-width: 80px;
   vertical-align: center;
   margin-left: 10px;
 }
 
 .label {
-  margin-top: 3px;
+  @include pretendard(500, 13px, $gray25);
 }
 
 .carousel-img {
@@ -213,7 +275,8 @@ form {
 
 .planner {
   @include flex-column(flex-start, flex-start);
-  @include size(24%, 220px);
+  @include size(24%, 224px);
+  min-width: 400px;
   padding-inline: 20px;
   padding-block: 20px;
   background-color: $gray25;

@@ -1,8 +1,28 @@
 <template>
   <div class="nav-bar-container">
     <div class="logo-container">
-      <div class="logo"><font-awesome-icon icon="fa-solid fa-paper-plane" /></div>
-      <div class="photo">사진</div>
+      <div class="logo">
+        <img src="../../public/icon.png"  alt="icon" height="40" style="margin-left: 5px"/>
+        <img src="../../public/logo.png"  alt="logo" height="26" style="margin: 13px 0 0 10px" class="image"/>
+      </div>
+      <n-divider />
+      <div class="photo">
+        <n-badge :value="value" :max="15">
+          <n-avatar
+            round
+            :size="48"
+            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+          />
+        </n-badge>
+        <div class="nickname">
+          <div>
+            김시은어쩌구
+          </div>
+          <div style="font-size: 16px; font-weight: 200; margin-top: 2px">
+            <div># 9939</div>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="menu-container">
       <div class="menu-items">
@@ -24,12 +44,12 @@
         </div>
         <div class="menu-button">
           <font-awesome-icon icon="fa-solid fa-envelope" class="icon"/>
-          <span class="text">쪽지 보내기</span>
+          <span class="text">메세지 보내기</span>
         </div>
-        <!--        <div class="menu-button">-->
-        <!--          <font-awesome-icon icon="fa-solid fa-bell" class="icon"/>-->
-        <!--          <span class="text">알림</span>-->
-        <!--        </div>-->
+        <div class="menu-button">
+          <font-awesome-icon icon="fa-solid fa-gear" class="icon"/>
+          <span class="text">회원정보 수정</span>
+        </div>
       </div>
       <div class="logout">
         <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="icon" />
@@ -41,6 +61,9 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import {ref} from "vue";
+
+const value = ref(5);
 </script>
 
 <style scoped lang="scss">
@@ -61,13 +84,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     width: 100%; /* 호버 시 너비 */
     color: $gray500;
 
-    .photo {
-      visibility: hidden;
-      display: inline-block;
-    }
-
-    .menu-container {
-      margin-top: 40px;
+    .image, .nickname {
+      display: inline;
     }
 
     .text {
@@ -82,32 +100,43 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     }
   }
 
-  .text {
+  .text, .image, .nickname {
     display: none;
   }
+}
+
+.logo {
+  margin: 15px 0 0 0;
+  @include flex-row(100%, auto);
 }
 
 .icon {
   margin-left: 15px;
 }
 
-.logo-container, .user-container, .menu-container {
+.photo {
+  margin-top: 40px;
+  @include flex-row(flex-start, center);
+}
+
+.logo-container, .user-container, .menu-container, .photo {
   width: 100%;
 }
 
 .logo-container {
-  margin-top: 30px;
+  flex: 3;
+  margin-left: 5px;
 }
 
-.photo {
-  display: none;
-  height: 200px;
+.nickname {
+  @include flex-column();
+  @include pretendard(900, 20px, $black);
+  margin-left: 30px;
 }
 
 .menu-container {
   @include flex-column(space-between, flex-start);
-  height: 100%;
-  margin-top: 240px;
+  flex: 8;
 }
 
 .menu-items {
@@ -117,7 +146,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 .menu-button {
   @include flex-row(flex-start, center);
-  @include noto-sans-kr(400, 25px, $gray500);
+  @include pretendard(400, 25px, $gray500);
   width: 100%;
   align-items: center;
   margin-bottom: 18px;
@@ -129,7 +158,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
   }
 
   .text {
-    @include noto-sans-kr(400, 16px, $gray500);
+    @include pretendard(400, 16px, $gray500);
     white-space: nowrap;
     margin-left: 10px;
   }
@@ -155,16 +184,20 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 }
 
 .logout {
+  flex: 1;
   @include flex-row(flex-start, center);
   cursor: pointer;
   position: fixed;
   bottom: 5%;
   margin: 0 0 0 4px;
   transition: width 0.5s ease;
-  @include noto-sans-kr(400, 18px, $gray400);
+
+  .text {
+    @include pretendard(400, 18px, $gray400);
+  }
 
   .icon {
-    @include noto-sans-kr(400, 18px, $gray400);
+    @include pretendard(400, 18px, $gray400);
   }
 
   &:hover {
@@ -173,7 +206,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
     }
 
     .text {
-      @include noto-sans-kr(400, 18px, $blue600);
+      @include pretendard(400, 18px, $blue600);
     };
   }
 }

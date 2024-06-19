@@ -84,7 +84,7 @@ watch(selectedDate, (newDate) => {
   @include custom-input();
   @include size(100%, 30px);
   @include flex-row(space-between, center);
-  @include noto-sans-kr(400, 16px, $black);
+  @include pretendard(400, 16px, $black);
   text-align: center;
 
   &:hover {

@@ -119,7 +119,7 @@ form {
 }
 
 .title {
-  @include noto-sans-kr(800, 30px, #1E1E1C);
+  @include pretendard(800, 30px, #1E1E1C);
 }
 
 .form-item {
@@ -128,12 +128,12 @@ form {
   margin-bottom: 18px;
 
   label {
-    @include noto-sans-kr(500, 15px, #1E1E1C);
+    @include pretendard(500, 15px, #1E1E1C);
     margin-bottom: 5px;
   }
 
   .error {
-    @include noto-sans-kr(400, 14px, $red500);
+    @include pretendard(400, 14px, $red500);
     margin: 4px 0 0 2px;
   }
 }
@@ -141,7 +141,7 @@ form {
 .form-item-row {
   @include size(70%, auto);
   @include flex-row(flex-start, center);
-  @include noto-sans-kr(400, 15px, $gray600);
+  @include pretendard(400, 15px, $gray600);
 }
 
 .align-text {
@@ -159,7 +159,7 @@ form {
 .custom-input {
   @include custom-input();
   @include size(100%, 30px);
-  @include noto-sans-kr(400, 16x, $black);
+  @include pretendard(400, 16x, $black);
 }
 
 .error-input {
@@ -170,12 +170,12 @@ form {
   @include custom-button($gray400, #FCFCFD, 5%, 5%, 6px);
   @include size(130px, 31px);
   margin-left: 10px;
-  @include noto-sans-kr(400, 16x, $gray25);
+  @include pretendard(400, 16x, $gray25);
 }
 
 .submit-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include noto-sans-kr(400, 16px, $gray25);
+  @include pretendard(400, 16px, $gray25);
   @include size(100%, 45px);
   margin-top: 12px;
 }
@@ -185,13 +185,13 @@ form {
 }
 
 .sns-label {
-  @include noto-sans-kr(600, 18px, $black);
+  @include pretendard(600, 18px, $black);
 }
 
 .kakao {
   @include custom-button(#FFCD00, $black, 5%, 5%, 6px);
   @include flex-row(flex-start, center);
-  @include noto-sans-kr(600, 16px, $black);
+  @include pretendard(600, 16px, $black);
   @include size(100%, 45px);
   margin-top: 12px;
 }
@@ -199,7 +199,7 @@ form {
 .sns-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
   @include flex-row(flex-start, center);
-  @include noto-sans-kr(400, 16px, $gray25);
+  @include pretendard(400, 16px, $gray25);
   @include size(100%, 45px);
 }
 
