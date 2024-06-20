@@ -1,16 +1,17 @@
 <template>
-  <div class="date-input-container">
-    <div class="custom-date-input">
+  <div class="date-input-container" :class="{ 'disabled': disabled }">
+    <div class="custom-date-input" @click="!disabled && toggleDatePicker" :class="{ 'disabled': disabled }">
       <input
           type="text"
           v-model="formattedDate"
           readonly
           class="input"
           :placeholder="placeholder"
+          :class="{ 'disabled': disabled }"
       />
-      <font-awesome-icon icon="fa-regular fa-calendar" @click="toggleDatePicker" class="icon" />
+      <font-awesome-icon icon="fa-regular fa-calendar" class="icon" />
     </div>
-    <div v-if="popoverVisible" class="calendar-container">
+    <div v-if="popoverVisible && !disabled" class="calendar-container">
       <va-date-picker
           v-model="selectedDate"
           format="YYYY.M.D."
@@ -35,6 +36,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: 'YYYY.M.D.',
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   }
 });
 
@@ -84,18 +89,34 @@ watch(selectedDate, (newDate) => {
   @include custom-input();
   @include size(100%, 30px);
   @include flex-row(space-between, center);
-  @include pretendard(400, 16px, $black);
+  @include noto-sans-kr(400, 16px, $black);
   text-align: center;
 
   &:hover {
     border-color: darken($gray400, 10%);
     outline: $blue100 solid 3px;
   }
+
+  &.disabled {
+    background-color: $gray200;
+  }
 }
 
 .input {
   border: none;
   outline: transparent;
+  margin-bottom: 2px;
+
+  &::placeholder {
+    color: $gray400;
+    outline: none;
+    @include noto-sans-kr(400, 14px, $gray400);
+  }
+
+  &.disabled {
+    background-color: $gray200;
+  }
+
 }
 
 .icon {

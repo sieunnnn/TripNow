@@ -15,10 +15,8 @@
           />
         </n-badge>
         <div class="nickname">
-          <div>
             김시은어쩌구
-          </div>
-          <div style="font-size: 16px; font-weight: 200; margin-top: 2px">
+          <div style="font-size: 16px; font-weight: 200; margin-top: 8px">
             <div># 9939</div>
           </div>
         </div>
@@ -30,10 +28,13 @@
           <font-awesome-icon icon="fa-solid fa-house-user" class="icon"/>
           <span class="text">대시 보드</span>
         </div>
-        <div class="menu-button">
-          <font-awesome-icon icon="fa-solid fa-map-location-dot" class="icon"/>
+        <router-link to="/planners" class="menu-button">
+          <n-badge v-if="isActive('/planners')" dot type="warning" processing :offset="[8, 1]">
+            <font-awesome-icon icon="fa-solid fa-map-location-dot" class="icon"/>
+          </n-badge>
+          <font-awesome-icon v-else icon="fa-solid fa-map-location-dot" class="icon"/>
           <span class="text">여행 계획</span>
-        </div>
+        </router-link>
         <div class="menu-button">
           <font-awesome-icon icon="fa-solid fa-image" class="icon"/>
           <span class="text">여행 기록</span>
@@ -47,7 +48,7 @@
           <span class="text">메세지 보내기</span>
         </div>
         <div class="menu-button">
-          <font-awesome-icon icon="fa-solid fa-gear" class="icon"/>
+          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" />
           <span class="text">회원정보 수정</span>
         </div>
       </div>
@@ -62,8 +63,15 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {ref} from "vue";
+import {useRoute} from "vue-router";
 
 const value = ref(5);
+const route = useRoute();
+
+const isActive = (path: string) => {
+  return route.path === path;
+}
+
 </script>
 
 <style scoped lang="scss">
@@ -130,7 +138,7 @@ const value = ref(5);
 
 .nickname {
   @include flex-column();
-  @include pretendard(900, 20px, $black);
+  @include noto-sans-kr(900, 20px, $black);
   margin-left: 30px;
 }
 
@@ -146,7 +154,7 @@ const value = ref(5);
 
 .menu-button {
   @include flex-row(flex-start, center);
-  @include pretendard(400, 25px, $gray500);
+  @include noto-sans-kr(400, 25px, $gray500);
   width: 100%;
   align-items: center;
   margin-bottom: 18px;
@@ -158,7 +166,7 @@ const value = ref(5);
   }
 
   .text {
-    @include pretendard(400, 16px, $gray500);
+    @include noto-sans-kr(400, 16px, $gray500);
     white-space: nowrap;
     margin-left: 10px;
   }
@@ -193,11 +201,11 @@ const value = ref(5);
   transition: width 0.5s ease;
 
   .text {
-    @include pretendard(400, 18px, $gray400);
+    @include noto-sans-kr(400, 18px, $gray400);
   }
 
   .icon {
-    @include pretendard(400, 18px, $gray400);
+    @include noto-sans-kr(400, 18px, $gray400);
   }
 
   &:hover {
@@ -206,7 +214,7 @@ const value = ref(5);
     }
 
     .text {
-      @include pretendard(400, 18px, $blue600);
+      @include noto-sans-kr(400, 18px, $blue600);
     };
   }
 }

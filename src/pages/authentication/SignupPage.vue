@@ -35,7 +35,7 @@
           </div>
           <div class="form-item">
             <label for="birthday">생년월일</label>
-            <DatePicker v-model="formValue.birthday" placeholder="생일을 적어주세요." style="width: 100%"/>
+            <DatePicker v-model="formValue.birthday" placeholder="생일을 적어주세요." style="width: 100%" :disabled="isInputDisabled"/>
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">가입 하기</button>
@@ -190,7 +190,7 @@ form {
 }
 
 .title {
-  @include pretendard(900, 30px, #1E1E1C);
+  @include noto-sans-kr(900, 30px, #1E1E1C);
 }
 
 .form-item {
@@ -199,12 +199,12 @@ form {
   margin-bottom: 18px;
 
   label {
-    @include pretendard(500, 15px, #1E1E1C);
+    @include noto-sans-kr(700, 15px, #1E1E1C);
     margin-bottom: 5px;
   }
 
   .error {
-    @include pretendard(400, 14px, $red500);
+    @include noto-sans-kr(500, 14px, $red500);
     margin: 4px 0 0 2px;
   }
 }
@@ -224,7 +224,7 @@ form {
 .custom-input {
   @include custom-input();
   @include size(100%, 30px);
-  @include pretendard(400, 14x, $black);
+  @include noto-sans-kr(400, 14x, $black);
 }
 
 .error-input {
@@ -235,12 +235,12 @@ form {
   @include custom-button($gray400, #FCFCFD, 5%, 5%, 6px);
   @include size(130px, 32px);
   margin-left: 10px;
-  @include pretendard(400, 14px, $gray25);
+  @include noto-sans-kr(400, 14px, $gray25);
 }
 
 .submit-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include pretendard(500, 14px, $gray25);
+  @include noto-sans-kr(500, 14px, $gray25);
   @include size(102px, 36px);
   margin-top: 25px;
 }

@@ -46,7 +46,7 @@ const { toasts } = useToast();
 }
 
 .message {
-  @include pretendard(300, 16px, white);
+  @include noto-sans-kr(300, 16px, white);
   z-index: 10000;
 }
 

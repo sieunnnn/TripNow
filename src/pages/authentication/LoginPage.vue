@@ -21,9 +21,9 @@
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">로그인</button>
-            <div class="form-item-row" style="width: 100%; margin: 10px 0 30px 0">
-              <div>🔑 비밀번호가 기억이 안나시나요?</div>
-              <div style="margin-left: 10px">비밀번호 찾기</div>
+            <div class="form-item-row mini-text" style="width: 100%; margin: 15px 0 30px 0">
+              <div class="mini-text">🔑 비밀번호가 기억이 안나시나요?</div>
+              <div class="mini-text" style="margin-left: 10px; text-decoration: underline">비밀번호 찾기</div>
             </div>
           </div>
         </form>
@@ -40,8 +40,8 @@
         </div>
         <hr class="form-item">
         <div class="form-item-row">
-          <div>✋ 회원가입이 필요하신가요?</div>
-          <router-link to="/signup"  class="link">회원가입 하기</router-link>
+          <div class="mini-text">✋ 회원가입이 필요하신가요? </div>
+          <router-link to="/signup" class="mini-text" style="margin-left: 10px; text-decoration: underline;">회원가입 하기</router-link>
         </div>
       </div>
     </div>
@@ -119,7 +119,7 @@ form {
 }
 
 .title {
-  @include pretendard(800, 30px, #1E1E1C);
+  @include noto-sans-kr(900, 30px, #1E1E1C);
 }
 
 .form-item {
@@ -128,12 +128,12 @@ form {
   margin-bottom: 18px;
 
   label {
-    @include pretendard(500, 15px, #1E1E1C);
+    @include noto-sans-kr(500, 15px, #1E1E1C);
     margin-bottom: 5px;
   }
 
   .error {
-    @include pretendard(400, 14px, $red500);
+    @include noto-sans-kr(400, 14px, $red500);
     margin: 4px 0 0 2px;
   }
 }
@@ -141,7 +141,7 @@ form {
 .form-item-row {
   @include size(70%, auto);
   @include flex-row(flex-start, center);
-  @include pretendard(400, 15px, $gray600);
+  @include noto-sans-kr(400, 15px, $gray600);
 }
 
 .align-text {
@@ -159,7 +159,7 @@ form {
 .custom-input {
   @include custom-input();
   @include size(100%, 30px);
-  @include pretendard(400, 16x, $black);
+  @include noto-sans-kr(400, 16x, $black);
 }
 
 .error-input {
@@ -170,12 +170,12 @@ form {
   @include custom-button($gray400, #FCFCFD, 5%, 5%, 6px);
   @include size(130px, 31px);
   margin-left: 10px;
-  @include pretendard(400, 16x, $gray25);
+  @include noto-sans-kr(400, 16x, $gray25);
 }
 
 .submit-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include pretendard(400, 16px, $gray25);
+  @include noto-sans-kr(500, 16px, $gray25);
   @include size(100%, 45px);
   margin-top: 12px;
 }
@@ -185,13 +185,13 @@ form {
 }
 
 .sns-label {
-  @include pretendard(600, 18px, $black);
+  @include noto-sans-kr(700, 18px, $black);
 }
 
 .kakao {
   @include custom-button(#FFCD00, $black, 5%, 5%, 6px);
   @include flex-row(flex-start, center);
-  @include pretendard(600, 16px, $black);
+  @include noto-sans-kr(700, 16px, $black);
   @include size(100%, 45px);
   margin-top: 12px;
 }
@@ -199,7 +199,7 @@ form {
 .sns-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
   @include flex-row(flex-start, center);
-  @include pretendard(400, 16px, $gray25);
+  @include noto-sans-kr(700, 16px, $gray25);
   @include size(100%, 45px);
 }
 
@@ -207,8 +207,15 @@ form {
   color: inherit;
   text-decoration: underline;
   text-decoration-color: $gray400;
+  @include noto-sans-kr(400, 16px, $gray25);
   cursor: pointer;
   margin-left: 10px
+}
+
+.mini-text {
+  color: $gray600;
+  @include noto-sans-kr(400, 15px, $gray600);
+  cursor: pointer;
 }
 
 </style>

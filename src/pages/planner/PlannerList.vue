@@ -46,11 +46,11 @@
         <div class="planner">
           <div class="flex-row" style="justify-content: space-between;">
             <div class="flex-row">
-              <n-tag round :bordered="false" class="tag" :color="{ color: '#98A2B3', textColor: '#FCFCFD' }" >
+              <n-tag size="small" round :bordered="false" style="margin: 2px 10px 0 0">
                 <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
                 1인 여행
               </n-tag>
-              <n-tag round :bordered="false" type="warning" class="tag" :color="{ color: '#32D583', textColor: '#FCFCFD' }">
+              <n-tag size="small" round :bordered="false" type="warning" style="margin-top: 2px;">
                 <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
                 공개중
               </n-tag>
@@ -65,7 +65,7 @@
             <div class="calendar" style="margin: 0 5px">~</div>
             <div class="calendar">2024. 12. 17</div>
           </div>
-          <div class="flex-row" style="justify-content: flex-end; margin-top: 19px">
+          <div class="flex-row" style="justify-content: flex-end; margin-top: 16px">
             <n-avatar-group :options="options" :size="48" :max="4">
               <template #avatar="{ option: { name, src } }">
                 <n-tooltip>
@@ -159,20 +159,13 @@ const createDropdownOptions = (options: Option[]) => {
 }
 
 .title {
-  @include pretendard(900, 28px, $black);
+  @include noto-sans-kr(900, 28px, $black);
   @include size(90%, auto);
-  margin: 25px 0 12px 0;
-}
-
-.tag {
-  font-family: "Pretendard-Regular", sans-serif;
-  font-size:12px;
-  font-weight: 300;
-  margin-right: 10px;
+  margin: 20px 0 12px 0;
 }
 
 .icon {
-  @include pretendard(400, 18px, $gray500);
+  @include noto-sans-kr(400, 18px, $gray500);
   margin-top: 5px;
 
   &:hover {
@@ -182,7 +175,7 @@ const createDropdownOptions = (options: Option[]) => {
 }
 
 .calendar {
-  @include pretendard(400, 14px, $gray600);
+  @include noto-sans-kr(400, 14px, $gray600);
 }
 
 .image {
@@ -210,12 +203,12 @@ form {
   margin-bottom: 16px;
 
   label {
-    @include pretendard(500, 15px, #1E1E1C);
+    @include noto-sans-kr(500, 15px, #1E1E1C);
     margin-bottom: 5px;
   }
 
   .error {
-    @include pretendard(400, 14px, $red500);
+    @include noto-sans-kr(400, 14px, $red500);
     margin: 4px 0 0 2px;
   }
 }
@@ -229,13 +222,13 @@ form {
 .custom-input {
   @include custom-input($gray400, $black, $gray400, white, transparent);
   @include size(100%, 30px);
-  @include pretendard(400, 16x, $black);
+  @include noto-sans-kr(400, 16x, $black);
 }
 
 .blue-button {
   @include flex-row(center, center);
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include pretendard(500, 13px, $gray25);
+  @include noto-sans-kr(500, 13px, $gray25);
   @include size(80px, 32px);
   min-width: 80px;
   vertical-align: center;
@@ -243,7 +236,7 @@ form {
 }
 
 .label {
-  @include pretendard(500, 13px, $gray25);
+  @include noto-sans-kr(500, 13px, $gray25);
 }
 
 .carousel-img {
@@ -275,7 +268,7 @@ form {
 
 .planner {
   @include flex-column(flex-start, flex-start);
-  @include size(24%, 224px);
+  @include size(24%, 220px);
   min-width: 400px;
   padding-inline: 20px;
   padding-block: 20px;
