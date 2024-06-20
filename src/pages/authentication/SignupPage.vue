@@ -50,11 +50,10 @@
 import { authenticationMailSend, authenticationValidate, signup } from '../../api/authentication/AuthenticationApi';
 import { authenticationRequest, authenticationValidateRequest, signupRequest } from '../../api/authentication/AuthenticationDto.ts';
 import { ref, computed } from 'vue';
-import { useToast, ToastType } from "../../components/toast/Toast.ts";
+import { useMessage } from 'naive-ui';
 
-// import flatpickr from 'flatpickr';
-// import 'flatpickr/dist/themes/light.css';
 import DatePicker from "../../components/DatePicker.vue";
+import router from "@/router";
 
 const formValue = ref({
   email: '',
@@ -63,7 +62,7 @@ const formValue = ref({
   birthday: new Date()
 });
 
-const { addToast } = useToast();
+const message = useMessage();
 
 const code = ref('');
 let isCodeInputDisabled = true;
@@ -87,22 +86,27 @@ const handleEmailSend = async () => {
     email: formValue.value.email,
   };
 
-  const status = await authenticationMailSend (data);
+  const response = await authenticationMailSend (data);
 
-  let message = '';
-  let type: ToastType = 'success';
+  if (response.status === 200) {
+    message.success("인증 번호가 담긴 메일을 발송 했어요.", {
+      keepAliveOnHover: true
+    });
 
-  if (status === 200) {
-    message = '✉️ 인증번호가 담긴 메일을 발송했어요.';
-    type = 'success';
-    isCodeInputDisabled = false;
+  } else if (response.status === 400) {
+    if (response.data.errorCode === 'MAIL_01') {
+      message.error("잘못된 이메일 형식이에요.", {
+        keepAliveOnHover: true
+      });
 
-  } else if (status === 400) {
-    message = '⚠️ 이미 존재하는 이메일이에요.';
-    type = 'error';
+    } else if (response.data.errorCode === 'INVALID_VALUE_02') {
+      message.warning("이미 존재하는 이메일이에요. 로그인 페이지로 이동할게요.", {
+        keepAliveOnHover: true
+      });
+
+      await router.push('/login');
+    }
   }
-
-  addToast(message, type, 2000);
 };
 
 const handleAuthValidate = async () => {
@@ -111,22 +115,18 @@ const handleAuthValidate = async () => {
     tempCode: code.value,
   };
 
-  const status = await authenticationValidate (data);
+  const response = await authenticationValidate (data);
 
-  let message = '';
-  let type: ToastType = 'success';
-
-  if (status === 200) {
-    message = '☑️ 이메일 인증이 완료되었어요.';
-    type = 'success';
-    isInputDisabled = true;
+  if (response === 200) {
+    message.success("이메일 인증이 완료 되었어요.", {
+      keepAliveOnHover: true
+    });
 
   } else {
-    message = '❎ 인증번호를 다시 입력해주세요.';
-    type = 'error';
+    message.error("인증 번호를 다시 입력해주세요.", {
+      keepAliveOnHover: true
+    });
   }
-
-  addToast(message, type, 2000);
 };
 
 const handleSignup = async () => {
@@ -139,19 +139,16 @@ const handleSignup = async () => {
 
   const status = await signup(data);
 
-  let message = '';
-  let type: ToastType = 'success';
-
   if (status === 200) {
-    message = '👤 회원 가입이 완료되었어요.';
-    type = 'success';
+    message.success("회원 가입이 완료 되었어요.", {
+      keepAliveOnHover: true
+    });
 
   } else {
-    message = '💣 회원가입을 다시 시도해주세요.';
-    type = 'error';
+    message.error("회원가입을 다시 시도해주세요.", {
+      keepAliveOnHover: true
+    });
   }
-
-  addToast(message, type, 2000);
 };
 </script>
 

@@ -18,14 +18,3 @@ export interface loginRequest {
     email: string,
     password: string
 }
-
-export interface userInfoResponse {
-    userId: number,
-    nickname: string,
-    userTag: number,
-    birthday: Date,
-    email: string,
-    profileUrl: string,
-    isBirthday: boolean,
-    sex: string
-}

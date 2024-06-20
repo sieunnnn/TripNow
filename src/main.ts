@@ -11,8 +11,6 @@ import App from './App.vue';
 import router from './router';
 import axiosInstance from './axios';
 // @ts-ignore
-import Toast from './components/toast/Toast.vue';
-// @ts-ignore
 import pinia from "./store";
 import naive from "naive-ui";
 
@@ -28,9 +26,10 @@ library.add(
     fas, far
 )
 
-app.component('Toast', Toast);
 app.component('font-awesome-icon', FontAwesomeIcon)
+app.use(pinia);
 app.use(router);
 app.use(naive);
 app.use(createVuestic());
+
 app.mount('#app');

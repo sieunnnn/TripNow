@@ -52,7 +52,7 @@
           <span class="text">회원정보 수정</span>
         </div>
       </div>
-      <div class="logout">
+      <div class="logout" @click="handleLogout">
         <font-awesome-icon icon="fa-solid fa-arrow-right-from-bracket" class="icon" />
         <span class="text">로그아웃</span>
       </div>
@@ -64,13 +64,25 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import {ref} from "vue";
 import {useRoute} from "vue-router";
+import {logout} from "../api/authentication/AuthenticationApi.ts";
+import router from "../router";
+import {useUserStore} from "../store/userStore.ts";
 
 const value = ref(5);
 const route = useRoute();
+const userStore = useUserStore();
 
 const isActive = (path: string) => {
   return route.path === path;
 }
+
+const handleLogout = async () => {
+  const status = await logout();
+
+  if (status === 200) {
+    await router.push('/login');
+  }
+};
 
 </script>
 

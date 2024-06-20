@@ -50,9 +50,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useToast, ToastType } from "../../components/toast/Toast.ts";
 import { loginRequest } from "../../api/authentication/AuthenticationDto.ts";
-import { login } from "../../api/authentication/AuthenticationApi.ts";
+import {getUserInfo, login} from "../../api/authentication/AuthenticationApi.ts";
+import { useMessage } from "naive-ui";
+
+import router from "../../router";
+
 import '../../assets/scss/mixins/_typo.scss'
 
 const formValue = ref({
@@ -60,7 +63,7 @@ const formValue = ref({
   password: '',
 });
 
-const { addToast } = useToast();
+const message = useMessage();
 
 const handleLogin = async () => {
   const data: loginRequest = {
@@ -70,17 +73,22 @@ const handleLogin = async () => {
 
   const status = await login(data);
 
-  let message = '';
-  let type: ToastType = 'success';
-
   if (status === 200) {
-    message = '✅ 로그인에 성공했어요.';
+    const response = await getUserInfo();
+
+    message.success("로그인에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    if (response == 200) {
+      await router.push('/');
+    }
 
   } else {
-    message = '❎ 이메일과 비밀번호를 다시한번 확인해주세요.';
+    message.warning("이메일과 비밀 번호를 다시 한번 확인해주세요.", {
+      keepAliveOnHover: true
+    });
   }
-
-  addToast(message, type, 2000)
 }
 </script>
 
