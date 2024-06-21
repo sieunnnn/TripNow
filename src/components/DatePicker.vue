@@ -127,12 +127,10 @@ watch(selectedDate, (newDate) => {
   position: absolute;
   top: 100%;
   left: 0;
-  margin-top: 5px;
-  border: $gray400, solid, 1px;
+  margin-top: 4px;
   border-radius: 10px;
   z-index: 9999999;
-  backdrop-filter: blur(12px);
-  background-color: rgba(252,252,253, 0.8);
+  background-color: $gray25;
   padding: 20px;
 }
 </style>

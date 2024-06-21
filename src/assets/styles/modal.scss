@@ -1,0 +1,56 @@
+@import '../scss/color/_black.scss';
+@import '../scss/color/_blue.scss';
+@import '../scss/color/_red.scss';
+@import '../scss/mixins/_background.scss';
+@import '../scss/mixins/_display.scss';
+@import '../scss/mixins/_input.scss';
+@import '../scss/mixins/_button.scss';
+@import '../scss/mixins/_typo.scss';
+
+.modal-button {
+    background-color: #1570EF;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #FFF;
+
+    cursor: pointer;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+
+    &:hover {
+        background-color: darken(#1570EF, 10%);
+    }
+
+    &:focus {
+        outline: none;
+        background-color: darken(#1570EF, 15%);
+    }
+}
+
+.modal-input {
+    @include custom-input();
+    height: 24px;
+    margin: 8px 0;
+}
+
+.modal-error-input {
+    @include custom-input-error();
+    height: 24px;
+}
+
+.modal-sub-title {
+    @include noto-sans-kr(600,17px, $black);
+    margin-bottom: 5px;
+}
+
+.modal-text {
+    @include noto-sans-kr(400, 15px, $black);
+    margin-bottom: 5px;
+}
+
+.modal-error-text {
+    @include noto-sans-kr(500, 16px, $red600);
+    margin-top: 5px;
+}

@@ -23,18 +23,37 @@
       >
     </n-carousel>
     <div class="flex-row" style="justify-content: center">
-      <div class="flex-row" style="align-items: flex-end; justify-content: space-between; width: 90%;">
-        <button class="blue-button" type="button" @click="handleCreatePlannerModal" style="width: 130px; margin: 0 0 16px 0; min-width: 120px">
+      <div class="flex-row" style="width: 90%;">
+        <button @click="openCreatePlannerModal" class="blue-button" type="button" style="width: 130px; margin: 0 50px 16px 0; min-width: 120px">
           <font-awesome-icon icon="fa-regular fa-calendar-plus" style="margin: 0 8px 2px 0" />
           여행 추가 하기
         </button>
-        <div class="flex-row" style="width: 550px">
+        <Modal>
+          <template #header>
+            여행 계획 추가 하기
+          </template>
+          <template #content>
+            <div class="modal-sub-title">여행 계획의 이름을 정해주세요.</div>
+            <div class="modal-text">최대 20자 까지 가능해요.</div>
+            <input type="text" class="modal-input"/>
+            <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
+            <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
+            <div class="modal-flex-row" style="margin: 10px 0 32px 0">
+              <input type="checkbox" style="margin:0 8px 0 2px">
+              <span class="modal-text">비공개로 설정하기</span>
+            </div>
+          </template>
+          <template #footer>
+            <button class="modal-button">추가 하기</button>
+          </template>
+        </Modal>
+        <div class="flex-row" style="width: 555px">
           <div class="form-item">
             <div class="align-contents">
               <input id="title" type="text" v-model="formValue.title" placeholder="찾고 싶은 여행 계획을 적어 주세요." class="custom-input" />
               <button type="submit" class="blue-button" @click="handleSearch">
                 <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="margin-right: 8px"/>
-                <span class="label">검색</span>
+                <span class="label" style="font-size: 14px; font-weight: 400">검색</span>
               </button>
             </div>
           </div>
@@ -96,19 +115,17 @@
 import { ref, onMounted } from 'vue';
 import { getPlannerList } from '../../api/PlannerApi.ts';
 import { plannerListResponse } from '../../dto/PlannerDto.ts';
+import Modal from "../../components/Modal.vue";
+import { useModalStore } from "../../store/modalStore.ts";
 
 const formValue = ref({
   title: ''
 });
 
-let createModalOpen = ref(false);
+const modalStore = useModalStore();
 
-const handleCreatePlannerModal = async () => {
-  createModalOpen.value = true;
-};
-
-const handleSearch = async () => {
-
+const openCreatePlannerModal = () => {
+  modalStore.openModal();
 };
 
 const planners = ref<plannerListResponse[]>([]);
@@ -164,6 +181,7 @@ onMounted(() => {
 @import '../../assets/scss/mixins/_input.scss';
 @import '../../assets/scss/mixins/_button.scss';
 @import '../../assets/scss/mixins/_typo.scss';
+@import "../../assets/styles/modal.scss";
 
 .flex-row {
   @include flex-row(flex-start, flex-start);
@@ -214,7 +232,7 @@ form {
 }
 
 .form-item {
-  @include size(495px, auto);
+  @include size(500px, auto);
   @include flex-column(flex-start, flex-start);
   margin-bottom: 16px;
 
@@ -237,14 +255,14 @@ form {
 
 .custom-input {
   @include custom-input($gray400, $black, $gray400, white, transparent);
-  @include size(100%, 30px);
+  @include size(100%, 32px);
   @include noto-sans-kr(400, 16x, $black);
 }
 
 .blue-button {
   @include flex-row(center, center);
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
-  @include noto-sans-kr(500, 13px, $gray25);
+  @include noto-sans-kr(400, 14px, $gray25);
   @include size(80px, 32px);
   min-width: 80px;
   vertical-align: center;
