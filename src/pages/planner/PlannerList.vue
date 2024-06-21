@@ -35,16 +35,17 @@
           <template #content>
             <div class="modal-sub-title">여행 계획의 이름을 정해주세요.</div>
             <div class="modal-text">최대 20자 까지 가능해요.</div>
-            <input type="text" class="modal-input"/>
+            <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}" @input="validateTitle"/>
+            <div v-if="!isTitleValid" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
             <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
             <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
             <div class="modal-flex-row" style="margin: 10px 0 32px 0">
-              <input type="checkbox" style="margin:0 8px 0 2px">
+              <input v-model="create.isPrivate" type="checkbox" style="margin:0 8px 0 2px"/>
               <span class="modal-text">비공개로 설정하기</span>
             </div>
           </template>
           <template #footer>
-            <button class="modal-button">추가 하기</button>
+            <button @click="handleCreatePlanner" class="modal-button">추가 하기</button>
           </template>
         </Modal>
         <div class="flex-row" style="width: 555px">
@@ -60,8 +61,8 @@
         </div>
       </div>
     </div>
-    <div class="planner-list-container">
-      <n-infinite-scroll :load="loadMorePlanners" class="planner-list-box" :distance="10">
+    <div class="planner-list-container" ref="plannerList">
+      <div class="planner-list-box">
         <div v-for="planner in planners" :key="planner.plannerId" class="planner">
           <div class="flex-row" style="justify-content: space-between;">
             <div class="flex-row">
@@ -74,11 +75,11 @@
                 그룹 여행
               </n-tag>
               <n-tag v-if="!planner.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
-                <font-awesome-icon icon="fa-regular fa-eye-slash" style="margin: 0 2px 0 2px" />
+                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
                 공개중
               </n-tag>
               <n-tag v-else size="small" round :bordered="false" style="margin: 2px 10px 0 0">
-                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
+                <font-awesome-icon icon="fa-regular fa-eye-slash" style="margin: 0 2px 0 2px" />
                 비공개
               </n-tag>
             </div>
@@ -106,35 +107,77 @@
             </n-avatar-group>
           </div>
         </div>
-      </n-infinite-scroll>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { getPlannerList } from '../../api/PlannerApi.ts';
-import { plannerListResponse } from '../../dto/PlannerDto.ts';
-import Modal from "../../components/Modal.vue";
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
+import { createPlanner, getPlannerList } from '../../api/PlannerApi.ts';
+import { plannerCreateRequest, plannerListResponse } from '../../dto/PlannerDto.ts';
 import { useModalStore } from "../../store/modalStore.ts";
+import { useMessage } from "naive-ui";
+
+import Modal from "../../components/Modal.vue";
 
 const formValue = ref({
   title: ''
 });
 
 const modalStore = useModalStore();
+const message = useMessage();
 
 const openCreatePlannerModal = () => {
   modalStore.openModal();
 };
 
+const create = ref({
+  title: '',
+  isPrivate: false
+});
+
+const isTitleValid = computed(() => create.value.title.length <= 20);
+
+const handleCreatePlanner = async () => {
+  if (!isTitleValid.value) {
+    message.error("제목은 최대 20자까지 가능합니다.");
+    return;
+  }
+
+  const data: plannerCreateRequest = {
+    title: create.value.title,
+    isPrivate: create.value.isPrivate
+  };
+
+  const response = await createPlanner(data);
+
+  if (response === 200) {
+    message.success("여행 계획 생성에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    modalStore.closeModal();
+    loadMorePlanners(true);
+  } else {
+    message.error("여행 계획 생성에 실패 했어요. 잠시 후 다시 시도해주세요.", {
+      keepAliveOnHover: true
+    });
+  }
+};
+
 const planners = ref<plannerListResponse[]>([]);
 const page = ref(0);
-const size = 20;
+const size = 12;
 const totalPages = ref(1);
 const loading = ref(false);
 
-const loadMorePlanners = async () => {
+const loadMorePlanners = async (reset = false) => {
+  if (reset) {
+    planners.value = [];
+    page.value = 0;
+  }
+
   if (loading.value || page.value >= totalPages.value) return;
 
   console.log('Loading planners...');
@@ -157,6 +200,30 @@ const loadMorePlanners = async () => {
   }
 };
 
+const handleScroll = () => {
+  const container = plannerList.value;
+  if (!container) return;
+
+  const scrollLeft = container.scrollLeft;
+  const scrollWidth = container.scrollWidth;
+  const clientWidth = container.clientWidth;
+
+  if (scrollLeft + clientWidth >= scrollWidth - 50) {
+    loadMorePlanners();
+  }
+};
+
+const plannerList = ref<HTMLElement | null>(null);
+
+onMounted(() => {
+  loadMorePlanners();
+  plannerList.value?.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+  plannerList.value?.removeEventListener('scroll', handleScroll);
+});
+
 const createDropdownOptions = (options: Array<{ src: string }>) =>
     options.map((option) => ({
       key: option.src,
@@ -166,10 +233,6 @@ const createDropdownOptions = (options: Array<{ src: string }>) =>
 const isDatePassed = (endDate: string) => {
   return new Date(endDate) < new Date();
 };
-
-onMounted(() => {
-  loadMorePlanners();
-});
 </script>
 
 <style scoped lang="scss">
@@ -256,7 +319,7 @@ form {
 .custom-input {
   @include custom-input($gray400, $black, $gray400, white, transparent);
   @include size(100%, 32px);
-  @include noto-sans-kr(400, 16x, $black);
+  @include noto-sans-kr(400, 16px, $black);
 }
 
 .blue-button {
@@ -284,12 +347,11 @@ form {
   padding: 0 5%;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .planner-list-box {
   @include flex-row(flex-start, flex-start);
-  overflow-y: scroll;
   flex-wrap: wrap;
 
   &::-webkit-scrollbar {
@@ -302,13 +364,13 @@ form {
 
 .planner {
   @include flex-column(flex-start, flex-start);
-  @include size(24%, 220px);
-  min-width: 400px;
+  @include size(380px, auto);
+  min-width: 380px;
   padding-inline: 20px;
   padding-block: 20px;
   background-color: $gray25;
   border-radius: 15px;
-  margin: 0 10px 10px 0;
+  margin: 0 20px 20px 0;
   overflow: hidden;
   text-wrap: nowrap;
 }
