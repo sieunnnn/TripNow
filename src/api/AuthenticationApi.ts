@@ -4,10 +4,10 @@ import {
     authenticationValidateRequest,
     loginRequest,
     signupRequest
-} from "./AuthenticationDto.ts";
+} from "../dto/AuthenticationDto.ts";
 import axios from "axios";
-import axiosInstance from "../AxiosInstance.ts";
-import {useUserStore} from "../../store/userStore.ts";
+import axiosInstance from "./AxiosInstance.ts";
+import {useUserStore} from "../store/userStore.ts";
 
 export const error = ref<String | null>(null);
 const API_BASE_URL = 'http://localhost:8080/api/v1/auth';
