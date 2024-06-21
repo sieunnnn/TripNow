@@ -7,17 +7,15 @@
       </div>
       <n-divider />
       <div class="photo">
-        <n-badge :value="value" :max="15">
-          <n-avatar
+        <n-avatar
             round
             :size="48"
-            src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-          />
-        </n-badge>
+            :src="userInfo?.profileImgUrl || '../../public/default.png'"
+        />
         <div class="nickname">
-            김시은어쩌구
-          <div style="font-size: 16px; font-weight: 200; margin-top: 8px">
-            <div># 9939</div>
+            {{ userInfo?.nickname }}
+          <div style="font-size: 14px; font-weight: 200; margin-top: 6px">
+            <div># {{ userInfo?.userTag }}</div>
           </div>
         </div>
       </div>
@@ -62,15 +60,14 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {ref} from "vue";
 import {useRoute} from "vue-router";
-import {logout} from "../api/authentication/AuthenticationApi.ts";
+import {logout} from "../api/AuthenticationApi.ts";
 import router from "../router";
 import {useUserStore} from "../store/userStore.ts";
 
-const value = ref(5);
 const route = useRoute();
 const userStore = useUserStore();
+const userInfo = userStore.userInfo;
 
 const isActive = (path: string) => {
   return route.path === path;
@@ -151,7 +148,7 @@ const handleLogout = async () => {
 .nickname {
   @include flex-column();
   @include noto-sans-kr(900, 20px, $black);
-  margin-left: 30px;
+  margin: 3px 0 0 20px ;
 }
 
 .menu-container {
