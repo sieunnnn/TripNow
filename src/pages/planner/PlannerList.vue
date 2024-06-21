@@ -3,7 +3,7 @@
     <n-carousel
         direction="vertical"
         dot-placement="right"
-        style="width: 87%; height: 300px; border-radius: 10px;  margin: 1.5% 0 25px 5%;"
+        style="width: 87%; height: 300px; border-radius: 10px; margin: 1.5% 0 25px 5%;"
     >
       <img
           class="carousel-img"
@@ -42,100 +42,117 @@
       </div>
     </div>
     <div class="planner-list-container">
-      <div class="planner-list-box">
-        <div class="planner">
+      <n-infinite-scroll :load="loadMorePlanners" class="planner-list-box" :distance="10">
+        <div v-for="planner in planners" :key="planner.plannerId" class="planner">
           <div class="flex-row" style="justify-content: space-between;">
             <div class="flex-row">
-              <n-tag size="small" round :bordered="false" style="margin: 2px 10px 0 0">
+              <n-tag v-if="planner.profileImages.length === 1" size="small" round :bordered="false" style="margin: 2px 10px 0 0">
                 <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
                 1인 여행
               </n-tag>
-              <n-tag size="small" round :bordered="false" type="warning" style="margin-top: 2px;">
-                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
+              <n-tag v-else size="small" round :bordered="false" type="info" style="margin: 2px 10px 0 0">
+                <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
+                그룹 여행
+              </n-tag>
+              <n-tag v-if="!planner.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
+                <font-awesome-icon icon="fa-regular fa-eye-slash" style="margin: 0 2px 0 2px" />
                 공개중
+              </n-tag>
+              <n-tag v-else size="small" round :bordered="false" style="margin: 2px 10px 0 0">
+                <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
+                비공개
               </n-tag>
             </div>
             <font-awesome-icon icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
             <font-awesome-icon icon="fa-solid fa-trash-can" class="icon"/>
           </div>
-          <div class="title">제주도 가고 싶어요 우히히힣</div>
+          <div class="title">{{ planner.title }}</div>
           <div class="flex-row" style="align-items: center">
-            <font-awesome-icon icon="fa-regular fa-calendar-check" class="icon" style="margin: 0 8px 0 2px; color: #FB6514"/>
-            <div class="calendar">2024. 09. 23</div>
+            <font-awesome-icon v-if="isDatePassed(planner.endDate)" icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #667085; font-size:16px"/>
+            <font-awesome-icon v-else icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #F63D68; font-size:16px"/>
+            <div class="calendar">{{ planner.startDate }}</div>
             <div class="calendar" style="margin: 0 5px">~</div>
-            <div class="calendar">2024. 12. 17</div>
+            <div class="calendar">{{ planner.endDate }}</div>
           </div>
           <div class="flex-row" style="justify-content: flex-end; margin-top: 16px">
-            <n-avatar-group :options="options" :size="48" :max="4">
-              <template #avatar="{ option: { name, src } }">
-                <n-tooltip>
-                  <template #trigger>
-                    <n-avatar :src="src"/>
-                  </template>
-                  {{ name }}
-                </n-tooltip>
+            <n-avatar-group :options="planner.profileImages.map(img => ({ src: img }))" :size="48" :max="4">
+              <template #avatar="{ option }">
+                <n-avatar :src="option.src"/>
               </template>
               <template #rest="{ options: restOptions, rest }">
-                  <n-avatar :options="createDropdownOptions(restOptions)">+{{ rest }}</n-avatar>
+                <n-dropdown :options="createDropdownOptions(restOptions)" placement="top">
+                  <n-avatar>+{{ rest }}</n-avatar>
+                </n-dropdown>
               </template>
             </n-avatar-group>
           </div>
         </div>
-      </div>
+      </n-infinite-scroll>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref, onMounted } from 'vue';
+import { getPlannerList } from '../../api/PlannerApi.ts';
+import { plannerListResponse } from '../../dto/PlannerDto.ts';
 
 const formValue = ref({
   title: ''
-})
+});
 
 let createModalOpen = ref(false);
 
 const handleCreatePlannerModal = async () => {
   createModalOpen.value = true;
-}
+};
 
 const handleSearch = async () => {
-}
 
-const options = ref([
-  {
-    name: 'Leonardo DiCaprio',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
-  },
-  {
-    name: 'Jennifer Lawrence',
-    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-  },
-  {
-    name: 'Audrey Hepburn',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
-  },
-  {
-    name: 'Anne Hathaway',
-    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-  },
-  {
-    name: 'Taylor Swift',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
+};
+
+const planners = ref<plannerListResponse[]>([]);
+const page = ref(0);
+const size = 20;
+const totalPages = ref(1);
+const loading = ref(false);
+
+const loadMorePlanners = async () => {
+  if (loading.value || page.value >= totalPages.value) return;
+
+  console.log('Loading planners...');
+
+  loading.value = true;
+
+  try {
+    const response = await getPlannerList(page.value, size);
+    planners.value.push(...response.content);
+    page.value = response.number + 1;
+    totalPages.value = response.totalPages;
+
+    console.log(response.content);
+
+  } catch (error) {
+    console.error('Error loading planners:', error);
+
+  } finally {
+    loading.value = false;
   }
-]);
-
-type Option = {
-  name: string;
-  src: string;
 };
 
-const createDropdownOptions = (options: Option[]) => {
-  return options.map((option: Option) => ({
-    key: option.name,
-    label: option.name
-  }));
+const createDropdownOptions = (options: Array<{ src: string }>) =>
+    options.map((option) => ({
+      key: option.src,
+      label: option.src
+    }));
+
+const isDatePassed = (endDate: string) => {
+  return new Date(endDate) < new Date();
 };
+
+onMounted(() => {
+  loadMorePlanners();
+});
 </script>
 
 <style scoped lang="scss">
@@ -170,7 +187,6 @@ const createDropdownOptions = (options: Option[]) => {
 
   &:hover {
     cursor: pointer;
-    color: $blue600;
   }
 }
 
@@ -247,13 +263,13 @@ form {
 
 .planner-list-container {
   @include flex-column(flex-start, center);
+  padding: 0 5%;
   width: 100%;
   height: 100%;
-  overflow:hidden;
+  overflow: hidden;
 }
 
 .planner-list-box {
-  @include size(90%, 95%);
   @include flex-row(flex-start, flex-start);
   overflow-y: scroll;
   flex-wrap: wrap;
