@@ -80,7 +80,7 @@ const handleLogin = async () => {
       keepAliveOnHover: true
     });
 
-    if (response == 200) {
+    if (response.status == 200) {
       await router.push('/');
     }
 

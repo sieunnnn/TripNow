@@ -60,14 +60,20 @@
 
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import {useRoute} from "vue-router";
-import {logout} from "../api/AuthenticationApi.ts";
+import { useRoute } from "vue-router";
+import { logout } from "../api/AuthenticationApi.ts";
 import router from "../router";
-import {useUserStore} from "../store/userStore.ts";
+import { useUserStore } from "../store/userStore.ts";
+import { onMounted, ref, watch } from "vue";
 
 const route = useRoute();
 const userStore = useUserStore();
-const userInfo = userStore.userInfo;
+
+const userInfo = ref(userStore.userInfo);
+
+watch(() => userStore.userInfo, (newUserInfo) => {
+  userInfo.value = newUserInfo;
+});
 
 const isActive = (path: string) => {
   return route.path === path;
@@ -81,6 +87,11 @@ const handleLogout = async () => {
   }
 };
 
+onMounted(async () =>{
+  if (!userStore.userInfo) {
+    await userStore.fetchUserInfo();
+  }
+});
 </script>
 
 <style scoped lang="scss">

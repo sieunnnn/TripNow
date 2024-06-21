@@ -11,7 +11,7 @@ axiosInstance.interceptors.request.use(
         const accessToken = localStorage.getItem('Authorization');
 
         if (accessToken) {
-            config.headers['Authorization'] = `${accessToken}`;
+            config.headers['authorization'] = `${accessToken}`;
 
         } else {
             console.log('No access token found in localStorage');
@@ -24,9 +24,7 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
@@ -34,26 +32,18 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const refreshToken = localStorage.getItem('RefreshToken');
-                if (!refreshToken) {
-                    new Error('No refresh token available');
-                }
-
-                console.log('Attempting to refresh token...');  // Debug log
-                const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`, {
-                    token: refreshToken,
-                });
-
-                const { accessToken } = response.data;
+                console.log('Attempting to refresh token...');
+                const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`);
+                const accessToken = response.headers['authorization'];
                 localStorage.setItem('Authorization', accessToken);
-                axiosInstance.defaults.headers.common['Authorization'] = `${accessToken}`;
-                originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+
+                axiosInstance.defaults.headers.common['authorization'] = `${accessToken}`;
+                originalRequest.headers['authorization'] = `${accessToken}`;
 
                 return axiosInstance(originalRequest);
 
-            } catch (e) {
-                console.error('Token refresh failed', e);
-                // Optionally handle logout or redirect to login
+            } catch (e: any) {
+                return Promise.reject(e);
             }
         }
 
