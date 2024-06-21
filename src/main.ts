@@ -15,8 +15,6 @@ import pinia from "./store";
 import naive from "naive-ui";
 
 import "vuestic-ui/css";
-import 'flatpickr/dist/flatpickr.min.css';
-import './assets/styles/flatpickr-custom.css';
 
 const app = createApp(App);
 
