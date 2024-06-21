@@ -50,8 +50,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { loginRequest } from "../../api/authentication/AuthenticationDto.ts";
-import {getUserInfo, login} from "../../api/authentication/AuthenticationApi.ts";
+import { loginRequest } from "../../dto/AuthenticationDto.ts";
+import {getUserInfo, login} from "../../api/AuthenticationApi.ts";
 import { useMessage } from "naive-ui";
 
 import router from "../../router";

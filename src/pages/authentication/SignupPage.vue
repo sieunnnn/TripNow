@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import { authenticationMailSend, authenticationValidate, signup } from '../../api/authentication/AuthenticationApi';
-import { authenticationRequest, authenticationValidateRequest, signupRequest } from '../../api/authentication/AuthenticationDto.ts';
+import { authenticationMailSend, authenticationValidate, signup } from '../../api/AuthenticationApi.ts';
+import { authenticationRequest, authenticationValidateRequest, signupRequest } from '../../dto/AuthenticationDto.ts';
 import { ref, computed } from 'vue';
 import { useMessage } from 'naive-ui';
 
