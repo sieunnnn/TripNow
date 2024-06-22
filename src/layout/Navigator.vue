@@ -10,7 +10,7 @@
         <n-avatar
             round
             :size="48"
-            :src="userInfo?.profileImgUrl || '../../public/default.png'"
+            :src="profileImageUrl"
         />
         <div class="nickname">
             {{ userInfo?.nickname }}
@@ -64,7 +64,7 @@ import { useRoute } from "vue-router";
 import { logout } from "../api/AuthenticationApi.ts";
 import router from "../router";
 import { useUserStore } from "../store/userStore.ts";
-import { onMounted, ref, watch } from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -73,6 +73,11 @@ const userInfo = ref(userStore.userInfo);
 
 watch(() => userStore.userInfo, (newUserInfo) => {
   userInfo.value = newUserInfo;
+});
+
+const profileImageUrl = computed(() => {
+  const defaultImage = '../../public/default.png';
+  return userStore.userInfo?.profileImgUrl === 'Default' ? defaultImage : userStore.userInfo?.profileImgUrl;
 });
 
 const isActive = (path: string) => {

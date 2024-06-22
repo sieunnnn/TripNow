@@ -35,7 +35,7 @@
           <template #content>
             <div class="modal-sub-title">여행 계획의 이름을 정해주세요.</div>
             <div class="modal-text">최대 20자 까지 가능해요.</div>
-            <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}" @input="validateTitle"/>
+            <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}"/>
             <div v-if="!isTitleValid" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
             <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
             <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
@@ -87,7 +87,7 @@
             <font-awesome-icon icon="fa-solid fa-trash-can" class="icon"/>
           </div>
           <div class="title">{{ planner.title }}</div>
-          <div class="flex-row" style="align-items: center">
+          <div v-if="planner.startDate && planner.endDate" class="flex-row" style="align-items: center">
             <font-awesome-icon v-if="isDatePassed(planner.endDate)" icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #667085; font-size:16px"/>
             <font-awesome-icon v-else icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #F63D68; font-size:16px"/>
             <div class="calendar">{{ planner.startDate }}</div>
@@ -95,7 +95,7 @@
             <div class="calendar">{{ planner.endDate }}</div>
           </div>
           <div class="flex-row" style="justify-content: flex-end; margin-top: 16px">
-            <n-avatar-group :options="planner.profileImages.map(img => ({ src: img }))" :size="48" :max="4">
+            <n-avatar-group :options="processedProfileImages(planner.profileImages)" :size="48" :max="4">
               <template #avatar="{ option }">
                 <n-avatar :src="option.src"/>
               </template>
@@ -117,6 +117,7 @@ import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import { createPlanner, getPlannerList } from '../../api/PlannerApi.ts';
 import { plannerCreateRequest, plannerListResponse } from '../../dto/PlannerDto.ts';
 import { useModalStore } from "../../store/modalStore.ts";
+import {useUserStore} from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
 
 import Modal from "../../components/Modal.vue";
@@ -125,9 +126,11 @@ const formValue = ref({
   title: ''
 });
 
+const userStore = useUserStore();
 const modalStore = useModalStore();
 const message = useMessage();
 
+// 모달
 const openCreatePlannerModal = () => {
   modalStore.openModal();
 };
@@ -137,8 +140,30 @@ const create = ref({
   isPrivate: false
 });
 
+
+// 검증
 const isTitleValid = computed(() => create.value.title.length <= 20);
 
+const createDropdownOptions = (options: Array<{ src: string }>) =>
+    options.map((option) => ({
+      key: option.src,
+      label: option.src
+    }));
+
+const isDatePassed = (endDate: string) => {
+  return new Date(endDate) < new Date();
+};
+
+const defaultImage = '../../public/default.png';
+
+const processedProfileImages = (images: string[]) => {
+  return images.map(img => {
+    return { src: img === 'Default' ? defaultImage : img };
+  });
+};
+
+
+// api
 const handleCreatePlanner = async () => {
   if (!isTitleValid.value) {
     message.error("제목은 최대 20자까지 가능합니다.");
@@ -158,7 +183,8 @@ const handleCreatePlanner = async () => {
     });
 
     modalStore.closeModal();
-    loadMorePlanners(true);
+    await loadMorePlanners(true);
+
   } else {
     message.error("여행 계획 생성에 실패 했어요. 잠시 후 다시 시도해주세요.", {
       keepAliveOnHover: true
@@ -166,6 +192,8 @@ const handleCreatePlanner = async () => {
   }
 };
 
+
+// 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
 const page = ref(0);
 const size = 12;
@@ -176,6 +204,7 @@ const loadMorePlanners = async (reset = false) => {
   if (reset) {
     planners.value = [];
     page.value = 0;
+    totalPages.value = 1;
   }
 
   if (loading.value || page.value >= totalPages.value) return;
@@ -186,12 +215,11 @@ const loadMorePlanners = async (reset = false) => {
 
   try {
     const response = await getPlannerList(page.value, size);
-    planners.value.push(...response.content);
-    page.value = response.number + 1;
-    totalPages.value = response.totalPages;
-
-    console.log(response.content);
-
+    if (response.content) {
+      planners.value.push(...response.content);
+      page.value = response.number + 1;
+      totalPages.value = response.totalPages || 1;
+    }
   } catch (error) {
     console.error('Error loading planners:', error);
 
@@ -204,35 +232,34 @@ const handleScroll = () => {
   const container = plannerList.value;
   if (!container) return;
 
-  const scrollLeft = container.scrollLeft;
-  const scrollWidth = container.scrollWidth;
-  const clientWidth = container.clientWidth;
+  const scrollTop = container.scrollTop;
+  const scrollHeight = container.scrollHeight;
+  const clientHeight = container.clientHeight;
 
-  if (scrollLeft + clientWidth >= scrollWidth - 50) {
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
     loadMorePlanners();
   }
 };
 
 const plannerList = ref<HTMLElement | null>(null);
 
-onMounted(() => {
-  loadMorePlanners();
-  plannerList.value?.addEventListener('scroll', handleScroll);
+onMounted(async () => {
+  try {
+    await userStore.fetchUserInfo();
+
+    if (userStore.isUserLoggedIn) {
+      await loadMorePlanners(true);
+      plannerList.value?.addEventListener('scroll', handleScroll);
+    }
+
+  } catch (error) {
+    console.error('Error loading user information:', error);
+  }
 });
 
 onBeforeUnmount(() => {
   plannerList.value?.removeEventListener('scroll', handleScroll);
 });
-
-const createDropdownOptions = (options: Array<{ src: string }>) =>
-    options.map((option) => ({
-      key: option.src,
-      label: option.src
-    }));
-
-const isDatePassed = (endDate: string) => {
-  return new Date(endDate) < new Date();
-};
 </script>
 
 <style scoped lang="scss">
@@ -312,7 +339,7 @@ form {
 
 .align-contents {
   @include size(100%, auto);
-  @include flex-row(flex-start, center);
+  @include flex-row(flex-start, flex-start);
   justify-items: center;
 }
 
@@ -343,7 +370,7 @@ form {
 }
 
 .planner-list-container {
-  @include flex-column(flex-start, center);
+  @include flex-column(flex-start, flex-start);
   padding: 0 5%;
   width: 100%;
   height: 100%;
