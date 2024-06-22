@@ -1,16 +1,22 @@
-// stores/modal.ts
 import { defineStore } from 'pinia';
 
 export const useModalStore = defineStore('modal', {
     state: () => ({
-        isModalOpen: false,
+        createModalOpen: false,
+        updateModalOpen: false,
     }),
     actions: {
-        openModal() {
-            this.isModalOpen = true;
+        openCreateModal() {
+            this.createModalOpen = true;
         },
-        closeModal() {
-            this.isModalOpen = false;
+        closeCreateModal() {
+            this.createModalOpen = false;
         },
-    },
+        openUpdateModal() {
+            this.updateModalOpen = true;
+        },
+        closeUpdateModal() {
+            this.updateModalOpen = false;
+        }
+    }
 });

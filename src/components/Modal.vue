@@ -1,8 +1,8 @@
 <template>
-  <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+  <div v-if="isOpen" class="modal-overlay" @click.self="close">
     <div class="modal-content">
       <div class="flex-row">
-        <button class="close-button" @click="closeModal">
+        <button class="close-button" @click="close">
           <font-awesome-icon icon="fa-solid fa-circle-xmark" />
         </button>
       </div>
@@ -14,13 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import { useModalStore } from '../store/modalStore.ts';
-import { computed } from 'vue';
+import { defineProps } from 'vue';
 
-const modalStore = useModalStore();
-const isModalOpen = computed(() => modalStore.isModalOpen);
-const closeModal = modalStore.closeModal;
-
+const props = defineProps({
+  isOpen: Boolean,
+  close: Function
+});
 </script>
 
 <style scoped lang="scss">

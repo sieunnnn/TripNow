@@ -28,7 +28,7 @@
           <font-awesome-icon icon="fa-regular fa-calendar-plus" style="margin: 0 8px 2px 0" />
           여행 추가 하기
         </button>
-        <Modal v-if="createModalStore.isModalOpen" @close="closeCreatePlannerModal">
+        <Modal :isOpen="modalStore.createModalOpen" :close="closeCreatePlannerModal">
           <template #header>
             여행 계획 추가 하기
           </template>
@@ -83,8 +83,8 @@
                 비공개
               </n-tag>
             </div>
-            <font-awesome-icon @click="openUpdatePlannerModal" icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
-            <Modal v-if="updateModalStore.isModalOpen" @close="closeUpdatePlannerModal">
+            <font-awesome-icon @click="openUpdatePlannerModal(planner)" icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
+            <Modal :isOpen="modalStore.updateModalOpen" :close="closeUpdatePlannerModal">
               <template #header>
                 여행 계획 수정 하기
               </template>
@@ -101,12 +101,12 @@
                 </div>
               </template>
               <template #footer>
-                <button @click="handleUpdatePlanner(planner.plannerId)" class="modal-button">추가 하기</button>
+                <button @click="handleUpdatePlanner(planner.plannerId)" class="modal-button">수정 하기</button>
               </template>
             </Modal>
             <font-awesome-icon @click="handleDeletePlanner(planner.plannerId)" icon="fa-solid fa-trash-can" class="icon"/>
           </div>
-          <div class="title">{{ planner.title }}</div>
+          <div @click="handlePlannerDetail(planner.plannerId)" class="title">{{ planner.title }}</div>
           <div v-if="planner.startDate && planner.endDate" class="flex-row" style="align-items: center">
             <font-awesome-icon v-if="isDatePassed(planner.endDate)" icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #667085; font-size:16px"/>
             <font-awesome-icon v-else icon="fa-regular fa-calendar-check" class="icon" style="margin: 2px 8px 0 4px; color: #F63D68; font-size:16px"/>
@@ -141,6 +141,7 @@ import {useUserStore} from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
 
 import Modal from "../../components/Modal.vue";
+import router from "@/router";
 
 const formValue = ref({
   title: ''
@@ -148,16 +149,23 @@ const formValue = ref({
 
 const userStore = useUserStore();
 const message = useMessage();
-const createModalStore = useModalStore();
-const updateModalStore = useModalStore();
+const modalStore = useModalStore();
+
+
+// 클릭 이벤트
+const handlePlannerDetail = async (plannerId: String) => {
+  await router.push({ path: `/planners/${plannerId}` });
+}
 
 // 모달
 const openCreatePlannerModal = () => {
-  createModalStore.openModal();
+  create.value.title = '';
+  create.value.isPrivate = false;
+  modalStore.openCreateModal();
 };
 
 const closeCreatePlannerModal = () => {
-  createModalStore.closeModal();
+  modalStore.closeCreateModal();
 }
 
 const create = ref({
@@ -173,11 +181,11 @@ const update = ref({
 const openUpdatePlannerModal = (planner: any) => {
   update.value.title = planner.title;
   update.value.isPrivate = planner.isPrivate;
-  updateModalStore.openModal();
+  modalStore.openUpdateModal();
 };
 
 const closeUpdatePlannerModal = () => {
-  updateModalStore.closeModal();
+  modalStore.closeUpdateModal();
 }
 
 
@@ -222,7 +230,7 @@ const handleCreatePlanner = async () => {
       keepAliveOnHover: true
     });
 
-    createModalStore.closeModal();
+    modalStore.closeCreateModal();
     await loadMorePlanners(true);
 
   } else {
@@ -232,7 +240,7 @@ const handleCreatePlanner = async () => {
   }
 };
 
-const handleUpdatePlanner = async (plannerId: number) => {
+const handleUpdatePlanner = async (plannerId: string) => {
   if (!isTitleValid.value) {
     message.error("제목은 최대 20자까지 가능합니다.");
     return;
@@ -250,7 +258,7 @@ const handleUpdatePlanner = async (plannerId: number) => {
       keepAliveOnHover: true
     });
 
-    createModalStore.closeModal();
+    modalStore.closeUpdateModal();
     await loadMorePlanners(true);
 
   } else {
@@ -276,6 +284,7 @@ const handleDeletePlanner = async (plannerId: string) => {
     });
   }
 }
+
 
 // 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
