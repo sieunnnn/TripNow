@@ -5,6 +5,8 @@ import LoginPage from "../pages/authentication/LoginPage.vue";
 import SocialCallback from "../pages/authentication/SocialCallback.vue";
 import Layout from '../layout/Layout.vue';
 import PlannerList from "../pages/planner/PlannerList.vue";
+import PlannerDetail from "../pages/planner/PlannerSearch.vue";
+import PlannerSearch from "../pages/planner/PlannerSearch.vue";
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -30,6 +32,16 @@ const routes: Array<RouteRecordRaw> = [
             {
                 path: '/planners',
                 component: PlannerList
+            },
+            {
+                path: 'planners/1',
+                name: 'PlannerDetail',
+                component: PlannerDetail
+            },
+            {
+                path: 'planners/search',
+                name: 'PlannerSearch',
+                component: PlannerSearch
             }
         ]
     }
