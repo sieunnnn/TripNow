@@ -28,7 +28,7 @@
           <font-awesome-icon icon="fa-regular fa-calendar-plus" style="margin: 0 8px 2px 0" />
           여행 추가 하기
         </button>
-        <Modal>
+        <Modal v-if="createModalStore.isModalOpen" @close="closeCreatePlannerModal">
           <template #header>
             여행 계획 추가 하기
           </template>
@@ -83,8 +83,28 @@
                 비공개
               </n-tag>
             </div>
-            <font-awesome-icon icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
-            <font-awesome-icon icon="fa-solid fa-trash-can" class="icon"/>
+            <font-awesome-icon @click="openUpdatePlannerModal" icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
+            <Modal v-if="updateModalStore.isModalOpen" @close="closeUpdatePlannerModal">
+              <template #header>
+                여행 계획 수정 하기
+              </template>
+              <template #content>
+                <div class="modal-sub-title">여행 계획의 이름을 수정해주세요.</div>
+                <div class="modal-text">최대 20자 까지 가능해요.</div>
+                <input v-model="update.title" :placeholder="planner.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}"/>
+                <div v-if="!isTitleValid" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
+                <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
+                <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
+                <div class="modal-flex-row" style="margin: 10px 0 32px 0">
+                  <input v-model="update.isPrivate" type="checkbox" style="margin:0 8px 0 2px"/>
+                  <span class="modal-text">비공개로 설정하기</span>
+                </div>
+              </template>
+              <template #footer>
+                <button @click="handleUpdatePlanner(planner.plannerId)" class="modal-button">추가 하기</button>
+              </template>
+            </Modal>
+            <font-awesome-icon @click="handleDeletePlanner(planner.plannerId)" icon="fa-solid fa-trash-can" class="icon"/>
           </div>
           <div class="title">{{ planner.title }}</div>
           <div v-if="planner.startDate && planner.endDate" class="flex-row" style="align-items: center">
@@ -114,8 +134,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
-import { createPlanner, getPlannerList } from '../../api/PlannerApi.ts';
-import { plannerCreateRequest, plannerListResponse } from '../../dto/PlannerDto.ts';
+import {createPlanner, deletePlanner, getPlannerList, updatePlanner} from '../../api/PlannerApi.ts';
+import {plannerCreateRequest, plannerListResponse, plannerUpdateRequest} from '../../dto/PlannerDto.ts';
 import { useModalStore } from "../../store/modalStore.ts";
 import {useUserStore} from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
@@ -127,18 +147,38 @@ const formValue = ref({
 });
 
 const userStore = useUserStore();
-const modalStore = useModalStore();
 const message = useMessage();
+const createModalStore = useModalStore();
+const updateModalStore = useModalStore();
 
 // 모달
 const openCreatePlannerModal = () => {
-  modalStore.openModal();
+  createModalStore.openModal();
 };
+
+const closeCreatePlannerModal = () => {
+  createModalStore.closeModal();
+}
 
 const create = ref({
   title: '',
   isPrivate: false
 });
+
+const update = ref({
+  title: '',
+  isPrivate: false
+})
+
+const openUpdatePlannerModal = (planner: any) => {
+  update.value.title = planner.title;
+  update.value.isPrivate = planner.isPrivate;
+  updateModalStore.openModal();
+};
+
+const closeUpdatePlannerModal = () => {
+  updateModalStore.closeModal();
+}
 
 
 // 검증
@@ -182,7 +222,7 @@ const handleCreatePlanner = async () => {
       keepAliveOnHover: true
     });
 
-    modalStore.closeModal();
+    createModalStore.closeModal();
     await loadMorePlanners(true);
 
   } else {
@@ -192,6 +232,50 @@ const handleCreatePlanner = async () => {
   }
 };
 
+const handleUpdatePlanner = async (plannerId: number) => {
+  if (!isTitleValid.value) {
+    message.error("제목은 최대 20자까지 가능합니다.");
+    return;
+  }
+
+  const data: plannerUpdateRequest = {
+    title: update.value.title,
+    isPrivate: update.value.isPrivate
+  };
+
+  const response = await updatePlanner(data, plannerId);
+
+  if (response === 200) {
+    message.success("여행 계획 수정에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    createModalStore.closeModal();
+    await loadMorePlanners(true);
+
+  } else {
+    message.error("여행 계획 수정에 실패 했어요. 잠시 후 다시 시도해주세요.", {
+      keepAliveOnHover: true
+    });
+  }
+};
+
+const handleDeletePlanner = async (plannerId: string) => {
+  const response = await deletePlanner(plannerId);
+
+  if (response === 200) {
+    message.success("여행 계획 삭제에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    await loadMorePlanners(true);
+
+  } else {
+    message.error("여행 계획 삭제에 실패 했어요. 잠시 후 다시 시도해주세요.", {
+      keepAliveOnHover: true
+    });
+  }
+}
 
 // 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
@@ -399,6 +483,5 @@ form {
   border-radius: 15px;
   margin: 0 20px 20px 0;
   overflow: hidden;
-  text-wrap: nowrap;
 }
 </style>
