@@ -1,6 +1,6 @@
 <template>
   <div class="date-input-container" :class="{ 'disabled': disabled }">
-    <div class="custom-date-input" @click="!disabled && toggleDatePicker" :class="{ 'disabled': disabled }">
+    <div class="custom-date-input" @click="handleToggleDatePicker" :class="{ 'disabled': disabled }">
       <input
           type="text"
           v-model="formattedDate"
@@ -11,7 +11,7 @@
       />
       <font-awesome-icon icon="fa-regular fa-calendar" class="icon" />
     </div>
-    <div v-if="popoverVisible && !disabled" class="calendar-container">
+    <div v-if="popoverVisible && !disabled" class="calendar-container" @click.stop>
       <va-date-picker
           v-model="selectedDate"
           format="YYYY.M.D."
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, defineEmits, onMounted, onBeforeUnmount } from 'vue';
 import { VaDatePicker } from 'vuestic-ui';
 import 'vuestic-ui/css';
 
@@ -43,17 +43,22 @@ const props = defineProps({
   }
 });
 
+const emit = defineEmits(['update:modelValue']);
+
 const selectedDate = ref<Date | null>(props.modelValue);
 const formattedDate = ref('');
 const popoverVisible = ref(false);
 
-const toggleDatePicker = () => {
-  popoverVisible.value = !popoverVisible.value;
+const handleToggleDatePicker = (event: Event) => {
+  if (!props.disabled) {
+    popoverVisible.value = !popoverVisible.value;
+  }
 };
 
 const handleConfirm = (date: Date | null) => {
   if (date) {
-    updateFormattedDate(date);
+    selectedDate.value = date;
+    emit('update:modelValue', date);
   }
   popoverVisible.value = false;
 };
@@ -66,8 +71,26 @@ const updateFormattedDate = (date: Date) => {
 watch(selectedDate, (newDate) => {
   if (newDate) {
     updateFormattedDate(newDate);
+    emit('update:modelValue', newDate);
+  }
+});
+
+// 초기 날짜 설정
+updateFormattedDate(props.modelValue);
+
+const handleClickOutside = (event: MouseEvent) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest('.date-input-container')) {
     popoverVisible.value = false;
   }
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 </script>
 
@@ -91,6 +114,7 @@ watch(selectedDate, (newDate) => {
   @include flex-row(space-between, center);
   @include noto-sans-kr(400, 16px, $black);
   text-align: center;
+  cursor: pointer;
 
   &:hover {
     border-color: darken($gray400, 10%);
@@ -99,6 +123,7 @@ watch(selectedDate, (newDate) => {
 
   &.disabled {
     background-color: $gray200;
+    cursor: not-allowed;
   }
 }
 
@@ -106,6 +131,7 @@ watch(selectedDate, (newDate) => {
   border: none;
   outline: transparent;
   margin-bottom: 2px;
+  cursor: pointer;
 
   &::placeholder {
     color: $gray400;
@@ -115,12 +141,13 @@ watch(selectedDate, (newDate) => {
 
   &.disabled {
     background-color: $gray200;
+    cursor: not-allowed;
   }
-
 }
 
 .icon {
   color: $gray500;
+  cursor: pointer;
 }
 
 .calendar-container {

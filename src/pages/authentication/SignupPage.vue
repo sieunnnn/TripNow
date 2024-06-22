@@ -65,8 +65,8 @@ const formValue = ref({
 const message = useMessage();
 
 const code = ref('');
-let isCodeInputDisabled = true;
-let isInputDisabled = true;
+const isCodeInputDisabled = ref(true);
+const isInputDisabled = ref(true);
 
 const passwordPattern = /^[A-Za-z\d~!@#$%^&*()_\-+=\[\]{}|\\;:'",.<>?/]{8,20}$/;
 const nicknamePattern = /^[a-zA-Z가-힣\d]+$/;
@@ -78,7 +78,7 @@ const passwordError = computed(() => {
 const nicknameError = computed(() => {
   return nicknamePattern.test(formValue.value.nickname) && formValue.value.nickname.length >= 2 && formValue.value.nickname.length <= 12
       ? ''
-      : '한글, 영문, 숫자 를 조합하여 2-12 자로 만들어주세요.';
+      : '닉네임은 2-12 글자로 만들수 있어요.';
 });
 
 const handleEmailSend = async () => {
@@ -92,6 +92,8 @@ const handleEmailSend = async () => {
     message.success("인증 번호가 담긴 메일을 발송 했어요.", {
       keepAliveOnHover: true
     });
+
+    isCodeInputDisabled.value = false;
 
   } else if (response.status === 400) {
     if (response.data.errorCode === 'MAIL_01') {
@@ -122,6 +124,8 @@ const handleAuthValidate = async () => {
       keepAliveOnHover: true
     });
 
+    isInputDisabled.value = false;
+
   } else {
     message.error("인증 번호를 다시 입력해주세요.", {
       keepAliveOnHover: true
@@ -143,6 +147,8 @@ const handleSignup = async () => {
     message.success("회원 가입이 완료 되었어요.", {
       keepAliveOnHover: true
     });
+
+    await router.push('/login')
 
   } else {
     message.error("회원가입을 다시 시도해주세요.", {
