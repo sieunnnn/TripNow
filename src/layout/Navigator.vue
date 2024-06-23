@@ -14,7 +14,7 @@
         />
         <div class="nickname">
             {{ userInfo?.nickname }}
-          <div style="font-size: 14px; font-weight: 200; margin-top: 6px">
+          <div v-if="userInfo" style="font-size: 14px; font-weight: 200; margin-top: 6px">
             <div># {{ userInfo?.userTag }}</div>
           </div>
         </div>
@@ -37,10 +37,13 @@
           <font-awesome-icon icon="fa-solid fa-image" class="icon"/>
           <span class="text">여행 기록</span>
         </div>
-        <div class="menu-button">
-          <font-awesome-icon icon="fa-solid fa-earth-asia" class="icon"/>
+        <router-link to="/planners/search" class="menu-button">
+          <n-badge v-if="isActive('/planners/search')" dot type="warning" processing :offset="[8, 1]">
+            <font-awesome-icon icon="fa-solid fa-earth-asia" class="icon"/>
+          </n-badge>
+          <font-awesome-icon v-else icon="fa-solid fa-earth-asia" class="icon"/>
           <span class="text">둘러 보기</span>
-        </div>
+        </router-link>
         <div class="menu-button">
           <font-awesome-icon icon="fa-solid fa-envelope" class="icon"/>
           <span class="text">메세지 보내기</span>
