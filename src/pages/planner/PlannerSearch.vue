@@ -7,7 +7,7 @@
         <div class="flex-row" style="width: 555px; margin-top: 20px">
           <div class="form-item">
             <div class="align-contents">
-              <input id="title" type="text" v-model="formValue.title" placeholder="키워드로 검색할수도 있어요." class="custom-input" />
+              <input id="title" type="text" v-model="formValue.input" placeholder="키워드로 검색할수도 있어요." class="custom-input" />
               <button type="submit" class="blue-button" @click="handleSearch">
                 <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="margin-right: 8px"/>
                 <span class="label" style="font-size: 14px; font-weight: 400">검색</span>
@@ -67,65 +67,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
-import {createPlanner, deletePlanner, getPlannerList, updatePlanner} from '../../api/PlannerApi.ts';
-import {plannerCreateRequest, plannerListResponse, plannerUpdateRequest} from '../../dto/PlannerDto.ts';
-import { useModalStore } from "../../store/modalStore.ts";
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { getUserPlannerList } from '../../api/PlannerApi.ts';
+import { plannerListResponse } from '../../dto/PlannerDto.ts';
 import {useUserStore} from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
-
-import Modal from "../../components/Modal.vue";
 import router from "@/router";
+import {searchPlanners} from "../../api/SearchApi.ts";
 
-const formValue = ref({
-  title: ''
-});
 
 const userStore = useUserStore();
 const message = useMessage();
-const modalStore = useModalStore();
-
+const noResults = ref(false);
+const formValue = ref({
+  input: ''
+});
 
 // 클릭 이벤트
-const handlePlannerDetail = async (plannerId: String) => {
+const handlePlannerDetail = async (plannerId: number) => {
   await router.push({ path: `/planners/${plannerId}` });
 }
 
-// 모달
-const openCreatePlannerModal = () => {
-  create.value.title = '';
-  create.value.isPrivate = false;
-  modalStore.openCreateModal();
-};
-
-const closeCreatePlannerModal = () => {
-  modalStore.closeCreateModal();
-}
-
-const create = ref({
-  title: '',
-  isPrivate: false
-});
-
-const update = ref({
-  title: '',
-  isPrivate: false
-})
-
-const openUpdatePlannerModal = (planner: any) => {
-  update.value.title = planner.title;
-  update.value.isPrivate = planner.isPrivate;
-  modalStore.openUpdateModal();
-};
-
-const closeUpdatePlannerModal = () => {
-  modalStore.closeUpdateModal();
-}
-
-
-// 검증
-const isTitleValid = computed(() => create.value.title.length <= 20);
-
+// 이미지 처리
 const createDropdownOptions = (options: Array<{ src: string }>) =>
     options.map((option) => ({
       key: option.src,
@@ -144,81 +107,34 @@ const processedProfileImages = (images: string[]) => {
   });
 };
 
+const handleSearch = async () => {
+  const input = formValue.value.input;
+  loading.value = true;
+  page.value = 0;
+  planners.value = [];
+  noResults.value = false;
 
-// api
-const handleCreatePlanner = async () => {
-  if (!isTitleValid.value) {
-    message.error("제목은 최대 20자까지 가능합니다.");
-    return;
-  }
+  try {
+    const response = await searchPlanners(page.value, size, input);
 
-  const data: plannerCreateRequest = {
-    title: create.value.title,
-    isPrivate: create.value.isPrivate
-  };
+    if (response.content && response.content.length > 0) {
+      planners.value.push(...response.content);
+      page.value = response.number + 1;
+      totalPages.value = response.totalPages || 1;
 
-  const response = await createPlanner(data);
+    } else {
+      noResults.value = true;
+      message.error("검색 결과가 존재 하지 않아요. 다른 키워드를 입력해주세요.");
+    }
 
-  if (response === 200) {
-    message.success("여행 계획 생성에 성공 했어요.", {
-      keepAliveOnHover: true
-    });
+  } catch (error) {
+    console.error('Error loading planners:', error);
+    message.error("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
 
-    modalStore.closeCreateModal();
-    await loadMorePlanners(true);
-
-  } else {
-    message.error("여행 계획 생성에 실패 했어요. 잠시 후 다시 시도해주세요.", {
-      keepAliveOnHover: true
-    });
-  }
-};
-
-const handleUpdatePlanner = async (plannerId: string) => {
-  if (!isTitleValid.value) {
-    message.error("제목은 최대 20자까지 가능합니다.");
-    return;
-  }
-
-  const data: plannerUpdateRequest = {
-    title: update.value.title,
-    isPrivate: update.value.isPrivate
-  };
-
-  const response = await updatePlanner(data, plannerId);
-
-  if (response === 200) {
-    message.success("여행 계획 수정에 성공 했어요.", {
-      keepAliveOnHover: true
-    });
-
-    modalStore.closeUpdateModal();
-    await loadMorePlanners(true);
-
-  } else {
-    message.error("여행 계획 수정에 실패 했어요. 잠시 후 다시 시도해주세요.", {
-      keepAliveOnHover: true
-    });
-  }
-};
-
-const handleDeletePlanner = async (plannerId: string) => {
-  const response = await deletePlanner(plannerId);
-
-  if (response === 200) {
-    message.success("여행 계획 삭제에 성공 했어요.", {
-      keepAliveOnHover: true
-    });
-
-    await loadMorePlanners(true);
-
-  } else {
-    message.error("여행 계획 삭제에 실패 했어요. 잠시 후 다시 시도해주세요.", {
-      keepAliveOnHover: true
-    });
+  } finally {
+    loading.value = false;
   }
 }
-
 
 // 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
@@ -241,7 +157,7 @@ const loadMorePlanners = async (reset = false) => {
   loading.value = true;
 
   try {
-    const response = await getPlannerList(page.value, size);
+    const response = await getUserPlannerList(page.value, size);
     if (response.content) {
       planners.value.push(...response.content);
       page.value = response.number + 1;
