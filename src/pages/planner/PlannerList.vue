@@ -51,7 +51,7 @@
         <div class="flex-row" style="width: 555px">
           <div class="form-item">
             <div class="align-contents">
-              <input id="title" type="text" v-model="formValue.title" placeholder="찾고 싶은 여행 계획을 적어 주세요." class="custom-input" />
+              <input id="title" type="text" v-model="formValue.input" placeholder="찾고 싶은 여행 계획을 적어 주세요." class="custom-input" />
               <button type="submit" class="blue-button" @click="handleSearch">
                 <font-awesome-icon icon="fa-solid fa-magnifying-glass" style="margin-right: 8px"/>
                 <span class="label" style="font-size: 14px; font-weight: 400">검색</span>
@@ -135,25 +135,30 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
 import {createPlanner, deletePlanner, getPlannerList, updatePlanner} from '../../api/PlannerApi.ts';
-import {plannerCreateRequest, plannerListResponse, plannerUpdateRequest} from '../../dto/PlannerDto.ts';
+import {
+  plannerCreateRequest,
+  plannerListResponse,
+  plannerUpdateRequest
+} from '../../dto/PlannerDto.ts';
 import { useModalStore } from "../../store/modalStore.ts";
 import {useUserStore} from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
 
 import Modal from "../../components/Modal.vue";
 import router from "@/router";
-
-const formValue = ref({
-  title: ''
-});
+import {searchMyPlanners } from "../../api/SearchApi.ts";
 
 const userStore = useUserStore();
 const message = useMessage();
 const modalStore = useModalStore();
+const noResults = ref(false);
+const formValue = ref({
+  input: ''
+});
 
 
 // 클릭 이벤트
-const handlePlannerDetail = async (plannerId: String) => {
+const handlePlannerDetail = async (plannerId: number) => {
   await router.push({ path: `/planners/${plannerId}` });
 }
 
@@ -212,6 +217,36 @@ const processedProfileImages = (images: string[]) => {
 
 
 // api
+const handleSearch = async () => {
+  const input = formValue.value.input;
+
+  loading.value = true;
+  page.value = 0;
+  planners.value = [];
+  noResults.value = false;
+
+  try {
+    const response = await searchMyPlanners(page.value, size, input);
+
+    if (response.content && response.content.length > 0) {
+      planners.value.push(...response.content);
+      page.value = response.number + 1;
+      totalPages.value = response.totalPages || 1;
+
+    } else {
+      noResults.value = true;
+      message.error("검색 결과가 존재 하지 않아요. 다른 키워드를 입력해주세요.");
+    }
+
+  } catch (error) {
+    console.error('Error loading planners:', error);
+    message.error("검색 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+  } finally {
+    loading.value = false;
+  }
+}
+
 const handleCreatePlanner = async () => {
   if (!isTitleValid.value) {
     message.error("제목은 최대 20자까지 가능합니다.");
@@ -240,7 +275,7 @@ const handleCreatePlanner = async () => {
   }
 };
 
-const handleUpdatePlanner = async (plannerId: string) => {
+const handleUpdatePlanner = async (plannerId: number) => {
   if (!isTitleValid.value) {
     message.error("제목은 최대 20자까지 가능합니다.");
     return;
@@ -268,7 +303,7 @@ const handleUpdatePlanner = async (plannerId: string) => {
   }
 };
 
-const handleDeletePlanner = async (plannerId: string) => {
+const handleDeletePlanner = async (plannerId: number) => {
   const response = await deletePlanner(plannerId);
 
   if (response === 200) {
@@ -308,11 +343,13 @@ const loadMorePlanners = async (reset = false) => {
 
   try {
     const response = await getPlannerList(page.value, size);
+
     if (response.content) {
       planners.value.push(...response.content);
       page.value = response.number + 1;
       totalPages.value = response.totalPages || 1;
     }
+
   } catch (error) {
     console.error('Error loading planners:', error);
 

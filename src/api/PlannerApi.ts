@@ -22,6 +22,22 @@ export const getPlannerList = async (page: number, size: number): Promise<Page<p
     }
 }
 
+export const getUserPlannerList = async (page: number, size: number): Promise<Page<plannerListResponse>> => {
+    try {
+        const response = await axiosInstance.get(`/planners`, {
+            params: {
+                page,
+                size
+            }
+        })
+
+        return response.data;
+
+    } catch (e: any) {
+        return e.response.data.errorCode;
+    }
+}
+
 export const createPlanner = async (data: plannerCreateRequest) => {
     try {
         const userStore = useUserStore();
@@ -49,7 +65,7 @@ export const updatePlanner = async (data: plannerUpdateRequest, plannerId: numbe
     }
 }
 
-export const deletePlanner = async (plannerId: string)=> {
+export const deletePlanner = async (plannerId: number)=> {
     try {
         const userStore = useUserStore();
         const userId = userStore.userInfo?.userId;
