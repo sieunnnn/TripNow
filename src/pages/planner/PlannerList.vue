@@ -146,7 +146,7 @@ import { useMessage } from "naive-ui";
 
 import Modal from "../../components/Modal.vue";
 import router from "@/router";
-import {searchMyPlanners } from "../../api/SearchApi.ts";
+import { searchMyPlanners } from "../../api/SearchApi.ts";
 
 const userStore = useUserStore();
 const message = useMessage();
