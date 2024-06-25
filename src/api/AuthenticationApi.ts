@@ -80,6 +80,6 @@ export const getUserInfo = async () => {
         return response;
 
     } catch (e: any) {
-        return e.response;
+        return e.response.data.errorCode;
     }
 };

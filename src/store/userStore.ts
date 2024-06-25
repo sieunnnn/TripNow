@@ -31,14 +31,9 @@ export const useUserStore = defineStore('user', {
                 await router.push("/login");
 
             } else {
-                try {
-                    const response = await getUserInfo();
-                    if (response.data) {
-                        this.setUserInfo(response.data);
-                    }
-
-                } catch (error) {
-                    await router.push("/login");
+                const response = await getUserInfo();
+                if (response.data) {
+                    this.setUserInfo(response.data);
                 }
             }
         }

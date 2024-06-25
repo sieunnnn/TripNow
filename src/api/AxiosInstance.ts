@@ -4,17 +4,14 @@ const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
+    withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use(
     (config) => {
         const accessToken = localStorage.getItem('Authorization');
-
         if (accessToken) {
             config.headers['authorization'] = `${accessToken}`;
-
-        } else {
-            console.log('No access token found in localStorage');
         }
         return config;
     },
@@ -32,8 +29,7 @@ axiosInstance.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                console.log('Attempting to refresh token...');
-                const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`);
+                const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`, null, { withCredentials: true });
                 const accessToken = response.headers['authorization'];
                 localStorage.setItem('Authorization', accessToken);
 
@@ -42,7 +38,7 @@ axiosInstance.interceptors.response.use(
 
                 return axiosInstance(originalRequest);
 
-            } catch (e: any) {
+            } catch (e) {
                 return Promise.reject(e);
             }
         }
