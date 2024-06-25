@@ -35,8 +35,8 @@
           <template #content>
             <div class="modal-sub-title">여행 계획의 이름을 정해주세요.</div>
             <div class="modal-text">최대 20자 까지 가능해요.</div>
-            <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}"/>
-            <div v-if="!isTitleValid" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
+            <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid(create.title)}"/>
+            <div v-if="!isTitleValid(create.title)" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
             <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
             <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
             <div class="modal-flex-row" style="margin: 10px 0 32px 0">
@@ -83,20 +83,20 @@
                 비공개
               </n-tag>
             </div>
-            <font-awesome-icon @click="openUpdatePlannerModal(planner)" icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
-            <Modal :isOpen="modalStore.updateModalOpen" :close="closeUpdatePlannerModal">
+            <font-awesome-icon @click="openUpdatePlannerModal(planner.plannerId)" icon="fa-regular fa-pen-to-square" style="margin-right: 15px" class="icon"/>
+            <Modal :isOpen="modalStore.updateModalOpen[planner.plannerId]" :close="() => closeUpdatePlannerModal(planner.plannerId)">
               <template #header>
                 여행 계획 수정 하기
               </template>
               <template #content>
                 <div class="modal-sub-title">여행 계획의 이름을 수정해주세요.</div>
                 <div class="modal-text">최대 20자 까지 가능해요.</div>
-                <input v-model="update.title" :placeholder="planner.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid}"/>
-                <div v-if="!isTitleValid" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
-                <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
+                <input v-model="update[planner.plannerId].title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid(update[planner.plannerId].title)}"/>
+                <div v-if="!isTitleValid(update[planner.plannerId].title)" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
+                <div class="modal-sub-title">여행 계획의 공개 여부를 정해주세요.</div>
                 <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
-                <div class="modal-flex-row" style="margin: 10px 0 32px 0">
-                  <input v-model="update.isPrivate" type="checkbox" style="margin:0 8px 0 2px"/>
+                <div class="modal-flex-row">
+                  <input v-model="update[planner.plannerId].isPrivate" type="checkbox" />
                   <span class="modal-text">비공개로 설정하기</span>
                 </div>
               </template>
@@ -133,17 +133,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, onBeforeUnmount } from 'vue';
-import {createPlanner, deletePlanner, getPlannerList, updatePlanner} from '../../api/PlannerApi.ts';
-import {
-  plannerCreateRequest,
-  plannerListResponse,
-  plannerUpdateRequest
-} from '../../dto/PlannerDto.ts';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { createPlanner, deletePlanner, getPlannerList, updatePlanner } from '../../api/PlannerApi.ts';
+import { plannerCreateRequest, plannerListResponse, plannerUpdateRequest } from '../../dto/PlannerDto.ts';
 import { useModalStore } from "../../store/modalStore.ts";
-import {useUserStore} from "../../store/userStore.ts";
+import { useUserStore } from "../../store/userStore.ts";
 import { useMessage } from "naive-ui";
-
 import Modal from "../../components/Modal.vue";
 import router from "@/router";
 import { searchMyPlanners } from "../../api/SearchApi.ts";
@@ -156,13 +151,18 @@ const formValue = ref({
   input: ''
 });
 
-
 // 클릭 이벤트
 const handlePlannerDetail = async (plannerId: number) => {
   await router.push({ path: `/planners/${plannerId}` });
 }
 
-// 모달
+const create = ref({
+  title: '',
+  isPrivate: false
+});
+
+const update = ref<{ [key: number]: { title: string, isPrivate: boolean } }>({});
+
 const openCreatePlannerModal = () => {
   create.value.title = '';
   create.value.isPrivate = false;
@@ -171,31 +171,30 @@ const openCreatePlannerModal = () => {
 
 const closeCreatePlannerModal = () => {
   modalStore.closeCreateModal();
-}
-
-const create = ref({
-  title: '',
-  isPrivate: false
-});
-
-const update = ref({
-  title: '',
-  isPrivate: false
-})
-
-const openUpdatePlannerModal = (planner: any) => {
-  update.value.title = planner.title;
-  update.value.isPrivate = planner.isPrivate;
-  modalStore.openUpdateModal();
 };
 
-const closeUpdatePlannerModal = () => {
-  modalStore.closeUpdateModal();
-}
+const openUpdatePlannerModal = (plannerId: number) => {
+  closeAllUpdatePlannerModals();
+  if (!update.value[plannerId]) {
+    update.value[plannerId] = { title: '', isPrivate: false };
+  }
+  modalStore.openUpdateModal(plannerId);
+};
 
+const closeUpdatePlannerModal = (plannerId: number) => {
+  modalStore.closeUpdateModal(plannerId);
+};
+
+const closeAllUpdatePlannerModals = () => {
+  Object.keys(modalStore.updateModalOpen).forEach(plannerId => {
+    modalStore.closeUpdateModal(parseInt(plannerId));
+  });
+};
 
 // 검증
-const isTitleValid = computed(() => create.value.title.length <= 20);
+const isTitleValid = (title: string) => {
+  return title.length <= 20;
+};
 
 const createDropdownOptions = (options: Array<{ src: string }>) =>
     options.map((option) => ({
@@ -215,8 +214,6 @@ const processedProfileImages = (images: string[]) => {
   });
 };
 
-
-// api
 const handleSearch = async () => {
   const input = formValue.value.input;
 
@@ -232,7 +229,6 @@ const handleSearch = async () => {
       planners.value.push(...response.content);
       page.value = response.number + 1;
       totalPages.value = response.totalPages || 1;
-
     } else {
       noResults.value = true;
       message.error("검색 결과가 존재 하지 않아요. 다른 키워드를 입력해주세요.");
@@ -248,7 +244,7 @@ const handleSearch = async () => {
 }
 
 const handleCreatePlanner = async () => {
-  if (!isTitleValid.value) {
+  if (!isTitleValid(create.value.title)) {
     message.error("제목은 최대 20자까지 가능합니다.");
     return;
   }
@@ -276,14 +272,15 @@ const handleCreatePlanner = async () => {
 };
 
 const handleUpdatePlanner = async (plannerId: number) => {
-  if (!isTitleValid.value) {
+  const planner = update.value[plannerId];
+  if (!planner || !isTitleValid(planner.title)) {
     message.error("제목은 최대 20자까지 가능합니다.");
     return;
   }
 
   const data: plannerUpdateRequest = {
-    title: update.value.title,
-    isPrivate: update.value.isPrivate
+    title: planner.title,
+    isPrivate: planner.isPrivate
   };
 
   const response = await updatePlanner(data, plannerId);
@@ -293,7 +290,7 @@ const handleUpdatePlanner = async (plannerId: number) => {
       keepAliveOnHover: true
     });
 
-    modalStore.closeUpdateModal();
+    modalStore.closeUpdateModal(plannerId);
     await loadMorePlanners(true);
 
   } else {
@@ -319,7 +316,6 @@ const handleDeletePlanner = async (plannerId: number) => {
     });
   }
 }
-
 
 // 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
