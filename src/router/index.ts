@@ -25,26 +25,26 @@ const routes: Array<RouteRecordRaw> = [
         component: SocialCallback
     },
     {
-        path: '/',
+        path: '/planners',
         name: 'Layout',
         component: Layout,
         children: [
             {
-                path: '/planners',
+                path: '',
                 component: PlannerList
             },
             {
-                path: 'planners/1',
+                path: 'search',
+                name: 'PlannerSearch',
+                component: PlannerSearch
+            },
+            {
+                path: 'detail',
                 name: 'PlannerDetail',
                 component: PlannerDetail
             },
-            {
-                path: 'planners/search',
-                name: 'PlannerSearch',
-                component: PlannerSearch
-            }
         ]
-    }
+    },
 ];
 
 const router = createRouter({
