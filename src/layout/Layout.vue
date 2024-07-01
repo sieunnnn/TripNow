@@ -21,11 +21,12 @@ import Navigator from "../layout/Navigator.vue";
   width: 100vw;
   height: 100vh;
   background-color: $gray100;
+  overflow: hidden;
 }
 
 .navigator {
   flex: 0 0 100px;
-  background-color: $gray25;
+  background-color: white;
   transition: all 0.5s ease;
 
   &:hover {

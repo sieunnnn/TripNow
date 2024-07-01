@@ -28,7 +28,7 @@ export const useUserStore = defineStore('user', {
         async fetchUserInfo() {
             const accessToken = localStorage.getItem("Authorization");
             if (accessToken == null) {
-                await router.push("/login");
+                // await router.push("/login");
 
             } else {
                 try {
@@ -38,7 +38,7 @@ export const useUserStore = defineStore('user', {
                     }
 
                 } catch (error) {
-                    await router.push("/login");
+                    // await router.push("/login");
                 }
             }
         }
