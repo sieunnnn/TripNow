@@ -17,6 +17,10 @@
           <div v-if="userInfo" style="font-size: 14px; font-weight: 200; margin-top: 6px">
             <div># {{ userInfo?.userTag }}</div>
           </div>
+          <div class="alert" @click="handleClick">
+            <font-awesome-icon icon="fa-regular fa-bell" style="margin-right: 5px" class="alert"/>
+            <span>알림 확인하기</span>
+          </div>
         </div>
       </div>
     </div>
@@ -49,7 +53,7 @@
           <span class="text">메세지 보내기</span>
         </div>
         <div class="menu-button">
-          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" />
+          <font-awesome-icon icon="fa-solid fa-pen-to-square" class="icon" />
           <span class="text">회원정보 수정</span>
         </div>
       </div>
@@ -65,9 +69,10 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { useRoute } from "vue-router";
 import { logout } from "../api/AuthenticationApi.ts";
-import router from "../router";
 import { useUserStore } from "../store/userStore.ts";
+import { useNotification } from 'naive-ui'
 import {computed, onMounted, ref, watch} from "vue";
+import router from "../router";
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -95,6 +100,24 @@ const handleLogout = async () => {
   }
 };
 
+const notification = useNotification();
+
+const handleClick = () => {
+  [1, 2, 3, 4, 5].forEach(() =>
+      notification.create({
+        title: 'Many Notifications',
+        content: `Try to scroll
+Try to scroll
+Try to scroll
+Try to scroll
+Try to scroll
+Try to scroll
+Try to scroll`
+      })
+  );
+};
+
+
 onMounted(async () =>{
   if (!userStore.userInfo) {
     await userStore.fetchUserInfo();
@@ -112,14 +135,12 @@ onMounted(async () =>{
 .nav-bar-container {
   @include flex-column(flex-start, flex-start);
   background-color: $gray100;
-  overflow: hidden;
   transition: width 0.5s ease;
   padding: 0 20px;
 
   &:hover {
     width: 100%; /* 호버 시 너비 */
     color: $gray500;
-
     .image, .nickname {
       display: inline;
     }
@@ -168,6 +189,15 @@ onMounted(async () =>{
   @include flex-column();
   @include noto-sans-kr(900, 20px, $black);
   margin: 3px 0 0 20px ;
+}
+
+.alert {
+  @include noto-sans-kr(400, 14px, $gray500);
+}
+
+.alert span {
+  @include noto-sans-kr(400, 14px, $gray500);
+  cursor: pointer;
 }
 
 .menu-container {
