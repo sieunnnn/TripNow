@@ -159,5 +159,6 @@ onBeforeUnmount(() => {
   z-index: 9999999;
   background-color: $gray25;
   padding: 20px;
+  box-shadow: 0px 5px 15px 2px #555555
 }
 </style>

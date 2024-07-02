@@ -1,6 +1,5 @@
 // stores/user.ts
 import { defineStore } from 'pinia';
-import router from "../router";
 import { getUserInfo } from "../api/AuthenticationApi.ts";
 
 export interface UserInfo {

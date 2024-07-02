@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-
-import SignupPage from '../pages/authentication/SignupPage.vue';
+import SignupPage from "../pages/authentication/SignupPage.vue";
 import LoginPage from "../pages/authentication/LoginPage.vue";
 import SocialCallback from "../pages/authentication/SocialCallback.vue";
-import Layout from '../layout/Layout.vue';
+import Layout from "../layout/Layout.vue";
 import PlannerList from "../pages/planner/PlannerList.vue";
+import PlannerSearch from "../pages/planner/PlannerSearch.vue";
 import PlannerDetail from "../pages/planner/PlannerDetail.vue";
-import PlannerSearch from '../pages/planner/PlannerSearch.vue';
+
 
 const routes: Array<RouteRecordRaw> = [
     {
