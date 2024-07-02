@@ -24,11 +24,11 @@
     </n-carousel>
     <div class="flex-row" style="justify-content: center">
       <div class="flex-row" style="width: 90%;">
-        <button @click="openCreatePlannerModal" class="blue-button" type="button" style="width: 130px; margin: 0 50px 16px 0; min-width: 120px">
+        <button @click="openCreatePlannerModal(1)" class="blue-button" type="button" style="width: 130px; margin: 0 50px 16px 0; min-width: 120px">
           <font-awesome-icon icon="fa-regular fa-calendar-plus" style="margin: 0 8px 2px 0" />
           여행 추가 하기
         </button>
-        <Modal :isOpen="modalStore.createModalOpen" :close="closeCreatePlannerModal">
+        <Modal :isOpen="modalStore.createModalOpen[1]" :close="() => closeCreatePlannerModal(1)">
           <template #header>
             여행 계획 추가 하기
           </template>
@@ -36,7 +36,7 @@
             <div class="modal-sub-title">여행 계획의 이름을 정해주세요.</div>
             <div class="modal-text">최대 20자 까지 가능해요.</div>
             <input v-model="create.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid(create.title)}"/>
-            <div v-if="!isTitleValid(create.title)" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
+            <div v-if="!isTitleValid(create.title)" class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
             <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
             <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
             <div class="modal-flex-row" style="margin: 10px 0 32px 0">
@@ -163,14 +163,14 @@ const create = ref({
 
 const update = ref<{ [key: number]: { title: string, isPrivate: boolean } }>({});
 
-const openCreatePlannerModal = () => {
+const openCreatePlannerModal = (id: number) => {
   create.value.title = '';
   create.value.isPrivate = false;
-  modalStore.openCreateModal();
+  modalStore.openCreateModal(id);
 };
 
-const closeCreatePlannerModal = () => {
-  modalStore.closeCreateModal();
+const closeCreatePlannerModal = (id: number) => {
+  modalStore.closeCreateModal(id);
 };
 
 const openUpdatePlannerModal = (plannerId: number) => {
@@ -261,7 +261,7 @@ const handleCreatePlanner = async () => {
       keepAliveOnHover: true
     });
 
-    modalStore.closeCreateModal();
+    modalStore.closeCreateModal(1);
     await loadMorePlanners(true);
 
   } else {

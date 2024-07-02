@@ -12,8 +12,18 @@
           </div>
         </div>
         <div class="menu-container">
-          <font-awesome-icon icon="fa-regular fa-pen-to-square"  @click="openUpdateModal(1)"  class="icon"/>
-          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon"/>
+          <font-awesome-icon icon="fa-regular fa-pen-to-square" class="icon"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openUpdateModal(1)">
+            계획 변경하기
+          </n-gradient-text>
+          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberModal(1)">
+            여행 친구 초대
+          </n-gradient-text>
+          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" style="font-size: 14px"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberManageModel(2)">
+            여행 친구 관리
+          </n-gradient-text>
         </div>
       </div>
       <div style="margin-top: 22px">
@@ -52,7 +62,13 @@
                 </div>
                 <div class="content">
                   <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                  <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
+                  <n-tooltip trigger="hover" placement="right-start" style="padding: 25px 20px; border-radius: 8px">
+                    <template #trigger>
+                      <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
+                    </template>
+                    <div class="tooltip-text">📍 제주도 어쩌구 저쩌구 123-4</div>
+                    <img src="../../../public/map_example.png" style="width: 200px">
+                  </n-tooltip>
                 </div>
                 <div class="content">
                   <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
@@ -142,7 +158,7 @@
       </div>
       <div class="date-container">
         <div class="date-create">
-          <div class="content-container" @click="openCreatePlanBoxModal">
+          <div class="content-container" @click="openCreatePlanBoxModal(2)">
             <font-awesome-icon icon="fa-regular fa-calendar-plus" class="icon"/>
             <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
               여행 날짜 추가하기
@@ -165,13 +181,68 @@
       <div class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
       <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
       <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
-      <div class="modal-flex-row" style="margin: 10px 0 32px 0">
+      <div class="modal-flex-row" style="margin: 10px 0 26px 0">
         <input v-model="updateTitle.isPrivate" type="checkbox" style="margin:0 8px 0 2px"/>
         <span class="modal-text">비공개로 설정하기</span>
       </div>
     </template>
     <template #footer>
       <button @click="handleUpdatePlanner(1)" class="modal-button">수정 하기</button>
+    </template>
+  </Modal>
+
+  <!-- 여행 멤버 추가 모달 -->
+  <Modal :isOpen="modalStore.createModalOpen[1]" :close="() => closeMemberModal(1)">
+    <template #header>
+      여행 친구 초대
+    </template>
+    <template #content>
+      <div class="modal-sub-title">여행 친구를 초대해보세요.</div>
+      <div class="modal-text">친구 초대는 최대 6명 까지 가능해요.</div>
+      <input placeholder="친구의 이메일을 입력 후 엔터를 눌러주세요." type="text" class="modal-input" style="margin-bottom: 16px"/>
+      <div class="search-container">
+        <div class="search-container">
+          <div class="search-content">
+            <div style="display: flex; flex-direction: row; align-items: center">
+              <n-avatar
+                  round
+                  size="small"
+                  src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              />
+              <div class="search-text">김시은 (#1234)</div>
+            </div>
+            <button class="add-button">추가 하기</button>
+          </div>
+          <hr style="width: 100%; margin: 12px 0">
+        </div>
+      </div>
+    </template>
+  </Modal>
+
+  <!-- 여행 멤버 수정 모달 -->
+  <Modal :isOpen="modalStore.updateModalOpen[2]" :close="() => closeMemberManageModel(2)">
+    <template #header>
+      여행 친구 관리
+    </template>
+    <template #content>
+      <div class="modal-sub-title">여행 친구 목록</div>
+      <div class="modal-text" style="margin-bottom: 25px">⚠️ 친구를 한번 내보내면 되돌릴 수 없어요.</div>
+      <div class="search-container">
+        <div class="search-container">
+          <div class="search-content">
+            <div style="display: flex; flex-direction: row; align-items: center">
+              <n-avatar
+                  round
+                  size="small"
+                  src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+              />
+              <div class="search-text">김시은 (#1234)</div>
+            </div>
+            <button class="delete-button">내보내기</button>
+          </div>
+          <hr style="width: 100%; margin: 12px 0">
+        </div>
+      </div>
     </template>
   </Modal>
 
@@ -190,7 +261,7 @@
   </Modal>
 
   <!-- 여행 날짜 추가 모달 -->
-  <Modal :isOpen="modalStore.createModalOpen" :close="closeCreatePlanBoxModal">
+  <Modal :isOpen="modalStore.createModalOpen[2]" :close="() => closeCreatePlanBoxModal(2)">
     <template #header>
       여행 날짜 추가하기
     </template>
@@ -264,10 +335,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import Modal from "../../components/Modal.vue";
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
-import DatePicker from "@/components/DatePicker.vue";
+import Modal from "../../components/Modal.vue";
+import DatePicker from "../../components/DatePicker.vue";
 
 const message = useMessage();
 
@@ -304,6 +375,14 @@ const createDropdownOptions = (options: Array<{ name: string; src: string }>) =>
 // 모달
 const modalStore = useModalStore();
 
+const openMemberModal = (id: number) => {
+  modalStore.openCreateModal(id);
+}
+
+const closeMemberModal = (id: number) => {
+  modalStore.closeCreateModal(id);
+}
+
 const updateTitle = ref({
   title: '',
   isPrivate: false
@@ -330,18 +409,12 @@ const createPlanBox = ref({
   birthday: new Date()
 });
 
-const closeAllUpdatePlannerModals = () => {
-  Object.keys(modalStore.updateModalOpen).forEach(plannerId => {
-    modalStore.closeUpdatePlanBoxModal(parseInt(plannerId));
-  });
+const openCreatePlanBoxModal = (id: number) => {
+  modalStore.openCreateModal(id);
 };
 
-const openCreatePlanBoxModal = () => {
-  modalStore.openCreateModal();
-};
-
-const closeCreatePlanBoxModal = () => {
-  modalStore.closeCreateModal();
+const closeCreatePlanBoxModal = (id: number) => {
+  modalStore.closeCreateModal(id);
 };
 
 const openCreatePlanModal = (planId: number) => {
@@ -360,6 +433,26 @@ const openPlanDetailModal = (planId: number) => {
 const closePlanDetailModel = (planId: number) => {
   modalStore.closePlanDetailModal(planId);
 }
+
+const openMemberManageModel = (id: number) => {
+  modalStore.openUpdateModal(id);
+}
+
+const closeMemberManageModel = (id: number) => {
+  modalStore.closeUpdateModal(id);
+}
+
+const closeAllCreatModals = () => {
+  Object.keys(modalStore.updateModalOpen).forEach(id => {
+    modalStore.closeUpdatePlanBoxModal(parseInt(id));
+  });
+}
+
+const closeAllUpdatePlannerModals = () => {
+  Object.keys(modalStore.updateModalOpen).forEach(plannerId => {
+    modalStore.closeUpdatePlanBoxModal(parseInt(plannerId));
+  });
+};
 
 const closeAllPlanDetailModals = () => {
   Object.keys(modalStore.updateModalOpen).forEach(planId => {
@@ -414,7 +507,7 @@ const closeAllPlanDetailModals = () => {
 .title {
   @include flex-row(flex-start, center);
   @include noto-sans-kr(900, 37px, $black);
-  margin-top: 56px;
+  margin-top: 58px;
 
   .travel-date {
     @include flex-row(flex-start, center);
@@ -428,17 +521,27 @@ const closeAllPlanDetailModals = () => {
     }
 
     span {
-      @include noto-sans-kr(400, 17px, $gray500);
+      @include noto-sans-kr(400, 17px, $gray600);
     }
   }
 }
 
 .menu-container {
-  margin-left: 5px;
+  margin: 12px 0 0 5px;
+
   .icon {
-    @include noto-sans-kr(400, 19px, $gray500);
-    margin:10px 12px 0 0;
+    @include noto-sans-kr(400, 15px, $gray500);
+    font-family: "Noto Sans KR", sans-serif;
+    margin-right: 6px;
     cursor: pointer;
+  }
+
+  .text {
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 12px;
   }
 }
 
@@ -602,6 +705,36 @@ const closeAllPlanDetailModals = () => {
         font-size: 18px;
       }
     }
+  }
+}
+
+.tooltip-text {
+  @include noto-sans-kr(400, 16px, $gray25);
+  margin-bottom: 10px;
+}
+
+.search-container {
+  @include flex-column();
+
+  .search-content {
+    @include flex-row(space-between, center);
+
+    .search-text {
+      @include noto-sans-kr(500, 16px, $black);
+      margin-left: 10px;
+    }
+  }
+
+  .add-button {
+    @include custom-button($blue600);
+    padding: 6px 10px;
+    @include noto-sans-kr(400, 14px, $gray25);
+  }
+
+  .delete-button {
+    @include custom-button($red600);
+    padding: 6px 10px;
+    @include noto-sans-kr(400, 14px, $gray25);
   }
 }
 </style>

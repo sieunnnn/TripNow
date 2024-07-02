@@ -51,6 +51,6 @@
 }
 
 .modal-error-text {
-    @include noto-sans-kr(500, 16px, $red600);
-    margin-top: 5px;
+    @include noto-sans-kr(400, 14px, $red600);
+    margin-top: 2px;
 }
