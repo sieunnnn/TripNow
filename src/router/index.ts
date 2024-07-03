@@ -39,7 +39,7 @@ const routes: Array<RouteRecordRaw> = [
                 component: PlannerSearch
             },
             {
-                path: 'detail',
+                path: ':plannerId',
                 name: 'PlannerDetail',
                 component: PlannerDetail
             },
