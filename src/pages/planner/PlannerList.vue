@@ -92,8 +92,8 @@
                 <div class="modal-sub-title">여행 계획의 이름을 수정해주세요.</div>
                 <div class="modal-text">최대 20자 까지 가능해요.</div>
                 <input v-model="update[planner.plannerId].title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid(update[planner.plannerId].title)}"/>
-                <div v-if="!isTitleValid(update[planner.plannerId].title)" class="modal-error-message">제목은 최대 20자까지 가능합니다.</div>
-                <div class="modal-sub-title">여행 계획의 공개 여부를 정해주세요.</div>
+                <div v-if="!isTitleValid(update[planner.plannerId].title)" class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
+                <div class="modal-sub-title" style="margin-top: 16px">여행 계획의 공개 여부를 정해주세요.</div>
                 <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
                 <div class="modal-flex-row">
                   <input v-model="update[planner.plannerId].isPrivate" type="checkbox" />
