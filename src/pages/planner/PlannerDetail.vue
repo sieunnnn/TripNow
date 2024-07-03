@@ -2,13 +2,31 @@
   <div class="planner-detail-container">
     <div class="planner-detail-header">
       <div class="title-container">
+<!--        <n-tag v-if="planner.profileImages.length === 1" size="small" round :bordered="false" style="margin: 2px 10px 0 0">-->
+<!--          <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>-->
+<!--          1인 여행-->
+<!--        </n-tag>-->
+<!--        <n-tag v-else size="small" round :bordered="false" type="info" style="margin: 2px 10px 0 0">-->
+<!--          <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>-->
+<!--          그룹 여행-->
+<!--        </n-tag>-->
+        <div class="tag-container">
+          <n-tag v-if="!plannderDetail?.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
+            <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
+            공개중
+          </n-tag>
+          <n-tag v-else size="small" round :bordered="false" style="margin: 2px 10px 0 0">
+            <font-awesome-icon icon="fa-regular fa-eye-slash" style="margin: 0 2px 0 2px" />
+            비공개
+          </n-tag>
+        </div>
         <div class="title">
-          플래너 제목임
-          <div class="travel-date">
+          {{ plannerDetail?.title }}
+          <div class="travel-date" v-if="plannerDetail?.startDate">
             <font-awesome-icon icon="fa-regular fa-calendar" class="icon" />
-            <span style="margin-right: 5px">2024.05.16</span>
+            <span style="margin-right: 5px">{{ plannerDetail?.startDate }}</span>
             <span style="margin-right: 5px">~</span>
-            <span style="margin-right: 5px">2024.05.20</span>
+            <span style="margin-right: 5px">{{ plannerDetail?.endDate }}</span>
           </div>
         </div>
         <div class="menu-container">
@@ -16,12 +34,12 @@
           <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openUpdateModal(1)">
             계획 변경하기
           </n-gradient-text>
-          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px"/>
+          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px; margin-bottom: 2px"/>
           <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberModal(1)">
             여행 친구 초대
           </n-gradient-text>
-          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" style="font-size: 14px"/>
-          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberManageModel(2)">
+          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" style="font-size: 14px; margin-bottom: 2px"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberManageModel(2); handleGetGroupMember(plannerDetail.planerId)">
             여행 친구 관리
           </n-gradient-text>
         </div>
@@ -69,69 +87,6 @@
                     <div class="tooltip-text">📍 제주도 어쩌구 저쩌구 123-4</div>
                     <img src="../../../public/map_example.png" style="width: 200px">
                   </n-tooltip>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
-                  <span class="text">02-123-5678</span>
-                </div>
-              </div>
-            </div>
-            <div class="todo" @click="openPlanDetailModal(2)">
-              <div class="todo-title">흑돼지 조지기</div>
-              <div class="content-container">
-                <div class="content">
-                  <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
-                  <span class="text">11:30</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
-                  <span class="text">100,000</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                  <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
-                  <span class="text">02-123-5678</span>
-                </div>
-              </div>
-            </div>
-            <div class="todo">
-              <div class="todo-title">흑돼지 조지기</div>
-              <div class="content-container">
-                <div class="content">
-                  <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
-                  <span class="text">11:30</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
-                  <span class="text">100,000</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                  <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
-                  <span class="text">02-123-5678</span>
-                </div>
-              </div>
-            </div>
-            <div class="todo">
-              <div class="todo-title">흑돼지 조지기</div>
-              <div class="content-container">
-                <div class="content">
-                  <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
-                  <span class="text">11:30</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
-                  <span class="text">100,000</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                  <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
                 </div>
                 <div class="content">
                   <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
@@ -199,19 +154,27 @@
     <template #content>
       <div class="modal-sub-title">여행 친구를 초대해보세요.</div>
       <div class="modal-text">친구 초대는 최대 6명 까지 가능해요.</div>
-      <input placeholder="친구의 이메일을 입력 후 엔터를 눌러주세요." type="text" class="modal-input" style="margin-bottom: 16px"/>
+      <input
+          v-model="searchInput"
+          @input="handleUserSearch"
+          @keyup.enter="handleUserSearch"
+          placeholder="친구의 이메일을 입력 후 엔터를 눌러주세요."
+          type="email"
+          class="modal-input"
+          style="margin-bottom: 16px"/>
       <div class="search-container">
-        <div class="search-container">
+        <div v-for="user in userSearchResponse" :key="user.userId" class="search-container">
           <div class="search-content">
             <div style="display: flex; flex-direction: row; align-items: center">
               <n-avatar
                   round
                   size="small"
-                  src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                  :src="user.profileImageUrl || '../../../public/default.png'"
               />
-              <div class="search-text">김시은 (#1234)</div>
+              <div class="search-nickname">{{ user.nickname }}</div>
+              <div class="search-userTag">#{{ user.userTag }}</div>
             </div>
-            <button class="add-button">추가 하기</button>
+            <button class="add-button" @click="handleAddMember(user.userId, plannerDetail.plannerId)">추가 하기</button>
           </div>
           <hr style="width: 100%; margin: 12px 0">
         </div>
@@ -229,16 +192,17 @@
       <div class="modal-text" style="margin-bottom: 25px">⚠️ 친구를 한번 내보내면 되돌릴 수 없어요.</div>
       <div class="search-container">
         <div class="search-container">
-          <div class="search-content">
+          <div v-for="member in groupMemberResponse" :key="member.groupMemberId" class="search-content">
             <div style="display: flex; flex-direction: row; align-items: center">
               <n-avatar
                   round
                   size="small"
-                  src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
+                  :src="member.profileImageUrl || '../../../public/default.png'"
               />
-              <div class="search-text">김시은 (#1234)</div>
+              <div class="search-nickname">{{ member.nickname }}</div>
+              <div class="search-userTag">#{{ member.userTag }}</div>
             </div>
-            <button class="delete-button">내보내기</button>
+            <button class="delete-button" @click="handleDeleteMember(member.groupMemberId, plannerDetail.plannerId)">내보내기</button>
           </div>
           <hr style="width: 100%; margin: 12px 0">
         </div>
@@ -315,30 +279,20 @@
       </div>
     </template>
   </Modal>
-
-  <!-- 추후 삭제 -->
-  <Modal :isOpen="modalStore.planDetailModalOpen[2]" :close="() => closePlanDetailModel(2)">
-    <template #header>
-      흑돼지 조지기
-    </template>
-    <template #content>
-      대략적인 플랜 상세 내용 2
-    </template>
-    <template #footer>
-      <div style="margin-top: 28px">
-        <button @click="handleUpdatePlanner(1)" class="modal-button" style="margin-right: 10px">수정 하기</button>
-        <button @click="handleUpdatePlanner(1)" class="modal-button">닫기</button>
-      </div>
-    </template>
-  </Modal>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
+import Modal from "../../components/Modal.vue";
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
-import Modal from "../../components/Modal.vue";
-import DatePicker from "../../components/DatePicker.vue";
+import DatePicker from "@/components/DatePicker.vue";
+import {useRoute} from "vue-router";
+import {getPlannerDetail} from "@/api/PlannerApi.ts";
+import {searchUsers} from "@/api/SearchApi.ts";
+import {userSearchResponse} from "@/dto/SearchDto.ts";
+import {groupMemberAddRequest, groupMemberResponse} from "@/dto/GroupMemberDto.ts";
+import {addGroupMembers, deleteGroupMember, getGroupMembers} from "@/api/GroupMemberApi.ts";
 
 const message = useMessage();
 
@@ -442,11 +396,11 @@ const closeMemberManageModel = (id: number) => {
   modalStore.closeUpdateModal(id);
 }
 
-const closeAllCreatModals = () => {
-  Object.keys(modalStore.updateModalOpen).forEach(id => {
-    modalStore.closeUpdatePlanBoxModal(parseInt(id));
-  });
-}
+// const closeAllCreatModals = () => {
+//   Object.keys(modalStore.updateModalOpen).forEach(id => {
+//     modalStore.closeUpdatePlanBoxModal(parseInt(id));
+//   });
+// }
 
 const closeAllUpdatePlannerModals = () => {
   Object.keys(modalStore.updateModalOpen).forEach(plannerId => {
@@ -460,6 +414,47 @@ const closeAllPlanDetailModals = () => {
   });
 };
 
+
+// api
+const plannerDetail = ref(null);
+
+onMounted(async () => {
+  const route = useRoute();
+  const plannerId = parseInt(route.params.plannerId as string, 10);
+  const plannerData = await getPlannerDetail(plannerId);
+  plannerDetail.value = plannerData;
+});
+
+const searchInput = ref('');
+const userSearchResponse = ref<Array<userSearchResponse>>([]);
+
+const handleUserSearch = async () => {
+  const input = searchInput.value.trim();
+  if (input !== '') {
+    const userSearchData = await searchUsers(input);
+    userSearchResponse.value = userSearchData;
+  }
+};
+
+const groupMemberResponse = ref<Array<groupMemberResponse>>([]);
+
+const handleAddMember = async (userId: number, plannerId: number) => {
+  const data: groupMemberAddRequest = {
+    userId: userId
+  }
+  const groupMemberData = await addGroupMembers(data, plannerId);
+  groupMemberResponse.value = groupMemberData;
+}
+
+const handleGetGroupMember = async (plannerId: number) => {
+  const groupMemberData = await getGroupMembers(plannerId);
+  groupMemberResponse.value = groupMemberData;
+}
+
+const handleDeleteMember = async (plannerId: number, groupMemberId: number) => {
+  const groupMemberData = await deleteGroupMember(plannerId, groupMemberId);
+  groupMemberResponse.value = groupMemberData;
+}
 </script>
 
 <style scoped lang="scss">
@@ -507,7 +502,7 @@ const closeAllPlanDetailModals = () => {
 .title {
   @include flex-row(flex-start, center);
   @include noto-sans-kr(900, 37px, $black);
-  margin-top: 58px;
+  margin-top: 10px;
 
   .travel-date {
     @include flex-row(flex-start, center);
@@ -515,19 +510,19 @@ const closeAllPlanDetailModals = () => {
     margin: 18px 0 0 5px;
 
     .icon {
-      @include noto-sans-kr(400, 16px, $gray500);
-      margin: 0 8px 0 6px;
+      @include noto-sans-kr(400, 18px, $gray500);
+      margin: 0 8px 0 16px;
       color: $pink500;
     }
 
     span {
-      @include noto-sans-kr(400, 17px, $gray600);
+      @include noto-sans-kr(400, 19px, $gray600);
     }
   }
 }
 
 .menu-container {
-  margin: 12px 0 0 5px;
+  margin: 13px 0 0 5px;
 
   .icon {
     @include noto-sans-kr(400, 15px, $gray500);
@@ -717,11 +712,16 @@ const closeAllPlanDetailModals = () => {
   @include flex-column();
 
   .search-content {
-    @include flex-row(space-between, center);
+    @include flex-row(space-between, flex-end);
 
-    .search-text {
-      @include noto-sans-kr(500, 16px, $black);
+    .search-nickname {
+      @include noto-sans-kr(700, 18px, $black);
       margin-left: 10px;
+    }
+
+    .search-userTag {
+      @include noto-sans-kr(500, 14px, $gray600);
+      margin: 5px 0 0 6px;
     }
   }
 
@@ -736,5 +736,11 @@ const closeAllPlanDetailModals = () => {
     padding: 6px 10px;
     @include noto-sans-kr(400, 14px, $gray25);
   }
+}
+
+.tag-container {
+  @include flex-row();
+  font-family: "Noto Sans KR", sans-serif;
+  margin-top: 26px;
 }
 </style>

@@ -38,6 +38,20 @@ export const getUserPlannerList = async (page: number, size: number): Promise<Pa
     }
 }
 
+export const getPlannerDetail = async (plannerId: number)=> {
+    try {
+        const userStore = useUserStore();
+        const userId = userStore.userInfo?.userId;
+        console.log("userId: ", userId);
+        const response = await axiosInstance.get(`/users/${userId}/planners/${plannerId}`);
+
+        return response.data;
+
+    } catch (e: any) {
+        return e.response.data.errorCode;
+    }
+}
+
 export const createPlanner = async (data: plannerCreateRequest) => {
     try {
         const userStore = useUserStore();
