@@ -34,7 +34,7 @@ onMounted(() => {
     sex
   });
 
-  router.push('/');
+  router.push('/planners');
 });
 
 </script>
