@@ -2,6 +2,7 @@ import axiosInstance from "./AxiosInstance.ts";
 import {Page} from "../dto/PaginationDto.ts";
 import { plannerListResponse } from "../dto/PlannerDto.ts";
 import {useUserStore} from "../store/userStore.ts";
+import {userSearchResponse} from "../dto/SearchDto.ts";
 
 export const searchPlanners = async (page: number, size: number, input: string): Promise<Page<plannerListResponse>> => {
     try {
@@ -40,3 +41,17 @@ export const searchMyPlanners = async (page: number, size: number, input: string
         return e.response.data.errorCode;
     }
 };
+
+export const searchUsers = async (input: string): Promise<Array<userSearchResponse>> => {
+    try {
+        const response = await axiosInstance.get(`/search/users`, {
+            params: {
+                email: input
+            }
+        });
+        return response.data;
+
+    } catch (e: any) {
+        return e.response.data.errorCode;
+    }
+}
