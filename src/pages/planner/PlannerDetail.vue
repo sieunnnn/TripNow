@@ -2,15 +2,15 @@
   <div class="planner-detail-container">
     <div class="planner-detail-header">
       <div class="title-container">
-<!--        <n-tag v-if="planner.profileImages.length === 1" size="small" round :bordered="false" style="margin: 2px 10px 0 0">-->
-<!--          <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>-->
-<!--          1인 여행-->
-<!--        </n-tag>-->
-<!--        <n-tag v-else size="small" round :bordered="false" type="info" style="margin: 2px 10px 0 0">-->
-<!--          <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>-->
-<!--          그룹 여행-->
-<!--        </n-tag>-->
         <div class="tag-container">
+          <n-tag v-if="groupMemberResponse.length === 1" size="small" round :bordered="false" style="margin: 2px 10px 0 0">
+            <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
+            1인 여행
+          </n-tag>
+          <n-tag v-else size="small" round :bordered="false" type="info" style="margin: 2px 10px 0 0">
+            <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
+            그룹 여행
+          </n-tag>
           <n-tag v-if="!plannderDetail?.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
             <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
             공개중
@@ -31,28 +31,28 @@
         </div>
         <div class="menu-container">
           <font-awesome-icon icon="fa-regular fa-pen-to-square" class="icon"/>
-          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openUpdateModal(1)">
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openUpdateModal(1)">
             계획 변경하기
           </n-gradient-text>
-          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px; margin-bottom: 2px"/>
-          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberModal(1)">
+          <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px; margin-bottom: 1px"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openMemberModal(1)">
             여행 친구 초대
           </n-gradient-text>
-          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" style="font-size: 14px; margin-bottom: 2px"/>
-          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(152,162,179)' }" class="text" @click="openMemberManageModel(2); handleGetGroupMember(plannerDetail.planerId)">
+          <font-awesome-icon icon="fa-solid fa-user-pen" class="icon" style="font-size: 14px; margin-bottom: 1px"/>
+          <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openMemberManageModel(2); handleGetGroupMember(index)">
             여행 친구 관리
           </n-gradient-text>
         </div>
       </div>
-      <div style="margin-top: 22px">
-        <n-avatar-group :options="options" :size="65" :max="7">
-          <template #avatar="{ option: { name, src } }">
-            <n-tooltip>
-              <template #trigger>
-                <n-avatar :src="src" />
-              </template>
-              {{ name }}
-            </n-tooltip>
+      <div style="margin-top: 46px">
+        <n-avatar-group :options="processedProfileImages()" :size="65" :max="7">
+          <template #avatar="{ option }">
+            <n-avatar :src="option.src"/>
+          </template>
+          <template #rest="{ options: restOptions, rest }">
+            <n-dropdown :options="createDropdownOptions(restOptions)" placement="top">
+              <n-avatar>+{{ rest }}</n-avatar>
+            </n-dropdown>
           </template>
         </n-avatar-group>
       </div>
@@ -122,6 +122,9 @@
         </div>
       </div>
     </div>
+<!--      <div class="chattingButton">-->
+<!--        <font-awesome-icon icon="fa-solid fa-comments" class="icon"/>-->
+<!--      </div>-->
   </div>
 
   <!-- 여행 계획 수정 모달 -->
@@ -132,7 +135,7 @@
     <template #content>
       <div class="modal-sub-title">여행 계획의 이름을 수정해주세요.</div>
       <div class="modal-text">최대 20자 까지 가능해요.</div>
-      <input v-model="updateTitle.title" placeholder="대충 제목" type="text" class="modal-input"/>
+      <input v-model="updateTitle.title" :placeholder="plannerDetail?.title" type="text" class="modal-input"/>
       <div class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
       <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
       <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
@@ -176,7 +179,7 @@
             </div>
             <button class="add-button" @click="handleAddMember(user.userId, plannerDetail.plannerId)">추가 하기</button>
           </div>
-          <hr style="width: 100%; margin: 12px 0">
+          <hr v-if="index < userSearchResponse.length - 1" style="width: 100%; margin: 12px 0">
         </div>
       </div>
     </template>
@@ -202,9 +205,9 @@
               <div class="search-nickname">{{ member.nickname }}</div>
               <div class="search-userTag">#{{ member.userTag }}</div>
             </div>
-            <button class="delete-button" @click="handleDeleteMember(member.groupMemberId, plannerDetail.plannerId)">내보내기</button>
+            <button v-if="!member.isHost" class="delete-button" @click="handleDeleteMember(member.groupMemberId, plannerDetail.plannerId)">내보내기</button>
           </div>
-          <hr style="width: 100%; margin: 12px 0">
+          <hr v-if="index < groupMemberResponse.length - 1" style="width: 100%; margin: 12px 0">
         </div>
       </div>
     </template>
@@ -283,48 +286,22 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
-import Modal from "../../components/Modal.vue";
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
-import DatePicker from "@/components/DatePicker.vue";
 import {useRoute} from "vue-router";
-import {getPlannerDetail} from "@/api/PlannerApi.ts";
-import {searchUsers} from "@/api/SearchApi.ts";
-import {userSearchResponse} from "@/dto/SearchDto.ts";
-import {groupMemberAddRequest, groupMemberResponse} from "@/dto/GroupMemberDto.ts";
-import {addGroupMembers, deleteGroupMember, getGroupMembers} from "@/api/GroupMemberApi.ts";
+import {getPlannerDetail} from "../../api/PlannerApi.ts";
+import {searchUsers} from "../../api/SearchApi.ts";
+import {userSearchResponse} from "../../dto/SearchDto.ts";
+import {groupMemberAddRequest, groupMemberResponse} from "../../dto/GroupMemberDto.ts";
+import {addGroupMembers, deleteGroupMember, getGroupMembers} from "../../api/GroupMemberApi.ts";
+import {useUserStore} from "@/store/userStore.ts";
+
+import Modal from "../../components/Modal.vue";
+import DatePicker from "../../components/DatePicker.vue";
 
 const message = useMessage();
-
-const options = ref([
-  {
-    name: 'Leonardo DiCaprio',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
-  },
-  {
-    name: 'Jennifer Lawrence',
-    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-  },
-  {
-    name: 'Audrey Hepburn',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
-  },
-  {
-    name: 'Anne Hathaway',
-    src: 'https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg'
-  },
-  {
-    name: 'Taylor Swift',
-    src: 'https://gw.alipayobjects.com/zos/antfincdn/aPkFc8Sj7n/method-draw-image.svg'
-  }
-]);
-
-const createDropdownOptions = (options: Array<{ name: string; src: string }>) => {
-  return options.map((option) => ({
-    key: option.name,
-    label: option.name
-  }));
-};
+const userStore = useUserStore();
+const route = useRoute();
 
 // 모달
 const modalStore = useModalStore();
@@ -396,12 +373,6 @@ const closeMemberManageModel = (id: number) => {
   modalStore.closeUpdateModal(id);
 }
 
-// const closeAllCreatModals = () => {
-//   Object.keys(modalStore.updateModalOpen).forEach(id => {
-//     modalStore.closeUpdatePlanBoxModal(parseInt(id));
-//   });
-// }
-
 const closeAllUpdatePlannerModals = () => {
   Object.keys(modalStore.updateModalOpen).forEach(plannerId => {
     modalStore.closeUpdatePlanBoxModal(parseInt(plannerId));
@@ -417,13 +388,33 @@ const closeAllPlanDetailModals = () => {
 
 // api
 const plannerDetail = ref(null);
+const index = ref<number | null>(null);
 
 onMounted(async () => {
-  const route = useRoute();
-  const plannerId = parseInt(route.params.plannerId as string, 10);
-  const plannerData = await getPlannerDetail(plannerId);
-  plannerDetail.value = plannerData;
+  try {
+    await userStore.fetchUserInfo();
+
+    if (userStore.isUserLoggedIn) {
+      const plannerId = parseInt(route.params.plannerId as string, 10);
+      index.value = plannerId;
+      await fetchPlannerData(plannerId);
+    }
+  } catch (error) {
+    console.error(error);
+  }
 });
+
+const fetchPlannerData = async (plannerId: number) => {
+  try {
+    const plannerData = await getPlannerDetail(plannerId);
+    plannerDetail.value = plannerData;
+
+    const groupMemberData = await getGroupMembers(plannerId);
+    groupMemberResponse.value = groupMemberData;
+  } catch (error) {
+    console.error('Error fetching planner data:', error);
+  }
+};
 
 const searchInput = ref('');
 const userSearchResponse = ref<Array<userSearchResponse>>([]);
@@ -449,12 +440,30 @@ const handleAddMember = async (userId: number, plannerId: number) => {
 const handleGetGroupMember = async (plannerId: number) => {
   const groupMemberData = await getGroupMembers(plannerId);
   groupMemberResponse.value = groupMemberData;
+  console.log(groupMemberResponse.value);
 }
 
 const handleDeleteMember = async (plannerId: number, groupMemberId: number) => {
   const groupMemberData = await deleteGroupMember(plannerId, groupMemberId);
   groupMemberResponse.value = groupMemberData;
 }
+
+const defaultImage = '../../public/default.png';
+
+const processedProfileImages = () => {
+  if (!groupMemberResponse.value || !Array.isArray(groupMemberResponse.value)) {
+    return [];
+  }
+  return groupMemberResponse.value.map(member => {
+    return { src: member.profileImageUrl ? member.profileImageUrl : defaultImage };
+  });
+};
+
+const createDropdownOptions = (restOptions) => {
+  return restOptions.map(option => {
+    return { label: option.src, value: option.src };
+  });
+};
 </script>
 
 <style scoped lang="scss">
@@ -742,5 +751,23 @@ const handleDeleteMember = async (plannerId: number, groupMemberId: number) => {
   @include flex-row();
   font-family: "Noto Sans KR", sans-serif;
   margin-top: 26px;
+}
+
+.chattingButton {
+  @include size(80px, 80px);
+  border-radius: 50%;
+  background-image: url("../../../public/background1.jpg");
+  background-repeat : no-repeat;
+  background-size : cover;
+  @include flex-column(center, center);
+  position: fixed;
+  top: 88%;
+  right: 2%;
+  z-index: 999;
+  box-shadow: 0px 2px 21px 3px $gray400;
+
+  .icon {
+    @include noto-sans-kr(400, 30px, $gray25);
+  }
 }
 </style>

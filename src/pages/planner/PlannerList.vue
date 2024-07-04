@@ -379,7 +379,7 @@ onMounted(async () => {
     }
 
   } catch (error) {
-    console.error('Error loading user information:', error);
+    console.error(error);
   }
 });
 
