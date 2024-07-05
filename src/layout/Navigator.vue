@@ -14,11 +14,11 @@
         />
         <div class="nickname">
             {{ userInfo?.nickname }}
-          <div v-if="userInfo" style="font-size: 14px; font-weight: 200; margin-top: 6px">
-            <div># {{ userInfo?.userTag }}</div>
-          </div>
+          <span v-if="userInfo" style="font-size: 14px; font-weight: 200; margin-top: 6px">
+            # {{ userInfo?.userTag }}
+          </span>
           <div class="alert" @click="handleClick">
-            <font-awesome-icon icon="fa-regular fa-bell" style="margin-right: 5px" class="alert"/>
+            <font-awesome-icon icon="fa-regular fa-bell" style="margin: 6px 5px 0 0" class="alert"/>
             <span>알림 확인하기</span>
           </div>
         </div>

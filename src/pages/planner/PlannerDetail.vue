@@ -32,7 +32,7 @@
         <div class="menu-container">
           <font-awesome-icon icon="fa-regular fa-pen-to-square" class="icon"/>
           <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openUpdateModal(1)">
-            계획 변경하기
+            계획 변경
           </n-gradient-text>
           <font-awesome-icon icon="fa-solid fa-user-plus" class="icon" style="font-size: 14px; margin-bottom: 1px"/>
           <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openMemberModal(1)">
@@ -42,6 +42,69 @@
           <n-gradient-text :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openMemberManageModel(2); handleGetGroupMember(index)">
             여행 친구 관리
           </n-gradient-text>
+          <font-awesome-icon v-if="groupMemberResponse.length === 1" icon="fa-solid fa-comment-dots" class="icon" />
+          <n-gradient-text v-if="groupMemberResponse.length === 1" :gradient="{ deg: 150, from: 'rgb(29,41,57)', to: 'rgb(71,84,103)' }" class="text" @click="openChatting(true)">
+            대화 하기
+          </n-gradient-text>
+          <n-drawer v-model:show="chattingStatus" :width="480" style="padding-left: 12px">
+            <n-drawer-content :native-scrollbar="false" :width="996">
+              <div class="chatting-container">
+<!--                <div class="chatting-title">{{ plannerDetail?.title }} 대화방</div>-->
+                <div class="chatting-member-container">
+                  <n-avatar-group :options="processedProfileImages()" :size="48" :max="7" style="margin-top: 2px">
+                    <template #avatar="{ option }">
+                      <n-avatar :src="option.src"/>
+                    </template>
+                    <template #rest="{ options: restOptions, rest }">
+                      <n-dropdown :options="createDropdownOptions(restOptions)" placement="top">
+                        <n-avatar>+{{ rest }}</n-avatar>
+                      </n-dropdown>
+                    </template>
+                  </n-avatar-group>
+                </div>
+<!--                <hr style="width: 100%; margin: 12px 0">-->
+                <div class="message-container">
+                  <div class="message">
+                    <div class="send-user">
+                      <div class="user-container">
+                        <div>
+                          <span class="message-nickname">시은</span>
+                          <span class="message-tag">#1234</span>
+                        </div>
+                        <div class="message-bubble">
+                          안녀어어엉~!~!~!
+                        </div>
+                      </div>
+                    </div>
+                    <div class="receive-user">
+                      <n-avatar round :size="40" :src="profileImageUrl"/>
+                      <div class="receive-container">
+                        <div class="user-container">
+                          <span class="message-nickname">누군가</span>
+                          <span class="message-tag">#2837</span>
+                        </div>
+                        <div class="message-bubble">
+                          안녕하세여어엉
+                        </div>
+                      </div>
+                    </div>
+                    <div class="receive-user">
+                      <n-avatar round :size="40" :src="profileImageUrl"/>
+                      <div class="receive-container">
+                        <div class="user-container">
+                          <span class="message-nickname">누군가</span>
+                          <span class="message-tag">#2837</span>
+                        </div>
+                        <div class="message-bubble">
+                          안녕하세여어엉
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </n-drawer-content>
+          </n-drawer>
         </div>
       </div>
       <div style="margin-top: 46px">
@@ -126,7 +189,6 @@
 <!--        <font-awesome-icon icon="fa-solid fa-comments" class="icon"/>-->
 <!--      </div>-->
   </div>
-
   <!-- 여행 계획 수정 모달 -->
   <Modal :isOpen="modalStore.updateModalOpen[1]" :close="() => closeUpdateModal(1)">
     <template #header>
@@ -285,7 +347,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
 import {useRoute} from "vue-router";
@@ -294,7 +356,7 @@ import {searchUsers} from "../../api/SearchApi.ts";
 import {userSearchResponse} from "../../dto/SearchDto.ts";
 import {groupMemberAddRequest, groupMemberResponse} from "../../dto/GroupMemberDto.ts";
 import {addGroupMembers, deleteGroupMember, getGroupMembers} from "../../api/GroupMemberApi.ts";
-import {useUserStore} from "@/store/userStore.ts";
+import {useUserStore} from "../../store/userStore.ts";
 
 import Modal from "../../components/Modal.vue";
 import DatePicker from "../../components/DatePicker.vue";
@@ -302,6 +364,18 @@ import DatePicker from "../../components/DatePicker.vue";
 const message = useMessage();
 const userStore = useUserStore();
 const route = useRoute();
+const chattingStatus = ref(false);
+
+// 채팅방
+const openChatting = (status: boolean) => {
+  chattingStatus.value = status;
+}
+
+// 프로필 이미지
+const profileImageUrl = computed(() => {
+  const defaultImage = '../../public/default.png';
+  return userStore.userInfo?.profileImgUrl === 'Default' ? defaultImage : userStore.userInfo?.profileImgUrl;
+});
 
 // 모달
 const modalStore = useModalStore();
@@ -755,19 +829,103 @@ const createDropdownOptions = (restOptions) => {
 
 .chattingButton {
   @include size(80px, 80px);
+  @include flex-column(center, center);
   border-radius: 50%;
   background-image: url("../../../public/background1.jpg");
   background-repeat : no-repeat;
   background-size : cover;
-  @include flex-column(center, center);
   position: fixed;
-  top: 88%;
-  right: 2%;
+  top: 90%;
+  right: 1%;
   z-index: 999;
   box-shadow: 0px 2px 21px 3px $gray400;
 
   .icon {
     @include noto-sans-kr(400, 30px, $gray25);
+  }
+}
+
+.chatting-container {
+  @include flex-column();
+  padding: 20px 10px 0 0;
+
+  .chatting-title {
+    @include noto-sans-kr(800, 30px, $black);
+  }
+
+  .chatting-member-container {
+    @include flex-row(flex-end, center);
+  }
+}
+
+.message-container {
+  padding-top: 40px;
+  .message {
+    @include flex-column(100%, 100%);
+
+    .send-user {
+      @include flex-row(flex-start, flex-start);
+      @include size(100%, 100%);
+
+      .user-container {
+        @include flex-column(flex-start, flex-end);
+        @include size(100%, auto);
+
+        .message-nickname {
+          @include noto-sans-kr(700, 16px, $black);
+          margin-left: 6px;
+        }
+
+        .message-tag {
+          @include noto-sans-kr(400, 14px, $gray700);
+          margin-left: 4px;
+        }
+
+        .message-bubble {
+          @include size(68%, auto);
+          @include noto-sans-kr(400, 16px, $gray25);
+          margin-left: 7px;
+          padding: 12px 20px 15px 20px;
+          background-color: $blue600;
+          border-radius: 18px 0px 18px 18px;
+        }
+      }
+    }
+
+    .receive-user {
+      @include flex-row(flex-start, flex-start);
+      @include size(100%,auto);
+      margin-top: 20px;
+
+        .receive-container {
+          @include flex-column(flex-start, flex-start);
+          @include size(90%,auto);
+
+          .user-container {
+            @include flex-row(flex-start, flex-end);
+
+            .message-nickname {
+              @include noto-sans-kr(700, 16px, $black);
+              margin-left: 6px;
+            }
+
+            .message-tag {
+              @include noto-sans-kr(400, 14px, $gray700);
+              margin-left: 4px;
+            }
+          }
+
+          .message-bubble {
+            @include size(80%, auto);
+            @include noto-sans-kr(400, 16px, $black);
+            margin-left: 7px;
+            padding: 12px 20px 15px 20px;
+            background-color: $gray200;
+            border-radius: 0 18px 18px 18px;
+          }
+        }
+      }
+
   }
 }
 </style>
