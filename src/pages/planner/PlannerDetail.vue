@@ -64,43 +64,35 @@
                 </div>
 <!--                <hr style="width: 100%; margin: 12px 0">-->
                 <div class="message-container">
-                  <div class="message">
-                    <div class="send-user">
+                  <div v-for="(msg, index) in messages" :key="index" class="message">
+                    <div v-if="msg.userId === userStore.userInfo?.userId" class="send-user">
                       <div class="user-container">
                         <div>
-                          <span class="message-nickname">시은</span>
-                          <span class="message-tag">#1234</span>
+                          <span class="message-nickname">{{ msg.nickname }}</span>
+                          <span class="message-tag">#{{ msg.userTag }}</span>
                         </div>
                         <div class="message-bubble">
-                          안녀어어엉~!~!~!
+                          {{ msg.message }}
                         </div>
                       </div>
                     </div>
-                    <div class="receive-user">
+                    <div v-else class="receive-user">
                       <n-avatar round :size="40" :src="profileImageUrl"/>
                       <div class="receive-container">
                         <div class="user-container">
-                          <span class="message-nickname">누군가</span>
-                          <span class="message-tag">#2837</span>
+                          <span class="message-nickname">{{ msg.nickname }}</span>
+                          <span class="message-tag">#{{ msg.userTag }}</span>
                         </div>
                         <div class="message-bubble">
-                          안녕하세여어엉
-                        </div>
-                      </div>
-                    </div>
-                    <div class="receive-user">
-                      <n-avatar round :size="40" :src="profileImageUrl"/>
-                      <div class="receive-container">
-                        <div class="user-container">
-                          <span class="message-nickname">누군가</span>
-                          <span class="message-tag">#2837</span>
-                        </div>
-                        <div class="message-bubble">
-                          안녕하세여어엉
+                          {{ msg.message }}
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
+                <div class="input-container">
+                  <input type="text" v-model="chatValue.message" placeholder="대화 내용을 입력해주세요." class="chatting-input">
+                  <button @click="handleMessage" type="button">전송하기</button>
                 </div>
               </div>
             </n-drawer-content>
@@ -363,6 +355,8 @@ import {useUserStore} from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
 import DatePicker from "../../components/DatePicker.vue";
 import axios from "axios";
+import {sendMessage, setClient} from "@/api/ChattingApi.ts";
+import {chatDto} from "@/dto/ChattingDto.ts";
 
 const message = useMessage();
 const userStore = useUserStore();
@@ -580,6 +574,7 @@ const connect = async() => {
         connected.value = true;
         console.log("connected success");
         subscribe(`/sub/planner/${plannerId.value}`);
+        setClient(client.value);
       }
 
       client.value.onDisconnect = () => {
@@ -606,10 +601,41 @@ const subscribe = (destination) => {
   if (client.value) {
     client.value.subscribe(destination, (message) => {
       console.log("message:", message.body);
+      const parsedMessage = JSON.parse(message.body);
+      if (parsedMessage.type === "chat") {
+        console.log("chat massage:", parsedMessage);
+        handleReceivedMessage(parsedMessage.message);
+      }
     });
   } else {
     console.log("Client is not connected");
   }
+};
+
+// 메세지 보내기
+const chatValue = ref({
+  message: ''
+})
+
+const handleMessage = async () => {
+  const data: chatDto = {
+    userId: userStore.userInfo?.userId,
+    userTag: userStore.userInfo?.userTag,
+    nickname: userStore.userInfo?.nickname,
+    profileImageUrl: userStore.userInfo?.profileImgUrl,
+    message: chatValue.value.message
+  }
+
+  sendMessage(plannerId.value, data);
+  chatValue.value.message = '';
+}
+
+// 수신한 메시지 처리
+const messages = ref<Array<any>>([]);
+
+const handleReceivedMessage = (message: any) => {
+  messages.value.push(message);
+  console.log("Processing message:", message);
 };
 
 </script>
@@ -905,7 +931,6 @@ const subscribe = (destination) => {
   @include size(80px, 80px);
   @include flex-column(center, center);
   border-radius: 50%;
-  background-image: url("../../../public/background1.jpg");
   background-repeat : no-repeat;
   background-size : cover;
   position: fixed;
@@ -920,7 +945,7 @@ const subscribe = (destination) => {
 }
 
 .chatting-container {
-  @include flex-column();
+  @include flex-column(flex-start, space-between);
   padding: 20px 10px 0 0;
 
   .chatting-title {
@@ -930,10 +955,31 @@ const subscribe = (destination) => {
   .chatting-member-container {
     @include flex-row(flex-end, center);
   }
+
+  .input-container {
+    @include flex-row();
+
+    input {
+      @include custom-input();
+      width: 80%;
+      margin-right: 15px;
+    }
+
+    button {
+      @include custom-button();
+      @include noto-sans-kr(400, 14px, $gray25);
+      width: 80px;
+      height: 36px;
+      border-radius: 6px;
+    }
+  }
 }
 
 .message-container {
-  padding-top: 40px;
+  //background-color: orange;
+  padding: 40px 0 10px 0;
+  height: 84vh;
+  overflow-y: scroll;
   .message {
     @include flex-column(100%, 100%);
 
@@ -968,38 +1014,42 @@ const subscribe = (destination) => {
 
     .receive-user {
       @include flex-row(flex-start, flex-start);
-      @include size(100%,auto);
+      @include size(100%, auto);
       margin-top: 20px;
 
-        .receive-container {
-          @include flex-column(flex-start, flex-start);
-          @include size(90%,auto);
+      .receive-container {
+        @include flex-column(flex-start, flex-start);
+        @include size(90%, auto);
 
-          .user-container {
-            @include flex-row(flex-start, flex-end);
+        .user-container {
+          @include flex-row(flex-start, flex-end);
 
-            .message-nickname {
-              @include noto-sans-kr(700, 16px, $black);
-              margin-left: 6px;
-            }
-
-            .message-tag {
-              @include noto-sans-kr(400, 14px, $gray700);
-              margin-left: 4px;
-            }
+          .message-nickname {
+            @include noto-sans-kr(700, 16px, $black);
+            margin-left: 6px;
           }
 
-          .message-bubble {
-            @include size(80%, auto);
-            @include noto-sans-kr(400, 16px, $black);
-            margin-left: 7px;
-            padding: 12px 20px 15px 20px;
-            background-color: $gray200;
-            border-radius: 0 18px 18px 18px;
+          .message-tag {
+            @include noto-sans-kr(400, 14px, $gray700);
+            margin-left: 4px;
           }
         }
-      }
 
+        .message-bubble {
+          @include size(80%, auto);
+          @include noto-sans-kr(400, 16px, $black);
+          margin-left: 7px;
+          padding: 12px 20px 15px 20px;
+          background-color: $gray200;
+          border-radius: 0 18px 18px 18px;
+        }
+      }
+    }
   }
 }
+
+.message-container::-webkit-scrollbar {
+  display: none;
+}
+
 </style>
