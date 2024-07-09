@@ -469,6 +469,7 @@ const closeAllPlanDetailModals = () => {
 // api
 const plannerDetail = ref(null);
 const index = ref<number | null>(null);
+const plannerId = ref();
 
 onMounted(async () => {
   try {
@@ -476,9 +477,9 @@ onMounted(async () => {
     await connect();
 
     if (userStore.isUserLoggedIn) {
-      const plannerId = parseInt(route.params.plannerId as string, 10);
+      plannerId.value = route.params.plannerId;
       index.value = plannerId;
-      await fetchPlannerData(plannerId);
+      await fetchPlannerData(plannerId.value);
     }
 
   } catch (error) {
@@ -578,6 +579,7 @@ const connect = async() => {
       client.value.onConnect = () => {
         connected.value = true;
         console.log("connected success");
+        subscribe(`/sub/planner/${plannerId.value}`);
       }
 
       client.value.onDisconnect = () => {
@@ -598,6 +600,17 @@ const connect = async() => {
     return;
   }
 }
+
+// 구독
+const subscribe = (destination) => {
+  if (client.value) {
+    client.value.subscribe(destination, (message) => {
+      console.log("message:", message.body);
+    });
+  } else {
+    console.log("Client is not connected");
+  }
+};
 
 </script>
 
