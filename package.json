@@ -9,23 +9,24 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/sockjs-client": "^1.5.4",
     "naive-ui": "^2.38.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"
   },
   "dependencies": {
-    "@stomp/stompjs": "^7.0.0",
-    "sockjs-client": "^1.6.1",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.2",
     "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@stomp/stompjs": "^7.0.0",
     "@vitejs/plugin-vue": "^5.0.5",
     "axios": "^1.7.2",
     "flatpickr": "^4.6.13",
     "pinia": "^2.1.7",
     "sass": "^1.77.4",
     "sass-loader": "^10.5.2",
+    "sockjs-client": "^1.6.1",
     "vue": "^3.4.29",
     "vue-router": "^4.0.13",
     "vuestic-ui": "^1.9.11"

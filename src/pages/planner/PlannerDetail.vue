@@ -356,26 +356,32 @@ import {searchUsers} from "../../api/SearchApi.ts";
 import {userSearchResponse} from "../../dto/SearchDto.ts";
 import {groupMemberAddRequest, groupMemberResponse} from "../../dto/GroupMemberDto.ts";
 import {addGroupMembers, deleteGroupMember, getGroupMembers} from "../../api/GroupMemberApi.ts";
-import {useUserStore} from "../../store/userStore.ts";
+import {Client} from "@stomp/stompjs";
+import SockJS from 'sockjs-client';
 
+import {useUserStore} from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
 import DatePicker from "../../components/DatePicker.vue";
+import axios from "axios";
 
 const message = useMessage();
 const userStore = useUserStore();
 const route = useRoute();
 const chattingStatus = ref(false);
 
+
 // 채팅방
 const openChatting = (status: boolean) => {
   chattingStatus.value = status;
 }
+
 
 // 프로필 이미지
 const profileImageUrl = computed(() => {
   const defaultImage = '../../public/default.png';
   return userStore.userInfo?.profileImgUrl === 'Default' ? defaultImage : userStore.userInfo?.profileImgUrl;
 });
+
 
 // 모달
 const modalStore = useModalStore();
@@ -467,12 +473,14 @@ const index = ref<number | null>(null);
 onMounted(async () => {
   try {
     await userStore.fetchUserInfo();
+    await connect();
 
     if (userStore.isUserLoggedIn) {
       const plannerId = parseInt(route.params.plannerId as string, 10);
       index.value = plannerId;
       await fetchPlannerData(plannerId);
     }
+
   } catch (error) {
     console.error(error);
   }
@@ -538,6 +546,59 @@ const createDropdownOptions = (restOptions) => {
     return { label: option.src, value: option.src };
   });
 };
+
+
+// 웹소켓
+// 연결
+const connected = ref(false);
+const client = ref<Client | null>(null);
+const accessToken = localStorage.getItem("Authorization");
+const connectionUrl = "http://localhost:8080/ws?token=" + accessToken;
+
+const connect = async() => {
+  try {
+    const response = await axios.get(connectionUrl);
+    if (response.status === 200) {
+      client.value = new Client({
+        webSocketFactory: () => {
+          const socket = new SockJS(connectionUrl);
+          socket.onclose = (event) => {
+            console.log("socket closed", event);
+          };
+          return socket;
+        },
+        debug: (str) => {
+          console.log(str);
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000,
+      });
+
+      client.value.onConnect = () => {
+        connected.value = true;
+        console.log("connected success");
+      }
+
+      client.value.onDisconnect = () => {
+        connected.value = false;
+        console.log("socket closed");
+      }
+
+      client.value.onStompError = (frame) => {
+        console.error(frame.headers['message']);
+        console.error(frame.body);
+      };
+
+      client.value.activate();
+    }
+
+  } catch (e) {
+    console.log(e);
+    return;
+  }
+}
+
 </script>
 
 <style scoped lang="scss">
