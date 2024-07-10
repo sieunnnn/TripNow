@@ -120,23 +120,37 @@
               <div class="text">{{ detail.planDate }}</div>
               <n-dropdown
                   :options="dateOptions"
+                  size="large"
                   @select="(key: any) => handleDateSelect(key, detail.planBoxId)"
                   placement="bottom-end"
               >
                 <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="icon" />
               </n-dropdown>
             </div>
-            <!-- 여행 날짜 수정/삭제 모달 -->
+            <!-- 여행 날짜 수정 모달 -->
             <Modal :isOpen="modalStore.updatePlanBoxModalOpen[detail.planBoxId]" :close="() => closeUpdatePlanBoxModal(detail.planBoxId)">
               <template #header>
                 여행 날짜 수정하기
               </template>
               <template #content>
                 <div class="modal-sub-title">변경할 날짜를 선택해주세요.</div>
-                <input type="date" class="modal-input" style="width: 100%; margin: 12px 0 18px 0"/>
+                <input v-model="planBox.updateDate" type="date" class="modal-input" style="width: 100%; margin: 12px 0 28px 0"/>
               </template>
               <template #footer>
-                <button @click="handleUpdatePlanner(1)" class="modal-button">수정 하기</button>
+                <button @click="handleUpdatePlanner(detail.planBoxId)" class="modal-button">수정 하기</button>
+              </template>
+            </Modal>
+            <!-- 여행 날짜 삭제 모달 -->
+            <Modal :isOpen="modalStore.deletePlanBoxModelOpen[detail.planBoxId]" :close="() => closeDeletePlanBoxModal(detail.planBoxId)">
+              <template #header>
+                여행 날짜 삭제하기
+              </template>
+              <template #content>
+                <div class="modal-text">한번 날짜를 삭제하면 되돌릴 수 없어요. </div>
+                <div class="modal-text">삭제 하려면 아래 버튼을 눌러주세요.</div>
+              </template>
+              <template #footer>
+                <button @click="handleDeletePlanner(detail.planBoxId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
               </template>
             </Modal>
           </div>
@@ -361,9 +375,15 @@ import SockJS from 'sockjs-client';
 import {useUserStore} from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
 import axios from "axios";
-import {createPlanBox, sendMessage, setClient} from "../../api/websocket/WebsocketPublish.ts";
+import {
+  createPlanBox,
+  deletePlanBox,
+  sendMessage,
+  setClient,
+  updatePlanBox
+} from "../../api/websocket/WebsocketPublish.ts";
 import {chatDto} from "../../dto/ChattingDto.ts";
-import {planBoxCreateRequest} from "../../dto/PlannerDto.ts";
+import {planBoxCreateRequest, planBoxUpdateRequest, planBoxUpdeteRequest} from "../../dto/PlannerDto.ts";
 
 const message = useMessage();
 const userStore = useUserStore();
@@ -408,14 +428,6 @@ const closeUpdateModal = (id: number) => {
   modalStore.closeUpdateModal(id);
 }
 
-const openUpdatePlanBoxModal = (planBoxId: number) => {
-  modalStore.openUpdatePlanBoxModal(planBoxId);
-};
-
-const closeUpdatePlanBoxModal = (planBoxId: number) => {
-  modalStore.closeUpdatePlanBoxModal(planBoxId);
-}
-
 const openCreatePlanBoxModal = (id: number) => {
   modalStore.openCreateModal(id);
 };
@@ -423,6 +435,22 @@ const openCreatePlanBoxModal = (id: number) => {
 const closeCreatePlanBoxModal = (id: number) => {
   modalStore.closeCreateModal(id);
 };
+
+const openUpdatePlanBoxModal = (planBoxId: number) => {
+  modalStore.openUpdatePlanBoxModal(planBoxId);
+};
+
+const closeUpdatePlanBoxModal = (planBoxId: number) => {
+  modalStore.closeUpdatePlanBoxModal(planBoxId);
+};
+
+const openDeletePlanBoxModal = (planBoxId: number) => {
+  modalStore.openDeletePlanBoxModal(planBoxId);
+};
+
+const closeDeletePlanBoxModal = (planBoxId: number) => {
+  modalStore.closeDeletePlanBoxModal(planBoxId);
+}
 
 const openCreatePlanModal = (planId: number) => {
   modalStore.openCreatePlanModal(planId);
@@ -545,6 +573,7 @@ const createDropdownOptions = (restOptions) => {
   });
 };
 
+
 // 드롭다운
 const dateOptions = [
   {
@@ -559,12 +588,13 @@ const dateOptions = [
 
 const handleDateSelect = (key: string | number, planBoxId:number) => {
   if (key === 'edit') {
-    openUpdatePlanBoxModal(planBoxId); // 적절한 수정 모달을 여는 함수 호출
+    openUpdatePlanBoxModal(planBoxId);
+
   } else if (key === 'delete') {
-    // 삭제하기 로직
-    // 삭제를 수행하는 함수 호출
+    openDeletePlanBoxModal(planBoxId);
   }
 };
+
 
 // 웹소켓
 // 연결
@@ -629,7 +659,11 @@ const subscribe = (destination) => {
       if (parsedMessage.type === "chat") {
         handleReceivedMessage(parsedMessage.message);
 
-      } else if (parsedMessage.type === "create-planBox") {
+      } else if (
+          parsedMessage.type === "create-planBox" ||
+          parsedMessage.type === "update-planBox" ||
+          parsedMessage.type === "delete-planBox"
+      ) {
         handlePlannerDetailResponse(parsedMessage.message);
       }
     });
@@ -665,7 +699,8 @@ const handleReceivedMessage = (message: any) => {
 
 // 플랜박스 생성하기
 const planBox = ref({
-  date: new Date()
+  date: new Date(),
+  updateDate: new Date()
 });
 
 const handleCreatePlanBox = async () => {
@@ -673,9 +708,23 @@ const handleCreatePlanBox = async () => {
     planDate: planBox.value.date
   };
 
-  await createPlanBox(plannerId.value, data);
+  createPlanBox(plannerId.value, data);
   closeCreatePlanBoxModal(2);
 };
+
+const handleUpdatePlanner = async (planBoxId: number) => {
+  const data: planBoxUpdateRequest = {
+    planDate: planBox.value.updateDate
+  };
+
+  updatePlanBox(plannerId.value, planBoxId, data);
+  closeUpdatePlanBoxModal(planBoxId);
+};
+
+const handleDeletePlanner = async (planBoxId: number) => {
+  deletePlanBox(plannerId.value, planBoxId);
+  closeDeletePlanBoxModal(planBoxId);
+}
 
 const plannerDetails = ref<Array<any>>([]);
 
@@ -683,7 +732,6 @@ const handlePlannerDetailResponse = (newPlannerDetails: any) => {
   plannerDetails.value = newPlannerDetails;
   console.log(plannerDetails.value);
 };
-
 </script>
 
 <style scoped lang="scss">

@@ -5,7 +5,11 @@ export interface plannerCreateRequest {
 }
 
 export interface planBoxCreateRequest {
-    planDate: string;
+    planDate: Date;
+}
+
+export interface planBoxUpdateRequest {
+    planDate: Date;
 }
 
 export interface planCreateRequest {
