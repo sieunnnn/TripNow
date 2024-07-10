@@ -17,3 +17,15 @@ export const sendMessage = (plannerId: number, chatDto: any): void => {
         console.log("Client is not connected");
     }
 };
+
+export const createPlanBox = (plannerId: number, planBoxCreateRequest: any): void => {
+    if (client && client.connected) {
+        const destination = `/pub/planner/${plannerId}/create`;
+        client.publish({
+            destination,
+            body: JSON.stringify(planBoxCreateRequest),
+        });
+    } else {
+        console.log("Client is not connected");
+    }
+}

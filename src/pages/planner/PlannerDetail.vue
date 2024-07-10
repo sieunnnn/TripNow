@@ -113,66 +113,87 @@
       </div>
     </div>
     <div class="planner-detail-box">
-      <div class="date-container">
-        <div class="date-box">
-          <div class="date">
-            <div class="text">2024.05.16</div>
-            <font-awesome-icon @click="openUpdatePlanBoxModal(1)" icon="fa-regular fa-pen-to-square" class="icon"/>
+      <div class="planner-date-box">
+        <div v-for="(detail, index) in plannerDetails" :key="index" class="date-container">
+          <div class="date-box">
+            <div class="date">
+              <div class="text">{{ detail.planDate }}</div>
+              <n-dropdown
+                  :options="dateOptions"
+                  @select="(key: any) => handleDateSelect(key, detail.planBoxId)"
+                  placement="bottom-end"
+              >
+                <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="icon" />
+              </n-dropdown>
+            </div>
+            <!-- 여행 날짜 수정/삭제 모달 -->
+            <Modal :isOpen="modalStore.updatePlanBoxModalOpen[detail.planBoxId]" :close="() => closeUpdatePlanBoxModal(detail.planBoxId)">
+              <template #header>
+                여행 날짜 수정하기
+              </template>
+              <template #content>
+                <div class="modal-sub-title">변경할 날짜를 선택해주세요.</div>
+                <input type="date" class="modal-input" style="width: 100%; margin: 12px 0 18px 0"/>
+              </template>
+              <template #footer>
+                <button @click="handleUpdatePlanner(1)" class="modal-button">수정 하기</button>
+              </template>
+            </Modal>
           </div>
-        </div>
-        <div class="todo-list">
-          <div class="todo-container">
-            <div class="todo" @click="openPlanDetailModal(1)">
-              <div class="todo-title">흑돼지 조지기</div>
-              <div class="content-container">
-                <div class="content">
-                  <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
-                  <span class="text">11:30</span>
+          <div class="todo-list">
+            <div class="todo-container">
+              <div class="todo"  v-for="plan in detail.planResponses" :key="plan.planId" @click="openPlanDetailModal(1)">
+                <div class="todo-title">{{ plan.title }}</div>
+                <div class="content-container">
+                  <div class="content">
+                    <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
+                    <span class="text">11:30</span>
+                  </div>
+                  <div class="content">
+                    <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
+                    <span class="text">100,000</span>
+                  </div>
+                  <div class="content">
+                    <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
+                    <n-tooltip trigger="hover" placement="right-start" style="padding: 25px 20px; border-radius: 8px">
+                      <template #trigger>
+                        <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
+                      </template>
+                      <div class="tooltip-text">📍 제주도 어쩌구 저쩌구 123-4</div>
+                      <img src="../../../public/map_example.png" style="width: 200px">
+                    </n-tooltip>
+                  </div>
+                  <div class="content">
+                    <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
+                    <span class="text">02-123-5678</span>
+                  </div>
                 </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
-                  <span class="text">100,000</span>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                  <n-tooltip trigger="hover" placement="right-start" style="padding: 25px 20px; border-radius: 8px">
-                    <template #trigger>
-                      <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
-                    </template>
-                    <div class="tooltip-text">📍 제주도 어쩌구 저쩌구 123-4</div>
-                    <img src="../../../public/map_example.png" style="width: 200px">
-                  </n-tooltip>
-                </div>
-                <div class="content">
-                  <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
-                  <span class="text">02-123-5678</span>
+              </div>
+              <div class="todo-create">
+                <div class="content-container" @click="openCreatePlanModal(1)">
+                  <font-awesome-icon icon="fa-regular fa-square-check" class="icon"/>
+                  <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
+                    일정 추가하기
+                  </n-gradient-text>
                 </div>
               </div>
             </div>
-            <div class="todo-create">
-              <div class="content-container" @click="openCreatePlanModal(1)">
-                <font-awesome-icon icon="fa-regular fa-square-check" class="icon"/>
-                <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
-                  일정 추가하기
-                </n-gradient-text>
-              </div>
+          </div>
+          <div class="budget-box">
+            <div class="budget">
+              <div class="text">200,000</div>
+              <font-awesome-icon icon="fa-solid fa-won-sign" class="icon"/>
             </div>
           </div>
         </div>
-        <div class="budget-box">
-          <div class="budget">
-            <div class="text">200,000</div>
-            <font-awesome-icon icon="fa-solid fa-won-sign" class="icon"/>
-          </div>
-        </div>
-      </div>
-      <div class="date-container">
-        <div class="date-create">
-          <div class="content-container" @click="openCreatePlanBoxModal(2)">
-            <font-awesome-icon icon="fa-regular fa-calendar-plus" class="icon"/>
-            <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
-              여행 날짜 추가하기
-            </n-gradient-text>
+        <div class="date-container">
+          <div class="date-create">
+            <div class="content-container" @click="openCreatePlanBoxModal(2)">
+              <font-awesome-icon icon="fa-regular fa-calendar-plus" class="icon"/>
+              <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
+                여행 날짜 추가하기
+              </n-gradient-text>
+            </div>
           </div>
         </div>
       </div>
@@ -267,20 +288,6 @@
     </template>
   </Modal>
 
-  <!-- 여행 날짜 수정 모달 -->
-  <Modal :isOpen="modalStore.updatePlanBoxModalOpen[1]" :close="() => closeUpdatePlanBoxModal(1)">
-    <template #header>
-      여행 날짜 수정하기
-    </template>
-    <template #content>
-      <div class="modal-sub-title">변경할 날짜를 선택해주세요.</div>
-      <DatePicker style="width: 100%; margin: 12px 0 18px 0"/>
-    </template>
-    <template #footer>
-      <button @click="handleUpdatePlanner(1)" class="modal-button">생성 하기</button>
-    </template>
-  </Modal>
-
   <!-- 여행 날짜 추가 모달 -->
   <Modal :isOpen="modalStore.createModalOpen[2]" :close="() => closeCreatePlanBoxModal(2)">
     <template #header>
@@ -288,10 +295,10 @@
     </template>
     <template #content>
       <div class="modal-sub-title">새로운 여행 날짜를 선택해주세요.</div>
-      <DatePicker style="width: 100%; margin: 12px 0 18px 0"/>
+      <input type="date" class="modal-input" v-model="planBox.date" style="width: 100%; margin: 12px 0 18px 0"/>
     </template>
     <template #footer>
-      <button @click="handleUpdatePlanner(1)" class="modal-button">생성 하기</button>
+      <button @click="handleCreatePlanBox()" class="modal-button">생성 하기</button>
     </template>
   </Modal>
 
@@ -353,10 +360,10 @@ import SockJS from 'sockjs-client';
 
 import {useUserStore} from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
-import DatePicker from "../../components/DatePicker.vue";
 import axios from "axios";
-import {sendMessage, setClient} from "@/api/ChattingApi.ts";
-import {chatDto} from "@/dto/ChattingDto.ts";
+import {createPlanBox, sendMessage, setClient} from "../../api/websocket/WebsocketPublish.ts";
+import {chatDto} from "../../dto/ChattingDto.ts";
+import {planBoxCreateRequest} from "../../dto/PlannerDto.ts";
 
 const message = useMessage();
 const userStore = useUserStore();
@@ -375,7 +382,6 @@ const profileImageUrl = computed(() => {
   const defaultImage = '../../public/default.png';
   return userStore.userInfo?.profileImgUrl === 'Default' ? defaultImage : userStore.userInfo?.profileImgUrl;
 });
-
 
 // 모달
 const modalStore = useModalStore();
@@ -409,10 +415,6 @@ const openUpdatePlanBoxModal = (planBoxId: number) => {
 const closeUpdatePlanBoxModal = (planBoxId: number) => {
   modalStore.closeUpdatePlanBoxModal(planBoxId);
 }
-
-const createPlanBox = ref({
-  birthday: new Date()
-});
 
 const openCreatePlanBoxModal = (id: number) => {
   modalStore.openCreateModal(id);
@@ -485,6 +487,7 @@ const fetchPlannerData = async (plannerId: number) => {
   try {
     const plannerData = await getPlannerDetail(plannerId);
     plannerDetail.value = plannerData;
+    plannerDetails.value = plannerData.planBoxResponses || [];
 
     const groupMemberData = await getGroupMembers(plannerId);
     groupMemberResponse.value = groupMemberData;
@@ -542,6 +545,26 @@ const createDropdownOptions = (restOptions) => {
   });
 };
 
+// 드롭다운
+const dateOptions = [
+  {
+    label: '수정하기',
+    key: 'edit',
+  },
+  {
+    label: '삭제하기',
+    key: 'delete',
+  },
+];
+
+const handleDateSelect = (key: string | number, planBoxId:number) => {
+  if (key === 'edit') {
+    openUpdatePlanBoxModal(planBoxId); // 적절한 수정 모달을 여는 함수 호출
+  } else if (key === 'delete') {
+    // 삭제하기 로직
+    // 삭제를 수행하는 함수 호출
+  }
+};
 
 // 웹소켓
 // 연결
@@ -602,9 +625,12 @@ const subscribe = (destination) => {
     client.value.subscribe(destination, (message) => {
       console.log("message:", message.body);
       const parsedMessage = JSON.parse(message.body);
+
       if (parsedMessage.type === "chat") {
-        console.log("chat massage:", parsedMessage);
         handleReceivedMessage(parsedMessage.message);
+
+      } else if (parsedMessage.type === "create-planBox") {
+        handlePlannerDetailResponse(parsedMessage.message);
       }
     });
   } else {
@@ -629,13 +655,33 @@ const handleMessage = async () => {
   sendMessage(plannerId.value, data);
   chatValue.value.message = '';
 }
-
 // 수신한 메시지 처리
 const messages = ref<Array<any>>([]);
 
 const handleReceivedMessage = (message: any) => {
   messages.value.push(message);
   console.log("Processing message:", message);
+};
+
+// 플랜박스 생성하기
+const planBox = ref({
+  date: new Date()
+});
+
+const handleCreatePlanBox = async () => {
+  const data: planBoxCreateRequest = {
+    planDate: planBox.value.date
+  };
+
+  await createPlanBox(plannerId.value, data);
+  closeCreatePlanBoxModal(2);
+};
+
+const plannerDetails = ref<Array<any>>([]);
+
+const handlePlannerDetailResponse = (newPlannerDetails: any) => {
+  plannerDetails.value = newPlannerDetails;
+  console.log(plannerDetails.value);
 };
 
 </script>
@@ -654,7 +700,8 @@ const handleReceivedMessage = (message: any) => {
 .planner-detail-container {
   @include background($gray200);
   @include size(100%, 100%);
-  @include flex-column(flex-start, center);
+  @include flex-column(center, center);
+  overflow-x: hidden;
 }
 
 .planner-detail-header {
@@ -666,20 +713,15 @@ const handleReceivedMessage = (message: any) => {
 
 .planner-detail-box {
   flex: 1;
-  //@include background($red100);
   @include flex-row(flex-start, flex-start);
   @include size(90%, 100%);
-  overflow-x: scroll;
-}
-
-.planner-detail-box::-webkit-scrollbar {
-  display: none;
+  overflow-x: hidden;
 }
 
 .title-container {
   display: flex;
   @include flex-column();
-  @include size(90%, 100%);
+  @include size(100%, 100%);
 }
 
 .title {
@@ -723,6 +765,14 @@ const handleReceivedMessage = (message: any) => {
   }
 }
 
+.planner-date-box{
+  @include flex-row(flex-start, flex-start);
+  @include size(100%, 100%);
+  //background-color: blue;
+  overflow-x: scroll;
+  padding:10px 0 2% 0;
+}
+
 .date-container {
   @include size(370px, 100%);
   min-width: 370px;
@@ -733,7 +783,7 @@ const handleReceivedMessage = (message: any) => {
     @include flex-row(center, center);
 
     .date {
-      @include flex-row(center, center);
+      @include flex-row(space-between, center);
       @include size(100%, 90%);
       background: $blue600;
       border-radius: 10px;
@@ -741,11 +791,12 @@ const handleReceivedMessage = (message: any) => {
 
     .text {
       @include noto-sans-kr(600, 28px, $gray25);
+      margin-left: 28%;
     }
 
     .icon {
-      @include noto-sans-kr(300, 16px, $gray25);
-      margin: 13px 0 6px 12px;
+      @include noto-sans-kr(300, 20px, $gray25);
+      margin: 15px;
       cursor: pointer;
     }
   }
@@ -884,6 +935,10 @@ const handleReceivedMessage = (message: any) => {
       }
     }
   }
+}
+
+.planner-date-box::-webkit-scrollbar {
+  display: none;
 }
 
 .tooltip-text {

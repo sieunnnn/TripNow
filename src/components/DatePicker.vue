@@ -57,8 +57,9 @@ const handleToggleDatePicker = (event: Event) => {
 
 const handleConfirm = (date: Date | null) => {
   if (date) {
-    selectedDate.value = date;
-    emit('update:modelValue', date);
+    const localDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    selectedDate.value = localDate;
+    emit('update:modelValue', localDate);
   }
   popoverVisible.value = false;
 };

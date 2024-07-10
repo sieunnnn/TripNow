@@ -35,7 +35,7 @@
           </div>
           <div class="form-item">
             <label for="birthday">생년월일</label>
-            <DatePicker v-model="formValue.birthday" placeholder="생일을 선택해주세요." style="width: 100%" :disabled="isInputDisabled"/>
+            <input type="date" class="custom-input" v-model="formValue.birthday" placeholder="생일을 선택해주세요." style="width: 100%" :disabled="isInputDisabled"/>
           </div>
           <div class="form-item">
             <button type="submit" class="submit-button">가입 하기</button>
