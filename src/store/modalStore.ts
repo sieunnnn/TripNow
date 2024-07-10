@@ -6,6 +6,7 @@ export const useModalStore = defineStore('modalStore', {
         createModalOpen: {} as { [key: number]: boolean },
         updateModalOpen: {} as { [key: number]: boolean },
         updatePlanBoxModalOpen: {} as { [key: number]: boolean },
+        deletePlanBoxModelOpen: {} as { [key: number]: boolean },
         createPlanModalOpen: {} as { [key: number]: boolean },
         planDetailModalOpen: {} as{ [key: number]: boolean }
     }),
@@ -27,6 +28,12 @@ export const useModalStore = defineStore('modalStore', {
         },
         closeUpdatePlanBoxModal(planBoxId: number) {
             this.updatePlanBoxModalOpen[planBoxId] = false;
+        },
+        openDeletePlanBoxModal(planBoxId: number) {
+            this.deletePlanBoxModelOpen[planBoxId] = true;
+        },
+        closeDeletePlanBoxModal(planBoxId: number) {
+            this.deletePlanBoxModelOpen[planBoxId] = false;
         },
         openCreatePlanModal(planId: number) {
             this.createPlanModalOpen[planId] = true;
