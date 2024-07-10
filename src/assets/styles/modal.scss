@@ -13,6 +13,7 @@
     font-weight: 400;
     font-size: 14px;
     color: #FFF;
+    width: 100%;
 
     cursor: pointer;
     padding: 8px 20px;
@@ -26,6 +27,28 @@
     &:focus {
         outline: none;
         background-color: darken(#1570EF, 15%);
+    }
+}
+
+.modal-warning-button {
+    background-color: #D92D20;
+    font-family: "Noto Sans KR", sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #FFF;
+    width: 100%;
+    cursor: pointer;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+
+    &:hover {
+        background-color: darken(#D92D20, 10%);
+    }
+
+    &:focus {
+        outline: none;
+        background-color: darken(#D92D20, 15%);
     }
 }
 
