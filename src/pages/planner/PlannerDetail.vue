@@ -11,7 +11,7 @@
             <font-awesome-icon icon="fa-solid fa-user" style="margin: 0 2px 0 2px"/>
             그룹 여행
           </n-tag>
-          <n-tag v-if="!plannderDetail?.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
+          <n-tag v-if="!plannerDetail?.isPrivate" size="small" round :bordered="false" type="success" style="margin: 2px 10px 0 0">
             <font-awesome-icon icon="fa-regular fa-eye" style="margin: 0 2px 0 2px" />
             공개중
           </n-tag>
@@ -127,6 +127,7 @@
                 <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="icon" />
               </n-dropdown>
             </div>
+
             <!-- 여행 날짜 수정 모달 -->
             <Modal :isOpen="modalStore.updatePlanBoxModalOpen[detail.planBoxId]" :close="() => closeUpdatePlanBoxModal(detail.planBoxId)">
               <template #header>
@@ -140,6 +141,7 @@
                 <button @click="handleUpdatePlanner(detail.planBoxId)" class="modal-button">수정 하기</button>
               </template>
             </Modal>
+
             <!-- 여행 날짜 삭제 모달 -->
             <Modal :isOpen="modalStore.deletePlanBoxModelOpen[detail.planBoxId]" :close="() => closeDeletePlanBoxModal(detail.planBoxId)">
               <template #header>
@@ -216,6 +218,7 @@
 <!--        <font-awesome-icon icon="fa-solid fa-comments" class="icon"/>-->
 <!--      </div>-->
   </div>
+
   <!-- 여행 계획 수정 모달 -->
   <Modal :isOpen="modalStore.updateModalOpen[1]" :close="() => closeUpdateModal(1)">
     <template #header>
@@ -326,8 +329,9 @@
       <input class="modal-input"/>
       <div class="modal-sub-title" style="margin: 8px 0 2px 0">일정 수행 시간을 선택해주세요.</div>
       <input type="time" class="modal-input"/>
-      <div class="modal-sub-title" style="margin: 8px 0 2px 0">방문하는 곳의 주소를 적어주세요.</div>
-      <input class="modal-input"/>
+      <div class="modal-sub-title" style="margin: 8px 0 2px 0">방문하는 곳의 주소를 입력해주세요.</div>
+      <SearchAddress  @updateAddress="handleAddressUpdate"/>
+      <div ref="mapContainer" class="map-container"></div>
       <div class="modal-sub-title" style="margin: 10px 0 2px 0">MEMO</div>
       <textarea class="modal-input" style="height: 120px; resize: none"/>
       <div class="modal-sub-title" style="margin: 10px 0 8px 0">여행 계획의 공개 여부를 정해주세요.</div>
@@ -360,19 +364,18 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
-import {useRoute} from "vue-router";
-import {getPlannerDetail} from "../../api/PlannerApi.ts";
-import {searchUsers} from "../../api/SearchApi.ts";
-import {userSearchResponse} from "../../dto/SearchDto.ts";
-import {groupMemberAddRequest, groupMemberResponse} from "../../dto/GroupMemberDto.ts";
-import {addGroupMembers, deleteGroupMember, getGroupMembers} from "../../api/GroupMemberApi.ts";
-import {Client} from "@stomp/stompjs";
+import { useRoute } from "vue-router";
+import { getPlannerDetail } from "../../api/PlannerApi.ts";
+import { searchUsers } from "../../api/SearchApi.ts";
+import { userSearchResponse } from "../../dto/SearchDto.ts";
+import { groupMemberAddRequest, groupMemberResponse } from "../../dto/GroupMemberDto.ts";
+import { addGroupMembers, deleteGroupMember, getGroupMembers } from "../../api/GroupMemberApi.ts";
+import { Client } from "@stomp/stompjs";
 import SockJS from 'sockjs-client';
-
-import {useUserStore} from "../../store/userStore.ts";
+import { useUserStore } from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
 import axios from "axios";
 import {
@@ -382,20 +385,19 @@ import {
   setClient,
   updatePlanBox
 } from "../../api/websocket/WebsocketPublish.ts";
-import {chatDto} from "../../dto/ChattingDto.ts";
-import {planBoxCreateRequest, planBoxUpdateRequest, planBoxUpdeteRequest} from "../../dto/PlannerDto.ts";
+import { chatDto } from "../../dto/ChattingDto.ts";
+import { planBoxCreateRequest, planBoxUpdateRequest, planBoxUpdeteRequest } from "../../dto/PlannerDto.ts";
+import SearchAddress from "@/components/SearchAddress.vue";
 
 const message = useMessage();
 const userStore = useUserStore();
 const route = useRoute();
 const chattingStatus = ref(false);
 
-
 // 채팅방
 const openChatting = (status: boolean) => {
   chattingStatus.value = status;
 }
-
 
 // 프로필 이미지
 const profileImageUrl = computed(() => {
@@ -489,27 +491,10 @@ const closeAllPlanDetailModals = () => {
   });
 };
 
-
 // api
 const plannerDetail = ref(null);
 const index = ref<number | null>(null);
 const plannerId = ref();
-
-onMounted(async () => {
-  try {
-    await userStore.fetchUserInfo();
-    await connect();
-
-    if (userStore.isUserLoggedIn) {
-      plannerId.value = route.params.plannerId;
-      index.value = plannerId;
-      await fetchPlannerData(plannerId.value);
-    }
-
-  } catch (error) {
-    console.error(error);
-  }
-});
 
 const fetchPlannerData = async (plannerId: number) => {
   try {
@@ -573,7 +558,6 @@ const createDropdownOptions = (restOptions) => {
   });
 };
 
-
 // 드롭다운
 const dateOptions = [
   {
@@ -589,15 +573,12 @@ const dateOptions = [
 const handleDateSelect = (key: string | number, planBoxId:number) => {
   if (key === 'edit') {
     openUpdatePlanBoxModal(planBoxId);
-
   } else if (key === 'delete') {
     openDeletePlanBoxModal(planBoxId);
   }
 };
 
-
-// 웹소켓
-// 연결
+// 웹소켓 연결
 const connected = ref(false);
 const client = ref<Client | null>(null);
 const accessToken = localStorage.getItem("Authorization");
@@ -642,7 +623,6 @@ const connect = async() => {
 
       client.value.activate();
     }
-
   } catch (e) {
     console.log(e);
     return;
@@ -658,7 +638,6 @@ const subscribe = (destination) => {
 
       if (parsedMessage.type === "chat") {
         handleReceivedMessage(parsedMessage.message);
-
       } else if (
           parsedMessage.type === "create-planBox" ||
           parsedMessage.type === "update-planBox" ||
@@ -732,6 +711,34 @@ const handlePlannerDetailResponse = (newPlannerDetails: any) => {
   plannerDetails.value = newPlannerDetails;
   console.log(plannerDetails.value);
 };
+
+const plan = ref({
+  title: '',
+  time: '',
+  address: '',
+  memo: '',
+  isPrivate: false
+});
+
+const handleAddressUpdate = (address) => {
+  plan.value.address = address;
+  console.log(address);
+};
+
+onMounted(async () => {
+  try {
+    await userStore.fetchUserInfo();
+    await connect();
+
+    if (userStore.isUserLoggedIn) {
+      plannerId.value = route.params.plannerId;
+      index.value = plannerId;
+      await fetchPlannerData(plannerId.value);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+});
 </script>
 
 <style scoped lang="scss">
@@ -1155,4 +1162,24 @@ const handlePlannerDetailResponse = (newPlannerDetails: any) => {
   display: none;
 }
 
+.modal-add-container {
+  @include flex-row();
+  align-items: center;
+
+  .modal-button {
+    @include size(150px, 25px);
+    margin-left: 10px;
+    padding: 0;
+  }
+}
+
+.maps-integration {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 16px;
+}
+
+.place-picker-container {
+  padding: 10px;
+}
 </style>

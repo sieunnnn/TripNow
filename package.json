@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@types/google.maps": "^3.55.11",
     "@types/sockjs-client": "^1.5.4",
     "naive-ui": "^2.38.2",
     "typescript": "^5.2.2",
