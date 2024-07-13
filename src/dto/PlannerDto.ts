@@ -27,7 +27,7 @@ export interface plannerUpdateRequest {
 }
 
 export interface planBoxUpdateRequest {
-    planDate: string;
+    planDate: Date;
     isPrivate: boolean;
 }
 
