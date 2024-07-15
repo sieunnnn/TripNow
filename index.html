@@ -27,7 +27,12 @@
       </style>
       <script type="module" src="https://unpkg.com/@googlemaps/extended-component-library@0.6">
       </script>
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDGsBxFRqIwj1Gb1IqIedr6o1RekambpNM&libraries=places"></script>
+      <script type="module">
+          const key = process.env.GOOGLE_MAPS_KEY;
+          const script = document.createElement('script');
+          script.src = `https://maps.googleapis.com/maps/api/js?key=${key}&libraries=places`;
+          document.head.appendChild(script);
+      </script>
   </head>
   <body>
   <div id="app">

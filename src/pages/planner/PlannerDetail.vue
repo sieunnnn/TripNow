@@ -138,7 +138,7 @@
                 <input v-model="planBox.updateDate" type="date" class="modal-input" style="width: 100%; margin: 12px 0 28px 0"/>
               </template>
               <template #footer>
-                <button @click="handleUpdatePlanner(detail.planBoxId)" class="modal-button">수정 하기</button>
+                <button @click="handleUpdatePlanBox(detail.planBoxId)" class="modal-button">수정 하기</button>
               </template>
             </Modal>
 
@@ -152,47 +152,125 @@
                 <div class="modal-text">삭제 하려면 아래 버튼을 눌러주세요.</div>
               </template>
               <template #footer>
-                <button @click="handleDeletePlanner(detail.planBoxId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
+                <button @click="handleDeletePlanBox(detail.planBoxId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
               </template>
             </Modal>
           </div>
           <div class="todo-list">
             <div class="todo-container">
-              <div class="todo"  v-for="plan in detail.planResponses" :key="plan.planId" @click="openPlanDetailModal(1)">
-                <div class="todo-title">{{ plan.title }}</div>
+              <div class="todo"  v-for="plan in detail.planResponses" :key="plan.planId">
+                <div class="todo-title">
+                  <div>{{ plan.title }}</div>
+                  <n-dropdown
+                      :options="dateOptions"
+                      size="large"
+                      @select="(key: any) => handlePlanSelect(key, detail.planBoxId, plan.planId)"
+                      placement="bottom-end"
+                  >
+                    <font-awesome-icon icon="fa-solid fa-ellipsis-vertical" class="icon" />
+                  </n-dropdown>
+
+                  <!-- 여행 일정 수정 모달 -->
+                  <Modal :isOpen="modalStore.updatePlanModalOpen[plan.planId]" :close="() => closeUpdatePlanModal(plan.planId)">
+                    <template #header>
+                      여행 일정 수정하기
+                    </template>
+                    <template #content>
+                      <div class="modal-sub-title" style="margin: 10px 0 2px 0">여행 일정의 이름을 적어주세요.</div>
+                      <input v-model="updatedPlan.title" class="modal-input" :placeholder="plan.title"/>
+                      <div class="modal-sub-title" style="margin: 8px 0 2px 0">일정 수행 시간을 선택해주세요.</div>
+                      <input v-model="updatedPlan.time" type="time" class="modal-input" :placeholder="plan.time"/>
+                      <div class="modal-sub-title" style="margin: 8px 0 2px 0">방문하는 곳의 주소를 입력해주세요.</div>
+                      <SearchAddress @updateAddress="handleUpdatePlanAddress"/>
+                      <div ref="mapContainer" class="map-container"></div>
+                      <div class="modal-sub-title" style="margin: 10px 0 2px 0">MEMO</div>
+                      <textarea v-model="updatedPlan.memo" class="modal-input" style="height: 120px; resize: none" :placeholder="plan.memo"/>
+                      <div class="modal-sub-title" style="margin: 10px 0 8px 0">여행 계획의 공개 여부를 정해주세요.</div>
+                      <div class="modal-text" style="margin: 10px 0 8px 0">비공개로 설정하면 나만 볼 수 있어요.</div>
+                      <div class="modal-flex-row" style="margin-bottom: 28px">
+                        <input v-model="updatedPlan.isPrivate" type="checkbox" style="margin-right: 5px"/>
+                        <span class="modal-text" style="margin-bottom: 4px">비공개로 설정하기</span>
+                      </div>
+                    </template>
+                    <template #footer>
+                      <button @click="handleUpdatePlan(detail.planBoxId, plan.planId)" class="modal-button">수정 하기</button>
+                    </template>
+                  </Modal>
+
+                  <!-- 여행 일정 삭제 모달 -->
+                  <Modal :isOpen="modalStore.deletePlanModalOpen[plan.planId]" :close="() => closeDeletePlanModal(plan.planId)">
+                    <template #header>
+                      여행 일정 삭제하기
+                    </template>
+                    <template #content>
+                      <div class="modal-text">한번 일정을 삭제하면 되돌릴 수 없어요. </div>
+                      <div class="modal-text">삭제 하려면 아래 버튼을 눌러주세요.</div>
+                    </template>
+                    <template #footer>
+                      <button @click="handleDeletePlan(detail.planBoxId, plan.planId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
+                    </template>
+                  </Modal>
+                </div>
                 <div class="content-container">
                   <div class="content">
                     <font-awesome-icon icon="fa-regular fa-clock" class="icon" style="margin: 2px 5px 0 1px"/>
-                    <span class="text">11:30</span>
+                    <span class="text">{{ plan.time }}</span>
                   </div>
                   <div class="content">
                     <font-awesome-icon icon="fa-solid fa-receipt" class="icon" style="margin-top: 2px;"/>
                     <span class="text">100,000</span>
                   </div>
                   <div class="content">
-                    <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
-                    <n-tooltip trigger="hover" placement="right-start" style="padding: 25px 20px; border-radius: 8px">
-                      <template #trigger>
-                        <span class="text" style="cursor: pointer">제주도 어쩌구 저쩌구 123-4</span>
-                      </template>
-                      <div class="tooltip-text">📍 제주도 어쩌구 저쩌구 123-4</div>
-                      <img src="../../../public/map_example.png" style="width: 200px">
-                    </n-tooltip>
-                  </div>
-                  <div class="content">
                     <font-awesome-icon icon="fa-solid fa-phone" class="icon" style="margin-top: 2px"/>
                     <span class="text">02-123-5678</span>
+                  </div>
+                  <div class="content" style="flex-direction: column">
+                    <div class="content">
+                      <font-awesome-icon icon="fa-solid fa-location-dot" class="icon" style="margin: 1px 5px 0 0"/>
+                      <span class="text">{{ plan.address }}</span>
+                    </div>
+                    <DrawMap :address="plan.address"/>
+                  </div>
+                  <div class="content">
+                    <span class="text">{{ plan.content }}</span>
                   </div>
                 </div>
               </div>
               <div class="todo-create">
-                <div class="content-container" @click="openCreatePlanModal(1)">
+                <div class="content-container" @click="openCreatePlanModal(detail.planBoxId)">
                   <font-awesome-icon icon="fa-regular fa-square-check" class="icon"/>
                   <n-gradient-text :gradient="{ deg: 150, from: 'rgb(52,64,84)', to: 'rgb(152,162,179)' }" class="text">
                     일정 추가하기
                   </n-gradient-text>
                 </div>
               </div>
+
+              <!-- 여행 일정 추가 모달 -->
+              <Modal :isOpen="modalStore.createPlanModalOpen[detail.planBoxId]" :close="() => closeCreatePlanModal(detail.planBoxId)">
+                <template #header>
+                  여행 일정 추가하기
+                </template>
+                <template #content>
+                  <div class="modal-sub-title" style="margin: 10px 0 2px 0">여행 일정의 이름을 적어주세요.</div>
+                  <input v-model="plan.title" class="modal-input"/>
+                  <div class="modal-sub-title" style="margin: 8px 0 2px 0">일정 수행 시간을 선택해주세요.</div>
+                  <input v-model="plan.time" type="time" class="modal-input"/>
+                  <div class="modal-sub-title" style="margin: 8px 0 2px 0">방문하는 곳의 주소를 입력해주세요.</div>
+                  <SearchAddress  @updateAddress="handleCreatePlanAddress"/>
+                  <div ref="mapContainer" class="map-container"></div>
+                  <div class="modal-sub-title" style="margin: 10px 0 2px 0">MEMO</div>
+                  <textarea v-model="plan.memo" class="modal-input" style="height: 120px; resize: none"/>
+                  <div class="modal-sub-title" style="margin: 10px 0 8px 0">여행 계획의 공개 여부를 정해주세요.</div>
+                  <div class="modal-text" style="margin: 10px 0 8px 0">비공개로 설정하면 나만볼 수 있어요.</div>
+                  <div class="modal-flex-row" style="margin-bottom: 28px">
+                    <input v-model="plan.isPrivate" type="checkbox" style="margin-right: 5px" />
+                    <span class="modal-text" style="margin-bottom: 4px">비공개로 설정하기</span>
+                  </div>
+                </template>
+                <template #footer>
+                  <button @click="handleCreatePlan(detail.planBoxId)" class="modal-button">추가 하기</button>
+                </template>
+              </Modal>
             </div>
           </div>
           <div class="budget-box">
@@ -212,6 +290,20 @@
             </div>
           </div>
         </div>
+
+        <!-- 여행 날짜 추가 모달 -->
+        <Modal :isOpen="modalStore.createModalOpen[2]" :close="() => closeCreatePlanBoxModal(2)">
+          <template #header>
+            여행 날짜 추가하기
+          </template>
+          <template #content>
+            <div class="modal-sub-title">새로운 여행 날짜를 선택해주세요.</div>
+            <input type="date" class="modal-input" v-model="planBox.date" style="width: 100%; margin: 12px 0 18px 0"/>
+          </template>
+          <template #footer>
+            <button @click="handleCreatePlanBox()" class="modal-button">생성 하기</button>
+          </template>
+        </Modal>
       </div>
     </div>
 <!--      <div class="chattingButton">-->
@@ -305,46 +397,6 @@
     </template>
   </Modal>
 
-  <!-- 여행 날짜 추가 모달 -->
-  <Modal :isOpen="modalStore.createModalOpen[2]" :close="() => closeCreatePlanBoxModal(2)">
-    <template #header>
-      여행 날짜 추가하기
-    </template>
-    <template #content>
-      <div class="modal-sub-title">새로운 여행 날짜를 선택해주세요.</div>
-      <input type="date" class="modal-input" v-model="planBox.date" style="width: 100%; margin: 12px 0 18px 0"/>
-    </template>
-    <template #footer>
-      <button @click="handleCreatePlanBox()" class="modal-button">생성 하기</button>
-    </template>
-  </Modal>
-
-  <!-- 여행 일정 추가 모달 -->
-  <Modal :isOpen="modalStore.createPlanModalOpen[1]" :close="() => closeCreatePlanModal(1)">
-    <template #header>
-      여행 일정 추가하기
-    </template>
-    <template #content>
-      <div class="modal-sub-title" style="margin: 10px 0 2px 0">여행 일정의 이름을 적어주세요.</div>
-      <input class="modal-input"/>
-      <div class="modal-sub-title" style="margin: 8px 0 2px 0">일정 수행 시간을 선택해주세요.</div>
-      <input type="time" class="modal-input"/>
-      <div class="modal-sub-title" style="margin: 8px 0 2px 0">방문하는 곳의 주소를 입력해주세요.</div>
-      <SearchAddress  @updateAddress="handleAddressUpdate"/>
-      <div ref="mapContainer" class="map-container"></div>
-      <div class="modal-sub-title" style="margin: 10px 0 2px 0">MEMO</div>
-      <textarea class="modal-input" style="height: 120px; resize: none"/>
-      <div class="modal-sub-title" style="margin: 10px 0 8px 0">여행 계획의 공개 여부를 정해주세요.</div>
-      <div class="modal-text" style="margin: 10px 0 8px 0">비공개로 설정하면 나만볼 수 있어요.</div>
-      <div class="modal-flex-row" style="margin-bottom: 28px">
-        <input type="checkbox" style="margin-right: 5px" />
-        <span class="modal-text" style="margin-bottom: 4px">비공개로 설정하기</span>
-      </div>
-    </template>
-    <template #footer>
-      <button @click="handleUpdatePlanner(1)" class="modal-button">추가 하기</button>
-    </template>
-  </Modal>
 
   <!-- 플랜 상세 모달 -->
   <Modal :isOpen="modalStore.planDetailModalOpen[1]" :close="() => closePlanDetailModel(1)">
@@ -364,7 +416,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import { useModalStore } from "../../store/modalStore.ts";
 import { useMessage } from "naive-ui";
 import { useRoute } from "vue-router";
@@ -379,15 +431,21 @@ import { useUserStore } from "../../store/userStore.ts";
 import Modal from "../../components/Modal.vue";
 import axios from "axios";
 import {
-  createPlanBox,
+  createPlan,
+  createPlanBox, deletePlan,
   deletePlanBox,
   sendMessage,
-  setClient,
+  setClient, updatePlan,
   updatePlanBox
 } from "../../api/websocket/WebsocketPublish.ts";
 import { chatDto } from "../../dto/ChattingDto.ts";
-import { planBoxCreateRequest, planBoxUpdateRequest, planBoxUpdeteRequest } from "../../dto/PlannerDto.ts";
+import {
+  planBoxCreateRequest,
+  planBoxUpdateRequest,
+  planCreateRequest
+} from "../../dto/PlannerDto.ts";
 import SearchAddress from "@/components/SearchAddress.vue";
+import DrawMap from "@/components/DrawMap.vue";
 
 const message = useMessage();
 const userStore = useUserStore();
@@ -469,6 +527,34 @@ const openPlanDetailModal = (planId: number) => {
 
 const closePlanDetailModel = (planId: number) => {
   modalStore.closePlanDetailModal(planId);
+}
+
+const openUpdatePlanModal = (planBoxId, planId) => {
+  const selectedPlan = plannerDetails.value
+      .find(detail => detail.planBoxId === planBoxId)
+      .planResponses.find(plan => plan.planId === planId);
+
+  updatedPlan.value = { ...selectedPlan };
+  modalStore.openPlanUpdateModal(planId);
+};
+
+const closeUpdatePlanModal = (planId) => {
+  modalStore.closePlanUpdateModal(planId);
+  updatedPlan.value = {
+    isPrivate: false,
+    title: '',
+    time: '',
+    address: '',
+    memo: ''
+  };
+};
+
+const openDeletePlanModal = (planId: number) => {
+  modalStore.openPlanDeleteModal(planId);
+}
+
+const closeDeletePlanModal = (planId: number) => {
+  modalStore.closePlanDeleteModal(planId);
 }
 
 const openMemberManageModel = (id: number) => {
@@ -641,7 +727,10 @@ const subscribe = (destination) => {
       } else if (
           parsedMessage.type === "create-planBox" ||
           parsedMessage.type === "update-planBox" ||
-          parsedMessage.type === "delete-planBox"
+          parsedMessage.type === "delete-planBox" ||
+          parsedMessage.type === "create-plan" ||
+          parsedMessage.type === "update-plan" ||
+          parsedMessage.type === "delete-plan"
       ) {
         handlePlannerDetailResponse(parsedMessage.message);
       }
@@ -691,7 +780,7 @@ const handleCreatePlanBox = async () => {
   closeCreatePlanBoxModal(2);
 };
 
-const handleUpdatePlanner = async (planBoxId: number) => {
+const handleUpdatePlanBox = async (planBoxId: number) => {
   const data: planBoxUpdateRequest = {
     planDate: planBox.value.updateDate
   };
@@ -700,30 +789,82 @@ const handleUpdatePlanner = async (planBoxId: number) => {
   closeUpdatePlanBoxModal(planBoxId);
 };
 
-const handleDeletePlanner = async (planBoxId: number) => {
+const handleDeletePlanBox = async (planBoxId: number) => {
   deletePlanBox(plannerId.value, planBoxId);
   closeDeletePlanBoxModal(planBoxId);
 }
 
-const plannerDetails = ref<Array<any>>([]);
-
-const handlePlannerDetailResponse = (newPlannerDetails: any) => {
-  plannerDetails.value = newPlannerDetails;
-  console.log(plannerDetails.value);
-};
-
 const plan = ref({
+  isPrivate: false,
   title: '',
   time: '',
   address: '',
-  memo: '',
-  isPrivate: false
+  memo: ''
 });
 
-const handleAddressUpdate = (address) => {
+const handleCreatePlanAddress = (address) => {
   plan.value.address = address;
   console.log(address);
 };
+
+const handleCreatePlan = async (planBoxId) => {
+  const data = {
+    isPrivate: plan.value.isPrivate,
+    title: plan.value.title,
+    time: plan.value.time,
+    content: plan.value.memo,
+    address: plan.value.address
+  }
+
+  createPlan(plannerId.value, planBoxId, data);
+  closeCreatePlanModal(planBoxId);
+}
+
+const handlePlanSelect = (key: string | number, planBoxId: number, planId: number) => {
+  if (key === 'edit') {
+    openUpdatePlanModal(planBoxId, planId);
+  } else if (key === 'delete') {
+    openDeletePlanModal(planId);
+  }
+};
+
+const updatedPlan = ref({
+  isPrivate: false,
+  title: '',
+  time: '',
+  address: '',
+  memo: ''
+});
+
+const handleUpdatePlanAddress = (address) => {
+  updatedPlan.value.address = address;
+  console.log('Address updated to:', address);
+};
+
+const handleUpdatePlan = async (planBoxId: number, planId: number) => {
+  const data = {
+    isPrivate: updatedPlan.value.isPrivate,
+    title: updatedPlan.value.title,
+    time: updatedPlan.value.time,
+    content: updatedPlan.value.memo,
+    address: updatedPlan.value.address
+  }
+  updatePlan(plannerId.value, planBoxId, planId, data);
+  closeUpdatePlanModal(planId);
+}
+
+const handleDeletePlan = async (planBoxId: number, planId: number) => {
+  deletePlan(plannerId.value, planBoxId, planId);
+  closeDeletePlanModal(planId);
+}
+
+const plannerDetails = ref<Array<any>>([]);
+
+const handlePlannerDetailResponse = (newPlannerDetails) => {
+  plannerDetails.value = newPlannerDetails;
+  console.log("Updated planner details: ", plannerDetails.value);
+};
+
 
 onMounted(async () => {
   try {
@@ -735,6 +876,7 @@ onMounted(async () => {
       index.value = plannerId;
       await fetchPlannerData(plannerId.value);
     }
+
   } catch (error) {
     console.error(error);
   }
@@ -881,11 +1023,19 @@ onMounted(async () => {
         cursor: pointer;
 
         .todo-title {
+          @include flex-row(space-between, center);
+          @include size(100%, auto);
           @include noto-sans-kr(900, 21px, $black);
+
+          .icon {
+            @include noto-sans-kr(400, 18px, $gray500);
+            margin: 0;
+          }
         }
 
         .content-container {
           @include flex-column();
+          @include size(100%, auto);
           margin: 12px 0 0 3px;
 
           .content {

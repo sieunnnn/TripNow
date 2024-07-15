@@ -71,3 +71,19 @@ export interface PlanResponse {
     content: string;
     address: string;
 }
+
+export interface planCreateRequest {
+    isPrivate: boolean;
+    title: string;
+    time: string;
+    content: string;
+    address: string;
+}
+
+export interface planUpdateRequest {
+    isPrivate: boolean;
+    title: string;
+    time: string;
+    content: string;
+    address: string;
+}

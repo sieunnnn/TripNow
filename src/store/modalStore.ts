@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 
-// TODO: 나중에 모달 정리 싹 하기
 export const useModalStore = defineStore('modalStore', {
     state: () => ({
         createModalOpen: {} as { [key: number]: boolean },
@@ -8,7 +7,9 @@ export const useModalStore = defineStore('modalStore', {
         updatePlanBoxModalOpen: {} as { [key: number]: boolean },
         deletePlanBoxModelOpen: {} as { [key: number]: boolean },
         createPlanModalOpen: {} as { [key: number]: boolean },
-        planDetailModalOpen: {} as{ [key: number]: boolean }
+        planDetailModalOpen: {} as { [key: number]: boolean },
+        updatePlanModalOpen: {} as { [key: number]: boolean },
+        deletePlanModalOpen: {} as { [key: number]: boolean },
     }),
     actions: {
         openCreateModal(id: number) {
@@ -46,6 +47,18 @@ export const useModalStore = defineStore('modalStore', {
         },
         closePlanDetailModal(planId: number) {
             this.planDetailModalOpen[planId] = false;
+        },
+        openPlanUpdateModal(planId: number) {
+            this.updatePlanModalOpen[planId] = true;
+        },
+        closePlanUpdateModal(planId: number) {
+            this.updatePlanModalOpen[planId] = false;
+        },
+        openPlanDeleteModal(planId: number) {
+            this.deletePlanModalOpen[planId] = true;
+        },
+        closePlanDeleteModal(planId: number) {
+            this.deletePlanModalOpen[planId] = false;
         }
     }
 });

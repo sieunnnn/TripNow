@@ -28,7 +28,7 @@ const updateMap = (place) => {
   if (!place.geometry || !place.geometry.location) return;
 
   map.setCenter(place.geometry.location);
-  map.setZoom(17);
+  map.setZoom(12);
 
   marker.setPosition(place.geometry.location);
   infowindow.setContent(
@@ -40,8 +40,8 @@ const updateMap = (place) => {
 
 onMounted(() => {
   const mapOptions = {
-    center: { lat: 37.7749, lng: -122.4194 },
-    zoom: 13,
+    center: { lat: 37.574187, lng: 126.976882 },
+    zoom: 17,
   };
 
   map = new google.maps.Map(mapContainer.value, mapOptions);
