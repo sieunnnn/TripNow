@@ -319,8 +319,8 @@
     <template #content>
       <div class="modal-sub-title">여행 계획의 이름을 수정해주세요.</div>
       <div class="modal-text">최대 20자 까지 가능해요.</div>
-      <input v-model="updateTitle.title" :placeholder="plannerDetail?.title" type="text" class="modal-input"/>
-      <div class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
+      <input v-model="updateTitle.title" :placeholder="plannerDetail?.title" type="text" :class="{'modal-input': true, 'modal-error-input': !isTitleValid(updateTitle.title)}"/>
+      <div v-if="!isTitleValid(updateTitle.title)" class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
       <div class="modal-sub-title" style="margin-top: 18px">여행 계획의 공개 여부를 정해주세요.</div>
       <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
       <div class="modal-flex-row" style="margin: 10px 0 26px 0">
@@ -576,6 +576,13 @@ const closeAllPlanDetailModals = () => {
     modalStore.closeUpdatePlanBoxModal(parseInt(planId));
   });
 };
+
+
+// validate
+const isTitleValid = (title: string) => {
+  return title.length <= 20;
+};
+
 
 // api
 const plannerDetail = ref(null);
@@ -987,7 +994,7 @@ onMounted(async () => {
     }
 
     .text {
-      @include noto-sans-kr(600, 28px, $gray25);
+      @include noto-sans-kr(600, 26px, $gray25);
       margin-left: 28%;
     }
 
@@ -1101,12 +1108,12 @@ onMounted(async () => {
     }
 
     .text {
-      @include noto-sans-kr(600, 30px, $gray25);
+      @include noto-sans-kr(600, 28px, $gray25);
     }
 
     .icon {
-      @include noto-sans-kr(300, 20px, $gray25);
-      margin: 10px 0 2px 8px;
+      @include noto-sans-kr(300, 18px, $gray25);
+      margin: 10px 0 4px 8px;
       cursor: pointer;
     }
   }
@@ -1252,7 +1259,7 @@ onMounted(async () => {
         @include size(100%, auto);
 
         .message-nickname {
-          @include noto-sans-kr(700, 16px, $black);
+          @include noto-sans-kr(700, 15px, $black);
           margin-left: 6px;
         }
 
@@ -1262,10 +1269,10 @@ onMounted(async () => {
         }
 
         .message-bubble {
-          @include size(68%, auto);
-          @include noto-sans-kr(400, 16px, $gray25);
+          @include size(65%, auto);
+          @include noto-sans-kr(300, 15px, $gray25);
           margin-left: 7px;
-          padding: 12px 20px 15px 20px;
+          padding: 8px 10px 8px 16px;
           background-color: $blue600;
           border-radius: 18px 0px 18px 18px;
         }
@@ -1285,7 +1292,7 @@ onMounted(async () => {
           @include flex-row(flex-start, flex-end);
 
           .message-nickname {
-            @include noto-sans-kr(700, 16px, $black);
+            @include noto-sans-kr(700, 15px, $black);
             margin-left: 6px;
           }
 
@@ -1299,7 +1306,7 @@ onMounted(async () => {
           @include size(80%, auto);
           @include noto-sans-kr(400, 16px, $black);
           margin-left: 7px;
-          padding: 12px 20px 15px 20px;
+          padding: 8px 16px 8px 10px;
           background-color: $gray200;
           border-radius: 0 18px 18px 18px;
         }
