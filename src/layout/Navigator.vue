@@ -48,8 +48,11 @@
           <font-awesome-icon v-else icon="fa-solid fa-earth-asia" class="icon"/>
           <span class="text">둘러 보기</span>
         </router-link>
-        <div class="menu-button">
-          <font-awesome-icon icon="fa-solid fa-envelope" class="icon"/>
+        <div class="menu-button" @click="openMessage(true)">
+          <n-badge v-if="messageStatus" dot type="warning" processing :offset="[8, 1]">
+            <font-awesome-icon icon="fa-solid fa-envelope" class="icon"/>
+          </n-badge>
+          <font-awesome-icon v-else icon="fa-solid fa-envelope" class="icon"/>
           <span class="text">메세지 보내기</span>
         </div>
         <div class="menu-button">
@@ -62,6 +65,7 @@
         <span class="text">로그아웃</span>
       </div>
     </div>
+    <MessageDrawer :messageStatus="messageStatus" @update:messageStatus="openMessage" />
   </div>
 </template>
 
@@ -73,10 +77,10 @@ import { useUserStore } from "../store/userStore.ts";
 import { useNotification } from 'naive-ui'
 import {computed, onMounted, ref, watch} from "vue";
 import router from "../router";
+import MessageDrawer from "@/components/MessageDrawer.vue";
 
 const route = useRoute();
 const userStore = useUserStore();
-
 const userInfo = ref(userStore.userInfo);
 
 watch(() => userStore.userInfo, (newUserInfo) => {
@@ -117,6 +121,11 @@ Try to scroll`
   );
 };
 
+const messageStatus = ref(false);
+
+const openMessage = (status: boolean) => {
+  messageStatus.value = status;
+}
 
 onMounted(async () =>{
   if (!userStore.userInfo) {
