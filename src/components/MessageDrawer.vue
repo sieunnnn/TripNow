@@ -1,5 +1,5 @@
 <template>
-  <n-drawer v-model:show="localMessageStatus" :width="550" style="padding: 30px 0 0 12px">
+  <n-drawer v-model:show="localMessageStatus" :width="500" style="padding: 30px 0 0 12px">
     <n-drawer-content :native-scrollbar="false" :width="996">
       <n-tabs type="segment" animated>
         <n-tab-pane name="search" tab="친구 찾기">
@@ -27,7 +27,26 @@
           </div>
         </n-tab-pane>
         <n-tab-pane name="friend" tab="친구  목록">
-          메세지
+          <div class="friend-container">
+            <div class="friend-content">
+              <div class="friend-box">
+                <div class="friend-info">
+                  <n-avatar
+                      round
+                      size="medium"
+                      src="../../../public/default.png"
+                  />
+                  <div class="friend-nickname">시은</div>
+                  <div class="friend-tag">#1234</div>
+                </div>
+                <button class="delete-button">친구 끊기</button>
+              </div>
+              <hr style="width: 100%; margin: 12px 0">
+            </div>
+          </div>
+        </n-tab-pane>
+        <n-tab-pane name="request" tab="친구 요청">
+          ㅇㅇ
         </n-tab-pane>
         <n-tab-pane name="message" tab="메세지">
           메세지
@@ -143,4 +162,39 @@ const handleUserSearch = async () => {
     }
   }
 }
+
+.friend-container {
+  @include flex-column();
+}
+
+.friend-content {
+  @include flex-column();
+  margin-top: 10px;
+  padding: 1px;
+}
+
+.friend-box {
+  @include flex-row(space-between, center);
+
+  .friend-nickname {
+    @include noto-sans-kr(700, 18px, $black);
+    margin:0 10px 0 10px;
+  }
+
+  .friend-tag {
+    @include noto-sans-kr(400, 16px, $gray500);
+    margin-top: 2px;
+  }
+
+  .delete-button {
+    @include custom-button-red();
+    @include size(90px, 28px);
+    @include noto-sans-kr(400, 14px, $gray25);
+  }
+}
+
+.friend-info {
+  @include flex-row();
+}
+
 </style>
