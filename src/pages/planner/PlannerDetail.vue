@@ -77,7 +77,9 @@
                       </div>
                     </div>
                     <div v-else class="receive-user">
-                      <n-avatar round :size="40" :src="profileImageUrl"/>
+                      <n-avatar round
+                                size="medium"
+                                :src="profileImageUrl"/>
                       <div class="receive-container">
                         <div class="user-container">
                           <span class="message-nickname">{{ msg.nickname }}</span>
@@ -91,7 +93,7 @@
                   </div>
                 </div>
                 <div class="input-container">
-                  <input type="text" v-model="chatValue.message" placeholder="대화 내용을 입력해주세요." class="chatting-input">
+                  <input type="text" v-model="chatValue.message" placeholder="대화 내용을 입력해주세요." />
                   <button @click="handleMessage" type="button">전송하기</button>
                 </div>
               </div>
@@ -900,6 +902,7 @@ onMounted(async () => {
 @import '../../assets/scss/mixins/_button.scss';
 @import '../../assets/scss/mixins/_typo.scss';
 @import "../../assets/styles/modal.scss";
+@import "../../assets/styles/message.scss";
 
 .planner-detail-container {
   @include background($gray200);
@@ -1209,114 +1212,6 @@ onMounted(async () => {
   .icon {
     @include noto-sans-kr(400, 30px, $gray25);
   }
-}
-
-.chatting-container {
-  @include flex-column(flex-start, space-between);
-  padding: 20px 10px 0 0;
-
-  .chatting-title {
-    @include noto-sans-kr(800, 30px, $black);
-  }
-
-  .chatting-member-container {
-    @include flex-row(flex-end, center);
-  }
-
-  .input-container {
-    @include flex-row();
-
-    input {
-      @include custom-input();
-      width: 80%;
-      margin-right: 15px;
-    }
-
-    button {
-      @include custom-button();
-      @include noto-sans-kr(400, 14px, $gray25);
-      width: 80px;
-      height: 36px;
-      border-radius: 6px;
-    }
-  }
-}
-
-.message-container {
-  //background-color: orange;
-  padding: 40px 0 10px 0;
-  height: 84vh;
-  overflow-y: scroll;
-  .message {
-    @include flex-column(100%, 100%);
-
-    .send-user {
-      @include flex-row(flex-start, flex-start);
-      @include size(100%, 100%);
-
-      .user-container {
-        @include flex-column(flex-start, flex-end);
-        @include size(100%, auto);
-
-        .message-nickname {
-          @include noto-sans-kr(700, 15px, $black);
-          margin-left: 6px;
-        }
-
-        .message-tag {
-          @include noto-sans-kr(400, 14px, $gray700);
-          margin-left: 4px;
-        }
-
-        .message-bubble {
-          @include size(65%, auto);
-          @include noto-sans-kr(300, 15px, $gray25);
-          margin-left: 7px;
-          padding: 8px 10px 8px 16px;
-          background-color: $blue600;
-          border-radius: 18px 0px 18px 18px;
-        }
-      }
-    }
-
-    .receive-user {
-      @include flex-row(flex-start, flex-start);
-      @include size(100%, auto);
-      margin-top: 20px;
-
-      .receive-container {
-        @include flex-column(flex-start, flex-start);
-        @include size(90%, auto);
-
-        .user-container {
-          @include flex-row(flex-start, flex-end);
-
-          .message-nickname {
-            @include noto-sans-kr(700, 15px, $black);
-            margin-left: 6px;
-          }
-
-          .message-tag {
-            @include noto-sans-kr(400, 14px, $gray700);
-            margin-left: 4px;
-          }
-        }
-
-        .message-bubble {
-          @include size(80%, auto);
-          @include noto-sans-kr(400, 16px, $black);
-          margin-left: 7px;
-          padding: 8px 16px 8px 10px;
-          background-color: $gray200;
-          border-radius: 0 18px 18px 18px;
-        }
-      }
-    }
-  }
-}
-
-.message-container::-webkit-scrollbar {
-  display: none;
 }
 
 .modal-add-container {
