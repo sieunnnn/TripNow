@@ -35,6 +35,7 @@
                       round
                       size="medium"
                       src="../../../public/default.png"
+                      style="margin-left: 3px"
                   />
                   <div class="friend-nickname">시은</div>
                   <div class="friend-tag">#1234</div>
@@ -46,10 +47,115 @@
           </div>
         </n-tab-pane>
         <n-tab-pane name="request" tab="친구 요청">
-          ㅇㅇ
+          <div class="friend-container">
+            <div class="friend-content">
+              <div class="friend-box">
+                <div class="friend-info">
+                  <n-avatar
+                      round
+                      size="medium"
+                      src="../../../public/default.png"
+                      style="margin-left: 3px"
+                  />
+                  <div class="friend-nickname">시은</div>
+                  <div class="friend-tag">#1234</div>
+                </div>
+                <button class="accept-button">요청 승낙</button>
+              </div>
+              <hr style="width: 100%; margin: 12px 0 0 0">
+            </div>
+          </div>
         </n-tab-pane>
         <n-tab-pane name="message" tab="메세지">
-          메세지
+          <div v-if="openFriendsList" class="friend-container">
+            <div class="friend-content" @click="openMessages()" style="cursor: pointer">
+              <div class="friend-box">
+                <div class="friend-info">
+                  <n-avatar
+                      round
+                      size="small"
+                      src="../../../public/default.png"
+                      style="margin-left: 3px"
+                  />
+                  <div class="friend-nickname">시은</div>
+                  <div class="friend-tag">#1234</div>
+                </div>
+                <div class="friend-tag" style="font-size: 15px">안녀어엉</div>
+              </div>
+              <hr style="width: 100%; margin: 12px 0 0 0">
+            </div>
+            <div class="friend-content">
+              <div class="friend-box">
+                <div class="friend-info">
+                  <n-avatar
+                      round
+                      size="small"
+                      src="../../../public/default.png"
+                      style="margin-left: 3px"
+                  />
+                  <div class="friend-nickname">시은</div>
+                  <div class="friend-tag">#1234</div>
+                </div>
+                <div class="friend-tag" style="font-size: 15px">안녀어엉</div>
+              </div>
+              <hr style="width: 100%; margin: 12px 0 0 0">
+            </div>
+          </div>
+
+          <!-- message -->
+          <div v-if="!openFriendsList" class="chatting-container">
+            <hr style="width: 100%; margin: 0 0 5px 0">
+            <div @click="backToFriendsList()" style="cursor: pointer">
+              <font-awesome-icon
+                  icon="fa-solid fa-circle-arrow-left"
+                  style="margin-right: 10px; color: #00C74A"
+              />
+              <span
+                  class="message-nickname"
+                  style="margin-left: 0"
+              >
+                뒤로 가기
+              </span>
+            </div>
+            <hr style="width: 100%; margin: 5px 0 0 0">
+            <div class="message-container" style="height: 75vh; padding-top: 30px">
+              <div class="message">
+                <div class="send-user">
+                  <div class="user-container">
+                    <div>
+                      <span class="message-nickname">시니</span>
+                      <span class="message-tag"># 1234</span>
+                    </div>
+                    <div class="message-bubble">
+                      앙농
+                    </div>
+                    <span class="message-tag">2024. 07. 09 10 : 00</span>
+                  </div>
+                </div>
+                <div class="receive-user">
+                  <n-avatar
+                      round
+                      size="medium"
+                      src="../../../public/default.png"
+                  />
+                  <div class="receive-container">
+                    <div class="user-container">
+                      <span class="message-nickname">누군가</span>
+                      <span class="message-tag">#3456</span>
+                    </div>
+                    <div class="message-bubble">
+                      hey
+                    </div>
+                    <span class="message-tag" style="margin-left: 10px">2024. 07. 09 10 : 00</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="input-container" style="padding: 3px">
+              <input type="text" placeholder="대화 내용을 입력해주세요." />
+              <button type="button">전송하기</button>
+            </div>
+          </div>
         </n-tab-pane>
       </n-tabs>
     </n-drawer-content>
@@ -78,6 +184,15 @@ watch(localMessageStatus, (newVal) => {
   emits('update:messageStatus', newVal);
 });
 
+const openFriendsList = ref(true);
+
+const openMessages = () => {
+  openFriendsList.value = false;
+}
+
+const backToFriendsList = () => {
+  openFriendsList.value = true;
+}
 
 // api
 const searchInput = ref('');
@@ -102,6 +217,7 @@ const handleUserSearch = async () => {
 @import '../assets/scss/mixins/_input.scss';
 @import '../assets/scss/mixins/_button.scss';
 @import '../assets/scss/mixins/_typo.scss';
+@import "../assets/styles/message.scss";
 
 .search-container {
   @include flex-row();
@@ -188,6 +304,12 @@ const handleUserSearch = async () => {
 
   .delete-button {
     @include custom-button-red();
+    @include size(90px, 28px);
+    @include noto-sans-kr(400, 14px, $gray25);
+  }
+
+  .accept-button {
+    @include custom-button();
     @include size(90px, 28px);
     @include noto-sans-kr(400, 14px, $gray25);
   }
