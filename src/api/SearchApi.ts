@@ -49,7 +49,12 @@ export const searchUsers = async (input: string): Promise<Array<userSearchRespon
                 email: input
             }
         });
-        return response.data;
+
+        const userStore = useUserStore();
+        const userId = userStore.userInfo?.userId;
+        const filteredUsers = response.data.filter((user: userSearchResponse) => user.userId !== userId);
+
+        return filteredUsers;
 
     } catch (e: any) {
         return e.response.data.errorCode;

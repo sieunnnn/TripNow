@@ -21,46 +21,46 @@
                 <div class="user-nickname">{{ user.nickname }}</div>
                 <div class="user-userTag">#{{ user.userTag }}</div>
               </div>
-              <button class="add-button" @click="handleSendRequest()">친구 요청</button>
+              <button class="add-button" @click="handleSendRequest(user.userId)">친구 요청</button>
             </div>
             <hr v-if="index < userSearchResponse.length - 1" style="width: 100%; margin: 12px 0">
           </div>
         </n-tab-pane>
         <n-tab-pane name="friend" tab="친구  목록">
           <div class="friend-container">
-            <div class="friend-content">
+            <div v-for="friend in friendList" :key="friend.friendId" class="friend-content">
               <div class="friend-box">
                 <div class="friend-info">
                   <n-avatar
                       round
                       size="medium"
-                      src="../../../public/default.png"
+                      :src="friend.profileImageUrl == 'Default' ? '../../../public/default.png' : friend.profileImageUrl"
                       style="margin-left: 3px"
                   />
-                  <div class="friend-nickname">시은</div>
-                  <div class="friend-tag">#1234</div>
+                  <div class="friend-nickname">{{ friend.nickname }}</div>
+                  <div class="friend-tag"># {{ friend.userTag }}</div>
                 </div>
-                <button class="delete-button">친구 끊기</button>
+                <button class="delete-button" @click="handleDeleteFriend(friend.friendId)">친구 끊기</button>
               </div>
               <hr style="width: 100%; margin: 12px 0">
             </div>
           </div>
         </n-tab-pane>
-        <n-tab-pane name="request" tab="친구 요청">
+        <n-tab-pane name="request" tab="친구 요청" @activate="handleWaitingList">
           <div class="friend-container">
-            <div class="friend-content">
+            <div v-for="friend in waitingList" :key="friend.friendId" class="friend-content">
               <div class="friend-box">
                 <div class="friend-info">
                   <n-avatar
                       round
                       size="medium"
-                      src="../../../public/default.png"
+                      :src="friend.profileImageUrl == 'Default' ? '../../../public/default.png' : friend.profileImageUrl"
                       style="margin-left: 3px"
                   />
-                  <div class="friend-nickname">시은</div>
-                  <div class="friend-tag">#1234</div>
+                  <div class="friend-nickname">{{ friend.nickname }}</div>
+                  <div class="friend-tag"># {{ friend.userTag }}</div>
                 </div>
-                <button class="accept-button">요청 승낙</button>
+                <button class="accept-button" @click="handleAccept(friend.friendId, friend.friendUserId)">요청 승낙</button>
               </div>
               <hr style="width: 100%; margin: 12px 0 0 0">
             </div>
@@ -163,14 +163,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import {onMounted, ref, watch} from "vue";
 import { defineProps, defineEmits } from "vue";
 import {searchUsers} from "../api/SearchApi.ts";
 import { userSearchResponse } from "../dto/SearchDto.ts";
+import {acceptFriend, deleteFriend, getFriends, getWaitingAcceptFriends, requestFriend} from "@/api/FriendApi.ts";
+import {friendRequestRequest, friendResponse} from "@/dto/FriendDto.ts";
+import {useMessage} from "naive-ui";
+import {useUserStore} from "@/store/userStore.ts";
+
+const userStore = useUserStore();
 
 const props = defineProps({
   messageStatus: Boolean,
 });
+
+const message = useMessage();
 
 const emits = defineEmits(['update:messageStatus']);
 
@@ -200,12 +208,92 @@ const userSearchResponse = ref<Array<userSearchResponse>>([]);
 
 const handleUserSearch = async () => {
   const input = searchInput.value.trim();
-  console.log("input: ", input);
   if (input !== '') {
     const userSearchData = await searchUsers(input);
     userSearchResponse.value = userSearchData;
   }
 };
+
+// 친구 요청
+const handleSendRequest = async (friendId: number) => {
+  const response = await requestFriend(friendId);
+
+  if (response == 200) {
+    message.success("친구 요청에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    await handleWaitingList();
+
+  } else if (response == "INVALID_VALUE_04") {
+    message.error("이미 친구인 유저에게는 친구 요청을 보낼 수 없어요.", {
+      keepAliveOnHover: true
+    });
+  }
+}
+
+// 친구 승낙 리스트
+const waitingList = ref<Array<friendResponse>>([]);
+const handleWaitingList = async () => {
+  try {
+    const response = await getWaitingAcceptFriends();
+    waitingList.value = response;
+
+  } catch (error) {
+    console.error('Error loading waiting list: ',error);
+  }
+}
+
+// 친구 승낙
+const handleAccept = async (friendId: number, friendUserId: number) => {
+  const response = await acceptFriend(friendId, friendUserId);
+
+  if (response == 200) {
+    message.success("요청 승낙에 성공 했어요.", {
+      keepAliveOnHover: true
+    });
+
+    await handleWaitingList();
+    await handleFriendList();
+
+  }
+}
+
+// 친구 리스트
+const friendList = ref<Array<friendResponse>>([]);
+const handleFriendList = async () => {
+  try {
+    const response = await getFriends();
+    friendList.value = response;
+
+  } catch (error) {
+    console.error('Error loading friend list: ',error);
+  }
+}
+
+const handleDeleteFriend = async (friendId: number) => {
+  try {
+    const response = await deleteFriend(friendId);
+
+    if (response == 200) {
+      message.success("친구 끊기에 성공 했어요.", {
+        keepAliveOnHover: true
+      });
+    }
+
+    await handleFriendList();
+
+  } catch (error) {
+    console.error('Error delete friend: ',error);
+  }
+}
+
+onMounted(async () => {
+  await userStore.fetchUserInfo();
+  await handleWaitingList();
+  await handleFriendList();
+});
+
 </script>
 
 <style scoped lang="scss">
