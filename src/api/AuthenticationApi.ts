@@ -10,7 +10,7 @@ import axiosInstance from "./AxiosInstance.ts";
 import {useUserStore} from "../store/userStore.ts";
 
 export const error = ref<String | null>(null);
-const API_BASE_URL = 'http://localhost:8080/api/v1/auth';
+const API_BASE_URL = 'https://klxsubiqfa.us14.qoddiapp.com/api/v1/auth';
 
 export const authenticationMailSend = async (data: authenticationRequest) => {
     try {
