@@ -3,13 +3,7 @@ import vue from '@vitejs/plugin-vue';
 import path from 'path';
 
 export default defineConfig({
-    plugins: [vue({
-        template: {
-            compilerOptions: {
-                isCustomElement: tag => tag.startsWith('gmp-') || tag.startsWith('gmpx-')
-            }
-        }
-    })],
+    plugins: [vue()],
     resolve: {
         alias: {
             '@': path.resolve(__dirname, './src'),
@@ -19,4 +13,7 @@ export default defineConfig({
         'process.env': process.env,
         global: 'globalThis',
     },
+    build: {
+        minify: false
+    }
 });

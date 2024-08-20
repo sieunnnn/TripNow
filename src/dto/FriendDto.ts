@@ -8,7 +8,7 @@ export interface friendResponse {
 
 export interface friendRequestRequest {
     friendUserId: number;
-    userId: number;
+    userId: number | undefined;
 }
 
 export interface friendRequest {

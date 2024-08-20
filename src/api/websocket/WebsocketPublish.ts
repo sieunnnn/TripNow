@@ -1,5 +1,4 @@
 import { Client } from "@stomp/stompjs";
-import {planUpdateRequest} from "../../dto/PlannerDto.ts";
 
 let client: Client | null = null;
 

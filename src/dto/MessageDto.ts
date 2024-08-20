@@ -1,12 +1,12 @@
 
 export interface sendMessageRequest {
     friendId: number;
-    sendUserId: number;
+    sendUserId: number | undefined;
     content: string;
 }
 
 export interface messagesRequest {
-    userId: number;
+    userId: number | undefined;
     friendId: number;
 }
 
@@ -22,7 +22,7 @@ export interface messageResponse {
     messageId: number;
     isSent: boolean;
 
-    sendUserId: number;
+    sendUserId: number | undefined;
     sendUserNickname: string;
     sendUserTag: number;
     sendUserProfileImage: string;

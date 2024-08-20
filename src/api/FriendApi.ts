@@ -31,7 +31,7 @@ export const getWaitingAcceptFriends = async ():Promise<Array<friendResponse>> =
 export const requestFriend = async(friendId: number) => {
     try {
         const userStore = useUserStore();
-        const storedUserId = userStore.userInfo?.userId;
+        const storedUserId: number | undefined = userStore.userInfo?.userId;
 
         const data: friendRequestRequest = {
             friendUserId: friendId,

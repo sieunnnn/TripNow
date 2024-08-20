@@ -27,7 +27,7 @@ export const getMassageList = async (page: number, size: number): Promise<Page<m
 export const getMassages = async (friendId: number, page: number, size: number): Promise<Page<messageResponse>> => {
     try {
         const userStore = useUserStore();
-        const userId = userStore.userInfo?.userId;
+        const userId: number | undefined = userStore.userInfo?.userId;
 
         const data: messagesRequest = {
             friendId: friendId,
@@ -62,7 +62,7 @@ export const getMassages = async (friendId: number, page: number, size: number):
 export const sendMessage = async (friendId: number, content: string) => {
     try {
         const userStore = useUserStore();
-        const userId = userStore.userInfo?.userId;
+        const userId: number | undefined = userStore.userInfo?.userId;
 
         const data: sendMessageRequest = {
             friendId: friendId,
@@ -79,7 +79,7 @@ export const sendMessage = async (friendId: number, content: string) => {
     }
 }
 
-function formatTimestamp(timestamp: string): string {
+function formatTimestamp(timestamp: Date): string {
     const date = new Date(timestamp);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
