@@ -45,7 +45,7 @@
             </div>
           </template>
           <template #footer>
-            <button @click="handleCreatePlanner" class="modal-button">추가 하기</button>
+            <button @click="handleCreatePlanner" class="modal-button" style="height: 40px">추가 하기</button>
           </template>
         </Modal>
         <div class="flex-row" style="width: 555px">
@@ -95,13 +95,13 @@
                 <div v-if="!isTitleValid(update[planner.plannerId].title)" class="modal-error-text">제목은 최대 20자까지 가능합니다.</div>
                 <div class="modal-sub-title" style="margin-top: 16px">여행 계획의 공개 여부를 정해주세요.</div>
                 <div class="modal-text">비공개로 설정하면 나만볼 수 있어요.</div>
-                <div class="modal-flex-row">
-                  <input v-model="update[planner.plannerId].isPrivate" type="checkbox" />
+                <div class="modal-flex-row" style="margin: 10px 0 32px 0">
+                  <input v-model="update[planner.plannerId].isPrivate" type="checkbox" style="margin:0 8px 0 2px"/>
                   <span class="modal-text">비공개로 설정하기</span>
                 </div>
               </template>
               <template #footer>
-                <button @click="handleUpdatePlanner(planner.plannerId)" class="modal-button">수정 하기</button>
+                <button @click="handleUpdatePlanner(planner.plannerId)" style="height: 40px" class="modal-button">수정 하기</button>
               </template>
             </Modal>
             <font-awesome-icon @click="handleDeletePlanner(planner.plannerId)" icon="fa-solid fa-trash-can" class="icon"/>

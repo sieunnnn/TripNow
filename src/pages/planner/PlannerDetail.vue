@@ -140,7 +140,7 @@
                 <input v-model="planBox.updateDate" type="date" class="modal-input" style="width: 100%; margin: 12px 0 28px 0"/>
               </template>
               <template #footer>
-                <button @click="handleUpdatePlanBox(detail.planBoxId)" class="modal-button">수정 하기</button>
+                <button @click="handleUpdatePlanBox(detail.planBoxId)" class="modal-button" style="height: 40px">수정 하기</button>
               </template>
             </Modal>
 
@@ -154,7 +154,7 @@
                 <div class="modal-text">삭제 하려면 아래 버튼을 눌러주세요.</div>
               </template>
               <template #footer>
-                <button @click="handleDeletePlanBox(detail.planBoxId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
+                <button @click="handleDeletePlanBox(detail.planBoxId)" class="modal-warning-button" style="margin-top: 28px; height: 40px">삭제 하기</button>
               </template>
             </Modal>
           </div>
@@ -195,7 +195,7 @@
                       </div>
                     </template>
                     <template #footer>
-                      <button @click="handleUpdatePlan(detail.planBoxId, plan.planId)" class="modal-button">수정 하기</button>
+                      <button @click="handleUpdatePlan(detail.planBoxId, plan.planId)" class="modal-button" style="height: 40px">수정 하기</button>
                     </template>
                   </Modal>
 
@@ -209,7 +209,7 @@
                       <div class="modal-text">삭제 하려면 아래 버튼을 눌러주세요.</div>
                     </template>
                     <template #footer>
-                      <button @click="handleDeletePlan(detail.planBoxId, plan.planId)" class="modal-warning-button" style="margin-top: 28px;">삭제 하기</button>
+                      <button @click="handleDeletePlan(detail.planBoxId, plan.planId)" class="modal-warning-button" style="margin-top: 28px; height: 40px">삭제 하기</button>
                     </template>
                   </Modal>
                 </div>
@@ -270,7 +270,7 @@
                   </div>
                 </template>
                 <template #footer>
-                  <button @click="handleCreatePlan(detail.planBoxId)" class="modal-button">추가 하기</button>
+                  <button @click="handleCreatePlan(detail.planBoxId)" class="modal-button" style="height: 40px">추가 하기</button>
                 </template>
               </Modal>
             </div>
@@ -303,7 +303,7 @@
             <input type="date" class="modal-input" v-model="planBox.date" style="width: 100%; margin: 12px 0 18px 0"/>
           </template>
           <template #footer>
-            <button @click="handleCreatePlanBox()" class="modal-button">생성 하기</button>
+            <button @click="handleCreatePlanBox()" class="modal-button" style="height: 40px">생성 하기</button>
           </template>
         </Modal>
       </div>
@@ -331,7 +331,7 @@
       </div>
     </template>
     <template #footer>
-      <button @click="handleUpdatePlanner(1)" class="modal-button">수정 하기</button>
+      <button @click="handleUpdatePlanner(1)" class="modal-button" style="height: 40px">수정 하기</button>
     </template>
   </Modal>
 
