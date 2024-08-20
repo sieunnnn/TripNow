@@ -40,7 +40,21 @@
                   <div class="friend-nickname">{{ friend.nickname }}</div>
                   <div class="friend-tag"># {{ friend.userTag }}</div>
                 </div>
-                <button class="delete-button" @click="handleDeleteFriend(friend.friendId)">친구 끊기</button>
+                <div>
+                  <button class="default-button" style="margin-right: 8px" @click="openSendMessageModal(friend.friendId)">쪽지 보내기</button>
+                  <button class="delete-button" @click="handleDeleteFriend(friend.friendId)">친구 끊기</button>
+                </div>
+                <Modal :isOpen="modalStore.sendMessageModalOpen[friend.friendId]" :close="() => closeSendMessageModal(friend.friendId)">
+                  <template #header>
+                    쪽지 보내기
+                  </template>
+                  <template #content>
+                      <textarea class="modal-input" v-model="messageForm.content" type="text" style="height: 100px; resize: none"/>
+                  </template>
+                  <template #footer>
+                    <button @click="handleSendMessage(friend.friendId)" class="modal-button" style="height: 40px">쪽지 보내기</button>
+                  </template>
+                </Modal>
               </div>
               <hr style="width: 100%; margin: 12px 0">
             </div>
@@ -66,45 +80,28 @@
             </div>
           </div>
         </n-tab-pane>
-        <n-tab-pane name="message" tab="메세지">
-          <div v-if="openFriendsList" class="friend-container">
-            <div class="friend-content" @click="openMessages()" style="cursor: pointer">
+        <n-tab-pane name="message" tab="메세지" @click="loadMoreFriends()">
+          <div v-for="friend in friendMessageList" :key="friend.friendId" v-if="openFriendsList == null" class="friend-container">
+            <div class="friend-content" @click="openMessages(friend.friendId)" style="cursor: pointer">
               <div class="friend-box">
                 <div class="friend-info">
                   <n-avatar
                       round
                       size="small"
-                      src="../../../public/default.png"
+                      :src="friend.friendProfileImage == 'Default' ? '../../../public/default.png' : friend.friendProfileImage"
                       style="margin-left: 3px"
                   />
-                  <div class="friend-nickname">시은</div>
-                  <div class="friend-tag">#1234</div>
+                  <div class="friend-nickname">{{ friend.friendNickname }}</div>
+                  <div class="friend-tag"># {{ friend.friendTag }}</div>
                 </div>
-                <div class="friend-tag" style="font-size: 15px">안녀어엉</div>
-              </div>
-              <hr style="width: 100%; margin: 12px 0 0 0">
-            </div>
-            <div class="friend-content">
-              <div class="friend-box">
-                <div class="friend-info">
-                  <n-avatar
-                      round
-                      size="small"
-                      src="../../../public/default.png"
-                      style="margin-left: 3px"
-                  />
-                  <div class="friend-nickname">시은</div>
-                  <div class="friend-tag">#1234</div>
-                </div>
-                <div class="friend-tag" style="font-size: 15px">안녀어엉</div>
+                <div class="friend-tag" style="font-size: 15px;">{{ friend.recentMessage }}</div>
               </div>
               <hr style="width: 100%; margin: 12px 0 0 0">
             </div>
           </div>
 
           <!-- message -->
-          <div v-if="!openFriendsList" class="chatting-container">
-            <hr style="width: 100%; margin: 0 0 5px 0">
+          <div v-if="openFriendsList != null" class="chatting-container" style="padding-top: 5px">
             <div @click="backToFriendsList()" style="cursor: pointer">
               <font-awesome-icon
                   icon="fa-solid fa-circle-arrow-left"
@@ -118,21 +115,21 @@
               </span>
             </div>
             <hr style="width: 100%; margin: 5px 0 0 0">
-            <div class="message-container" style="height: 75vh; padding-top: 30px">
-              <div class="message">
-                <div class="send-user">
+            <div class="message-container" style="height: 75vh; padding-top: 10px">
+              <div v-for="message in friendMessages" :key="message.messageId" class="message">
+                <div v-if="message.isSent" class="send-user">
                   <div class="user-container">
                     <div>
-                      <span class="message-nickname">시니</span>
-                      <span class="message-tag"># 1234</span>
+<!--                      <span class="message-nickname">{{ message.sendUserNickname }}</span>-->
+<!--                      <span class="message-tag"># {{ message.sendUserTag }}</span>-->
                     </div>
                     <div class="message-bubble">
-                      앙농
+                      {{ message.content }}
                     </div>
-                    <span class="message-tag">2024. 07. 09 10 : 00</span>
+                    <span class="message-tag" style="font-size: 11px">{{ message.sendAt }}</span>
                   </div>
                 </div>
-                <div class="receive-user">
+                <div v-else class="receive-user">
                   <n-avatar
                       round
                       size="medium"
@@ -140,20 +137,20 @@
                   />
                   <div class="receive-container">
                     <div class="user-container">
-                      <span class="message-nickname">누군가</span>
-                      <span class="message-tag">#3456</span>
+                      <span class="message-nickname">{{ message.sendUserNickname }}</span>
+                      <span class="message-tag"># {{ message.sendUserTag }}</span>
                     </div>
                     <div class="message-bubble">
-                      hey
+                      {{ message.content }}
                     </div>
-                    <span class="message-tag" style="margin-left: 10px">2024. 07. 09 10 : 00</span>
+                    <span class="message-tag" style="margin-left: 10px; font-size: 12px">{{ message.sendAt }}</span>
                   </div>
                 </div>
               </div>
             </div>
             <div class="input-container" style="padding: 3px">
-              <input type="text" placeholder="대화 내용을 입력해주세요." />
-              <button type="button">전송하기</button>
+              <input v-model="messageForm.content" type="text" placeholder="대화 내용을 입력해주세요." />
+              <button type="button" @click="handleSendMessage(openFriendsList)">전송하기</button>
             </div>
           </div>
         </n-tab-pane>
@@ -163,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref, watch} from "vue";
+import {onBeforeUnmount, onMounted, ref, watch} from "vue";
 import { defineProps, defineEmits } from "vue";
 import {searchUsers} from "../api/SearchApi.ts";
 import { userSearchResponse } from "../dto/SearchDto.ts";
@@ -171,8 +168,13 @@ import {acceptFriend, deleteFriend, getFriends, getWaitingAcceptFriends, request
 import {friendRequestRequest, friendResponse} from "@/dto/FriendDto.ts";
 import {useMessage} from "naive-ui";
 import {useUserStore} from "@/store/userStore.ts";
+import Modal from "@/components/Modal.vue";
+import {useModalStore} from "@/store/modalStore.ts";
+import {getMassageList, getMassages, sendMessage} from "@/api/MessageApi.ts";
+import {messageListResponse, messageResponse} from "@/dto/MessageDto.ts";
 
 const userStore = useUserStore();
+const modalStore = useModalStore();
 
 const props = defineProps({
   messageStatus: Boolean,
@@ -192,14 +194,16 @@ watch(localMessageStatus, (newVal) => {
   emits('update:messageStatus', newVal);
 });
 
-const openFriendsList = ref(true);
+const openFriendsList = ref(null);
 
-const openMessages = () => {
-  openFriendsList.value = false;
+const openMessages = (friendId: number) => {
+  console.log('openMessages called with friendId:', friendId);
+  openFriendsList.value = friendId;
+  loadMoreMessages(friendId, true);
 }
 
-const backToFriendsList = () => {
-  openFriendsList.value = true;
+const backToFriendsList = (friendId: number) => {
+  openFriendsList.value = null;
 }
 
 // api
@@ -288,10 +292,126 @@ const handleDeleteFriend = async (friendId: number) => {
   }
 }
 
+const openSendMessageModal = (friendId: number) => {
+  modalStore.openSendMessageModal(friendId);
+}
+
+const closeSendMessageModal = (friendId: number) => {
+  modalStore.closeSendMessageModal(friendId);
+}
+
+const messageForm = ref({
+  content: ''
+});
+
+const handleSendMessage = async (friendId: number) => {
+    try {
+      const response = await sendMessage(friendId, messageForm.value.content);
+      if (response == 200) {
+        message.success("쪽지 보내기에 성공 했어요.", {
+          keepAliveOnHover: true
+        })
+
+        messageForm.value.content = '';
+        await loadMoreFriends(true);
+        await loadMoreMessages(friendId, true);
+        closeSendMessageModal(friendId);
+      }
+    } catch (error) {
+      console.error('Error delete friend: ',error);
+    }
+}
+
+// 무한 스크롤
+const friendMessageList = ref<messageListResponse[]>([]);
+const page = ref(0);
+const size = 12;
+const totalPages = ref(1);
+const loading = ref(false);
+
+const loadMoreFriends = async (reset = false) => {
+  if (reset) {
+    friendMessageList.value = [];
+    page.value = 0;
+    totalPages.value = 1;
+  }
+
+  if (loading.value || page.value >= totalPages.value) return;
+  console.log('Loading messages...');
+  loading.value = true;
+
+  try {
+    const response = await getMassageList(page.value, size);
+
+    if (response.content) {
+      friendMessageList.value.push(...response.content);
+      page.value = response.number + 1;
+      totalPages.value = response.totalPages || 1;
+    }
+
+  } catch (error) {
+    console.error('Error loading message list:', error);
+
+  } finally {
+    loading.value = false;
+  }
+}
+
+const friendListContainer = ref<HTMLElement | null>(null);
+
+const handleScroll = () => {
+  const container = friendListContainer.value;
+  if (!container) return;
+
+  const scrollTop = container.scrollTop;
+  const scrollHeight = container.scrollHeight;
+  const clientHeight = container.clientHeight;
+
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
+    loadMoreFriends();
+  }
+};
+
+const friendMessages = ref<messageResponse[]>([]);
+
+const loadMoreMessages = async (friendId: number, reset = false) => {
+  if (reset) {
+    friendMessages.value = [];
+    page.value = 0;
+    totalPages.value = 1;
+  }
+
+  if (loading.value || page.value >= totalPages.value) return;
+  console.log('Loading messages...');
+  loading.value = true;
+
+  try {
+    const response = await getMassages(friendId, page.value, size);
+
+    if (response.content) {
+      friendMessages.value.push(...response.content);
+      page.value = response.number + 1;
+      totalPages.value = response.totalPages || 1;
+    }
+
+  } catch (error) {
+    console.error('Error loading message list:', error);
+
+  } finally {
+    loading.value = false;
+  }
+}
+
 onMounted(async () => {
   await userStore.fetchUserInfo();
   await handleWaitingList();
   await handleFriendList();
+  await loadMoreFriends(true);
+  plannerList.value?.addEventListener('scroll', handleScroll);
+});
+
+onBeforeUnmount(() => {
+  friendListContainer.value?.removeEventListener('scroll', handleScroll);
 });
 
 </script>
@@ -306,6 +426,7 @@ onMounted(async () => {
 @import '../assets/scss/mixins/_button.scss';
 @import '../assets/scss/mixins/_typo.scss';
 @import "../assets/styles/message.scss";
+@import "../assets/styles/modal.scss";
 
 .search-container {
   @include flex-row();
@@ -392,6 +513,12 @@ onMounted(async () => {
 
   .delete-button {
     @include custom-button-red();
+    @include size(90px, 28px);
+    @include noto-sans-kr(400, 14px, $gray25);
+  }
+
+  .default-button {
+    @include custom-button-default();
     @include size(90px, 28px);
     @include noto-sans-kr(400, 14px, $gray25);
   }
