@@ -3,7 +3,7 @@
     <div class="white-box">
       <div class="login-content">
         <div class="align-text">
-          <div class="title">
+          <div class="title" style="margin-top: 40px">
             서비스 이용을 위해 <br>
             로그인을 해주세요.
           </div>

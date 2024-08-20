@@ -3,7 +3,7 @@
     <div class="white-box">
       <div class="signup-content">
         <div class="align-text">
-          <div class="title">
+          <div class="title" style="margin-top: 40px">
             회원가입을 위해 <br>
             정보를 입력해주세요.
           </div>
@@ -177,7 +177,7 @@ const handleSignup = async () => {
 .white-box {
   @include background($gray25);
   @include flex-column(flex-start, center);
-  @include size(500px, 85%);
+  @include size(500px, 80%);
   min-width: 500px;
   border-radius: 15px;
 }
@@ -244,7 +244,7 @@ form {
 .submit-button {
   @include custom-button($blue600, $gray25, 5%, 5%, 6px);
   @include noto-sans-kr(500, 14px, $gray25);
-  @include size(102px, 36px);
+  @include size(100%, 45px);
   margin-top: 25px;
 }
 </style>
