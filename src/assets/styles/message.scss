@@ -71,9 +71,9 @@
         }
 
         .message-bubble {
-          @include size(65%, auto);
-          @include noto-sans-kr(300, 15px, $gray25);
-          margin-left: 7px;
+          @include size(55%, auto);
+          @include noto-sans-kr(300, 14px, white);
+          margin: 5px 0 0 0;
           padding: 8px 10px 8px 16px;
           background-color: $blue600;
           border-radius: 18px 0px 18px 18px;
@@ -84,7 +84,7 @@
     .receive-user {
       @include flex-row(flex-start, flex-start);
       @include size(100%, auto);
-      margin-top: 20px;
+      margin-top: 10px;
 
       .receive-container {
         @include flex-column(flex-start, flex-start);
@@ -105,8 +105,8 @@
         }
 
         .message-bubble {
-          @include size(80%, auto);
-          @include noto-sans-kr(400, 16px, $black);
+          @include size(65%, auto);
+          @include noto-sans-kr(400, 14px, $black);
           margin-left: 7px;
           padding: 7px 16px 8px 20px;
           background-color: $gray200;
