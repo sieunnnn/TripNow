@@ -10,6 +10,7 @@ export const useModalStore = defineStore('modalStore', {
         planDetailModalOpen: {} as { [key: number]: boolean },
         updatePlanModalOpen: {} as { [key: number]: boolean },
         deletePlanModalOpen: {} as { [key: number]: boolean },
+        sendMessageModalOpen: {} as {[key: number]: boolean}
     }),
     actions: {
         openCreateModal(id: number) {
@@ -59,6 +60,12 @@ export const useModalStore = defineStore('modalStore', {
         },
         closePlanDeleteModal(planId: number) {
             this.deletePlanModalOpen[planId] = false;
+        },
+        openSendMessageModal(friendId: number) {
+            this.sendMessageModalOpen[friendId] = true;
+        },
+        closeSendMessageModal(friendId: number) {
+            this.sendMessageModalOpen[friendId] = false;
         }
     }
 });
