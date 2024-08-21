@@ -1,11 +1,8 @@
-import axios from 'axios';
+import axios from '../axios.ts';
 
 const API_BASE_URL = 'https://5161-1-215-153-253.ngrok-free.app/api/v1';
 
-const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    withCredentials: true,
-});
+const axiosInstance = axios;
 
 axiosInstance.interceptors.request.use(
     (config) => {

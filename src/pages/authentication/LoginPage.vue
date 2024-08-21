@@ -74,16 +74,17 @@ const handleLogin = async () => {
   const status = await login(data);
 
   if (status === 200) {
-    const response = await getUserInfo();
+    // const response = await getUserInfo();
 
     message.success("로그인에 성공 했어요.", {
       keepAliveOnHover: true
     });
 
-    if (response.status == 200) {
-      await router.push('/planners');
-    }
+    // if (response.status == 200) {
+    //   await router.push('/planners');
+    // }
 
+    await router.push('/');
   } else {
     message.warning("이메일과 비밀 번호를 다시 한번 확인해주세요.", {
       keepAliveOnHover: true

@@ -5,7 +5,7 @@ import {
     loginRequest,
     signupRequest
 } from "../dto/AuthenticationDto.ts";
-import axios from "axios";
+import axios from "../axios.ts";
 import axiosInstance from "./AxiosInstance.ts";
 import {useUserStore} from "../store/userStore.ts";
 
