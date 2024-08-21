@@ -312,7 +312,7 @@ const handleDeletePlanner = async (plannerId: number) => {
 // 무한 스크롤
 const planners = ref<plannerListResponse[]>([]);
 const page = ref(0);
-const size = 12;
+const size = 16;
 const totalPages = ref(1);
 const loading = ref(false);
 
@@ -493,11 +493,6 @@ form {
   width: 100%;
   height: 100%;
   overflow: auto;
-}
-
-.planner-list-box {
-  @include flex-row(flex-start, flex-start);
-  flex-wrap: wrap;
 
   &::-webkit-scrollbar {
     display: none;
@@ -505,6 +500,11 @@ form {
 
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.planner-list-box {
+  @include flex-row(flex-start, flex-start);
+  flex-wrap: wrap;
 }
 
 .planner {

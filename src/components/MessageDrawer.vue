@@ -94,7 +94,7 @@
                   <div class="friend-nickname">{{ friend.friendNickname }}</div>
                   <div class="friend-tag"># {{ friend.friendTag }}</div>
                 </div>
-                <div class="friend-tag" style="font-size: 15px;">{{ friend.recentMessage }}</div>
+                <div class="friend-tag" style="font-size: 15px; width: 280px; overflow: hidden; font-size: 12px">{{ friend.recentMessage }}</div>
               </div>
               <hr style="width: 100%; margin: 12px 0 0 0">
             </div>

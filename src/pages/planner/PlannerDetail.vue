@@ -677,7 +677,7 @@ const handleDateSelect = (key: string | number, planBoxId:number) => {
 const connected = ref(false);
 const client = ref<Client | null>(null);
 const accessToken = localStorage.getItem("Authorization");
-const connectionUrl = "http://localhost:8080/ws?token=" + accessToken;
+const connectionUrl = "https://localhost:8443/wss?token=" + accessToken;
 
 const connect = async() => {
   try {

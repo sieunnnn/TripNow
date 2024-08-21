@@ -31,7 +31,7 @@
           소셜 계정으로 30 초 만에 로그인하기
           <button type="button" class="submit-button sns-button">
             <img src="/google.png" width="22" height="22" class="image"/>
-            <a href="http://localhost:8080/api/v1/oauth/authorize/google" class="link" style="text-decoration: none">구글 계정 으로 로그인</a>
+            <a href="https://localhost:8443/api/v1/oauth/authorize/google" class="link" style="text-decoration: none">구글 계정 으로 로그인</a>
           </button>
           <button type="button" class="kakao" style="margin-bottom: 30px">
             <img src="/kakao.png" width="22" height="22" class="image"/>
@@ -81,7 +81,7 @@ const handleLogin = async () => {
     });
 
     if (response.status == 200) {
-      await router.push('/');
+      await router.push('/planners');
     }
 
   } else {
