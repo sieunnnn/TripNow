@@ -34,7 +34,7 @@
                   <n-avatar
                       round
                       size="medium"
-                      :src="friend.profileImageUrl == 'Default' ? '../../../public/default.png' : friend.profileImageUrl"
+                      :src="friend.profileImageUrl == 'Default' ? '/default.png' : friend.profileImageUrl"
                       style="margin-left: 3px"
                   />
                   <div class="friend-nickname">{{ friend.nickname }}</div>
@@ -68,7 +68,7 @@
                   <n-avatar
                       round
                       size="medium"
-                      :src="friend.profileImageUrl == 'Default' ? '../../../public/default.png' : friend.profileImageUrl"
+                      :src="friend.profileImageUrl == 'Default' ? '/default.png' : friend.profileImageUrl"
                       style="margin-left: 3px"
                   />
                   <div class="friend-nickname">{{ friend.nickname }}</div>
@@ -88,7 +88,7 @@
                   <n-avatar
                       round
                       size="small"
-                      :src="friend.friendProfileImage == 'Default' ? '../../../public/default.png' : friend.friendProfileImage"
+                      :src="friend.friendProfileImage == 'Default' ? '/default.png' : friend.friendProfileImage"
                       style="margin-left: 3px"
                   />
                   <div class="friend-nickname">{{ friend.friendNickname }}</div>
@@ -133,7 +133,7 @@
                   <n-avatar
                       round
                       size="medium"
-                      src="../../../public/default.png"
+                      src="/default.png"
                   />
                   <div class="receive-container">
                     <div class="user-container">

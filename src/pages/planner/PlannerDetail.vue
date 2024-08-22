@@ -636,7 +636,7 @@ const handleDeleteMember = async (plannerId: number, groupMemberId: number) => {
   groupMemberResponse.value = groupMemberData;
 }
 
-const defaultImage = '../../public/default.png';
+const defaultImage = '/default.png';
 
 const processedProfileImages = () => {
   if (!groupMemberResponse.value || !Array.isArray(groupMemberResponse.value)) {
