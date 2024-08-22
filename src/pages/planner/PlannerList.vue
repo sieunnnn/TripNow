@@ -198,10 +198,11 @@ const isDatePassed = (endDate: string) => {
   return new Date(endDate) < new Date();
 };
 
-const defaultImage = '../../public/default.png';
+const defaultImage = '/default.png';
 
 const processedProfileImages = (images: string[]) => {
   return images.map(img => {
+    console.log(img);
     return { src: img === 'Default' ? defaultImage : img };
   });
 };

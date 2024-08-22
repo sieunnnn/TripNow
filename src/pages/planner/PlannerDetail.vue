@@ -358,7 +358,7 @@
               <n-avatar
                   round
                   size="small"
-                  :src="user.profileImageUrl || '../../../public/default.png'"
+                  :src="user.profileImageUrl || '/default.png'"
               />
               <div class="search-nickname">{{ user.nickname }}</div>
               <div class="search-userTag">#{{ user.userTag }}</div>

@@ -16,7 +16,7 @@
                 <n-avatar
                     round
                     size="medium"
-                    :src="user.profileImageUrl || '../../../public/default.png'"
+                    :src="user.profileImageUrl || '/default.png'"
                 />
                 <div class="user-nickname">{{ user.nickname }}</div>
                 <div class="user-userTag">#{{ user.userTag }}</div>

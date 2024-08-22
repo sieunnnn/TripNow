@@ -88,7 +88,7 @@ watch(() => userStore.userInfo, (newUserInfo) => {
 });
 
 const profileImageUrl = computed(() => {
-  const defaultImage = '../../public/default.png';
+  const defaultImage = '/default.png';
   return userStore.userInfo?.profileImgUrl === 'Default' ? defaultImage : userStore.userInfo?.profileImgUrl;
 });
 
