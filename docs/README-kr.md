@@ -8,7 +8,7 @@
 <br>
 
 # 사용법
-server status 뱃지가 on 인 경우 정상작동을 해요. 이 경우 [이곳](https://trip-now.vercel.app/login) 을 클릭하면 로그인 화면이 나타납니다.
+`server status` 뱃지가 on 인 경우 정상작동을 해요. 이 경우 [이곳](https://trip-now.vercel.app/login) 을 클릭하면 로그인 화면이 나타납니다.
 
 ## Test ID / Password
 |test ID|password|test ID|password|
