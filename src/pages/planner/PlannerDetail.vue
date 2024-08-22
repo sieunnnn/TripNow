@@ -643,7 +643,7 @@ const processedProfileImages = () => {
     return [];
   }
   return groupMemberResponse.value.map(member => {
-    return { src: member.profileImageUrl ? member.profileImageUrl : defaultImage };
+    return { src: member.profileImageUrl === 'Default' ? defaultImage : member.profileImageUrl };
   });
 };
 
