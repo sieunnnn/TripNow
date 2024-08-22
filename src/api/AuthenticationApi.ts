@@ -10,7 +10,7 @@ import axiosInstance from "./AxiosInstance.ts";
 import {useUserStore} from "../store/userStore.ts";
 
 export const error = ref<String | null>(null);
-const API_BASE_URL = 'https://24fb-1-215-153-253.ngrok-free.app/api/v1/auth';
+const API_BASE_URL = 'https://69aa-1-215-153-253.ngrok-free.app/api/v1/auth';
 
 export const authenticationMailSend = async (data: authenticationRequest) => {
     try {

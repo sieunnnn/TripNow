@@ -677,7 +677,7 @@ const handleDateSelect = (key: string | number, planBoxId:number) => {
 const connected = ref(false);
 const client = ref<Client | null>(null);
 const accessToken = localStorage.getItem("Authorization");
-const connectionUrl = "https://24fb-1-215-153-253.ngrok-free.app/wss?token=" + accessToken;
+const connectionUrl = "https://69aa-1-215-153-253.ngrok-free.app/wss?token=" + accessToken;
 
 const connect = async() => {
   try {

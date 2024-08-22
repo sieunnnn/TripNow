@@ -31,7 +31,7 @@
           소셜 계정으로 30 초 만에 로그인하기
           <button type="button" class="submit-button sns-button">
             <img src="/google.png" width="22" height="22" class="image"/>
-            <a href="https://24fb-1-215-153-253.ngrok-free.app/api/v1/oauth/authorize/google" class="link" style="text-decoration: none">구글 계정 으로 로그인</a>
+            <a href="https://69aa-1-215-153-253.ngrok-free.app/api/v1/oauth/authorize/google" class="link" style="text-decoration: none">구글 계정 으로 로그인</a>
           </button>
           <button type="button" class="kakao" style="margin-bottom: 30px">
             <img src="/kakao.png" width="22" height="22" class="image"/>
