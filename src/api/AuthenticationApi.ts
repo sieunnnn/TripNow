@@ -44,7 +44,7 @@ export const signup = async (data: signupRequest)=> {
 
 export const login = async (data: loginRequest) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/login`, data);
+        const response = await axiosInstance.post(`${API_BASE_URL}/login`, data);
         const accessToken = response.headers['authorization'];
         localStorage.setItem('Authorization', accessToken);
 
