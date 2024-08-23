@@ -75,6 +75,16 @@
     <td><img src="https://github.com/user-attachments/assets/e4eca162-2440-4bc4-bd83-961a5c2bd87a" alt="무한 스크롤과 검색기능" style="width:400px;"/></td>
     <td><img src="https://github.com/user-attachments/assets/9eafad1f-2034-47b2-b7ad-cc9de2cca93e" alt="친구 / 쪽지 기능" style="width:400px;"/></td>
   </tr>
+  <tr>
+    <td align="center" colspan='2'>
+    플래너 동시동작
+    </td>
+  </tr>
+  <tr>
+    <td colspan='2'>
+    <video src="https://github.com/user-attachments/assets/fed82060-616b-4551-9765-a636e6f30e1c">플래너 동시동작</video>
+    </td>
+  </tr>
 </table>
 
 <br>
