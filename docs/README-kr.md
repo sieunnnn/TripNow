@@ -23,7 +23,7 @@
 <br>
 
 # 사용 기술과 도구
-<img src="https://img.shields.io/badge/Sass-CC6699?style=flat&logo=sass&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vuedotjs&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Typescript-3178C6?style=flat&logo=typescript&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Figma-000000?style=flat&logo=figma&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/IntellijIDEA-000000?style=flat&logo=&logoColor=white" height="25px"/> 
+<img src="https://img.shields.io/badge/Sass-CC6699?style=flat&logo=sass&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Vue.js-4FC08D?style=flat&logo=vuedotjs&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Typescript-3178C6?style=flat&logo=typescript&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Vercel-000000?style=flat&logo=vercel&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/Figma-000000?style=flat&logo=figma&logoColor=white" height="25px"/> <img src="https://img.shields.io/badge/IntellijIDEA-000000?style=flat&logo=&logoColor=white" height="25px"/> 
 
 <br>
 <br>
